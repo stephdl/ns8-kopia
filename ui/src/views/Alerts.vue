@@ -46,7 +46,7 @@
               class="maxwidth"
             />
             <!-- Short numbers side by side on wide screens, like the Policies page -->
-            <div class="field-grid cols-3">
+            <div class="field-grid">
               <NsTextInput
                 type="number"
                 min="1"
@@ -71,6 +71,8 @@
                 class="mg-bottom"
                 ref="admin_alert_hours"
               />
+            </div>
+            <div class="field-grid">
               <NsTextInput
                 type="number"
                 min="50"
@@ -477,22 +479,17 @@ export default {
   max-width: 38rem;
 }
 
+// Two short fields per line on wide screens, every other control takes the same width
 .field-grid {
   display: grid;
   grid-template-columns: 1fr;
   column-gap: 1rem;
-  max-width: 60rem;
+  max-width: 38rem;
 }
 
 @media (min-width: 672px) {
   .field-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1056px) {
-  .field-grid.cols-3 {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 

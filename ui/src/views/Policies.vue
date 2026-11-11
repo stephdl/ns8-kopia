@@ -50,7 +50,7 @@
               ref="snapshot_interval"
             />
             <!-- Six short numbers: side by side on wide screens -->
-            <div class="field-grid cols-3">
+            <div class="field-grid">
               <NsTextInput
                 v-for="field in keepFields"
                 :key="field"
@@ -434,22 +434,17 @@ export default {
   }
 }
 
+// Two short fields per line on wide screens, every other control takes the same width
 .field-grid {
   display: grid;
   grid-template-columns: 1fr;
   column-gap: 1rem;
-  max-width: 60rem;
+  max-width: 38rem;
 }
 
 @media (min-width: 672px) {
   .field-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1056px) {
-  .field-grid.cols-3 {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 
