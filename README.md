@@ -259,4 +259,6 @@ This deletes the repository volume and every backup in it.
 ## Testing
 
 The Robot Framework tests in [tests/](tests/) run in CI on a fresh NS8 node: install,
-configure, add a machine, check its state, then remove the module.
+configure, then the node acts as its own client: it runs the enrollment script in a kopia
+container, backs up, restores a file, checks the state, resets the password and checks the
+old one is refused. Then it removes the module.
