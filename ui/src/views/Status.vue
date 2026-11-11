@@ -184,15 +184,6 @@
           <NsInfoCard
             v-if="isConfigured"
             light
-            :title="serverTitle"
-            :description="$t('status.server')"
-            :icon="Cloud32"
-            :loading="loading.getHealth"
-            class="min-height-card"
-          />
-          <NsInfoCard
-            v-if="isConfigured"
-            light
             :title="diskTitle"
             :description="$t('status.disk')"
             :icon="DataBase32"
@@ -223,14 +214,10 @@
             class="min-height-card"
           >
             <template slot="content">
-              <div>
-                <div v-if="health.certificate" class="break-word">
+              <div class="card-rows">
+                <div v-if="health.certificate">
                   {{ $t("status.certificate_expires") }}
                   {{ formatDateTime(health.certificate.expires) }}
-                </div>
-                <div v-if="health.certificate" class="break-word">
-                  {{ $t("status.fingerprint") }}
-                  {{ health.certificate.fingerprint }}
                 </div>
                 <div class="mg-top-sm">
                   {{ $t("status.certificate_note") }}
@@ -344,7 +331,7 @@
     <!-- services -->
     <cv-row>
       <cv-column class="page-subtitle">
-        <h4>{{ $tc("status.services", 2) }}</h4>
+        <h4>{{ $t("status.failed_services") }}</h4>
       </cv-column>
     </cv-row>
     <cv-row v-if="!loading.getStatus">
@@ -353,12 +340,21 @@
           <NsEmptyState :title="$t('status.no_services')"> </NsEmptyState>
         </cv-tile>
       </cv-column>
+      <cv-column v-else-if="!failedServices.length">
+        <cv-tile light>
+          <NsEmptyState :title="$t('status.all_services_running')">
+            <template #pictogram>
+              <CircleCheckPictogram />
+            </template>
+          </NsEmptyState>
+        </cv-tile>
+      </cv-column>
       <cv-column v-else>
         <div
           class="card-grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4"
         >
           <NsSystemdServiceCard
-            v-for="service in status.services"
+            v-for="service in failedServices"
             :key="service.name"
             light
             class="min-height-card"
@@ -381,6 +377,144 @@
         </cv-tile>
       </cv-column>
     </cv-row>
+    <!-- images -->
+    <cv-row>
+      <cv-column class="page-subtitle">
+        <h4>{{ $tc("status.app_images", 2) }}</h4>
+      </cv-column>
+    </cv-row>
+    <cv-row>
+      <cv-column>
+        <cv-tile light>
+          <div v-if="!loading.getStatus">
+            <NsEmptyState
+              v-if="!status.images.length"
+              :title="$t('status.no_images')"
+            >
+            </NsEmptyState>
+            <NsDataTable
+              v-else
+              :allRows="status.images"
+              :columns="i18nImagesTableColumns"
+              :rawColumns="imagesTableColumns"
+              :sortable="true"
+              :pageSizes="[5, 10, 25, 50, 100]"
+              :overflow-menu="false"
+              isSearchable
+              :searchPlaceholder="$t('status.search_images')"
+              :searchClearLabel="core.$t('common.clear_search')"
+              :noSearchResultsLabel="core.$t('common.no_search_results')"
+              :noSearchResultsDescription="
+                core.$t('common.no_search_results_description')
+              "
+              :itemsPerPageLabel="core.$t('pagination.items_per_page')"
+              :rangeOfTotalItemsLabel="
+                core.$t('pagination.range_of_total_items')
+              "
+              :ofTotalPagesLabel="core.$t('pagination.of_total_pages')"
+              :backwardText="core.$t('pagination.previous_page')"
+              :forwardText="core.$t('pagination.next_page')"
+              :pageNumberLabel="core.$t('pagination.page_number')"
+              @updatePage="imagesTablePage = $event"
+            >
+              <template slot="data">
+                <cv-data-table-row
+                  v-for="(row, rowIndex) in imagesTablePage"
+                  :key="`${rowIndex}`"
+                  :value="`${rowIndex}`"
+                >
+                  <cv-data-table-cell>
+                    <span>
+                      {{ row.name }}
+                    </span>
+                  </cv-data-table-cell>
+                  <cv-data-table-cell>
+                    <span>{{ row.size }}</span>
+                  </cv-data-table-cell>
+                  <cv-data-table-cell>
+                    <span>{{ row.created }}</span>
+                  </cv-data-table-cell>
+                </cv-data-table-row>
+              </template>
+            </NsDataTable>
+          </div>
+          <cv-skeleton-text
+            v-else
+            :paragraph="true"
+            :line-count="5"
+          ></cv-skeleton-text>
+        </cv-tile>
+      </cv-column>
+    </cv-row>
+    <!-- volumes -->
+    <cv-row>
+      <cv-column class="page-subtitle">
+        <h4>{{ $tc("status.app_volumes", 2) }}</h4>
+      </cv-column>
+    </cv-row>
+    <cv-row>
+      <cv-column>
+        <cv-tile light>
+          <div v-if="!loading.getStatus">
+            <NsEmptyState
+              v-if="!status.volumes.length"
+              :title="$t('status.no_volumes')"
+            >
+            </NsEmptyState>
+            <NsDataTable
+              v-else
+              :allRows="status.volumes"
+              :columns="i18nVolumesTableColumns"
+              :rawColumns="volumesTableColumns"
+              :sortable="true"
+              :pageSizes="[5, 10, 25, 50, 100]"
+              :overflow-menu="false"
+              isSearchable
+              :searchPlaceholder="$t('status.search_volumes')"
+              :searchClearLabel="core.$t('common.clear_search')"
+              :noSearchResultsLabel="core.$t('common.no_search_results')"
+              :noSearchResultsDescription="
+                core.$t('common.no_search_results_description')
+              "
+              :itemsPerPageLabel="core.$t('pagination.items_per_page')"
+              :rangeOfTotalItemsLabel="
+                core.$t('pagination.range_of_total_items')
+              "
+              :ofTotalPagesLabel="core.$t('pagination.of_total_pages')"
+              :backwardText="core.$t('pagination.previous_page')"
+              :forwardText="core.$t('pagination.next_page')"
+              :pageNumberLabel="core.$t('pagination.page_number')"
+              @updatePage="volumesTablePage = $event"
+            >
+              <template slot="data">
+                <cv-data-table-row
+                  v-for="(row, rowIndex) in volumesTablePage"
+                  :key="`${rowIndex}`"
+                  :value="`${rowIndex}`"
+                >
+                  <cv-data-table-cell>
+                    <span>
+                      {{ row.name }}
+                    </span>
+                  </cv-data-table-cell>
+                  <cv-data-table-cell>
+                    <span>{{ row.mount }}</span>
+                  </cv-data-table-cell>
+                  <cv-data-table-cell>
+                    <span>{{ row.created }}</span>
+                  </cv-data-table-cell>
+                </cv-data-table-row>
+              </template>
+            </NsDataTable>
+          </div>
+          <cv-skeleton-text
+            v-else
+            :paragraph="true"
+            :line-count="10"
+          ></cv-skeleton-text>
+        </cv-tile>
+      </cv-column>
+    </cv-row>
     <RestartModuleModal
       :visible="isShownRestartModuleModal"
       :node="status.node"
@@ -396,7 +530,6 @@ import { mapState } from "vuex";
 import RestartModuleModal from "@/components/RestartModuleModal.vue";
 // Not in IconService.
 import Restart20 from "@carbon/icons-vue/es/restart/20";
-import Cloud32 from "@carbon/icons-vue/es/cloud/32";
 import Devices32 from "@carbon/icons-vue/es/devices/32";
 import Checkmark32 from "@carbon/icons-vue/es/checkmark/32";
 import {
@@ -407,7 +540,6 @@ import {
   PageTitleService,
 } from "@nethserver/ns8-ui-lib";
 
-const DISK_WARNING_PERCENT = 85;
 const CERTIFICATE_WARNING_DAYS = 30;
 const CLIENT_STATES = ["ok", "late", "late_admin", "never_seen", "unknown"];
 
@@ -432,10 +564,18 @@ export default {
       },
       urlCheckInterval: null,
       host: "",
+      // Same threshold as the disk alert mail, read from the settings
+      diskAlertPercent: 85,
       status: {
         instance: "",
         services: [],
+        images: [],
+        volumes: [],
       },
+      imagesTablePage: [],
+      imagesTableColumns: ["name", "size", "created"],
+      volumesTablePage: [],
+      volumesTableColumns: ["name", "mount", "created"],
       health: {
         server: "",
         disk: null,
@@ -448,7 +588,6 @@ export default {
       backups: [],
       isShownRestartModuleModal: false,
       Restart20,
-      Cloud32,
       Devices32,
       Checkmark32,
       loading: {
@@ -470,6 +609,15 @@ export default {
     };
   },
   computed: {
+    failedServices() {
+      return (this.status.services || []).filter((service) => service.failed);
+    },
+    i18nImagesTableColumns() {
+      return this.imagesTableColumns.map((col) => this.$t(`status.${col}`));
+    },
+    i18nVolumesTableColumns() {
+      return this.volumesTableColumns.map((col) => this.$t(`status.${col}`));
+    },
     ...mapState(["instanceName", "instanceLabel", "core", "appName"]),
     isConfigured() {
       return this.host !== "";
@@ -494,7 +642,7 @@ export default {
     },
     isDiskAlmostFull() {
       return (
-        !!this.health.disk && this.health.disk.percent >= DISK_WARNING_PERCENT
+        !!this.health.disk && this.health.disk.percent >= this.diskAlertPercent
       );
     },
     isCertificateNear() {
@@ -502,12 +650,6 @@ export default {
         !!this.health.certificate &&
         this.health.certificate.days_left <= CERTIFICATE_WARNING_DAYS
       );
-    },
-    serverTitle() {
-      if (!this.health.server) {
-        return "-";
-      }
-      return this.$t("status.server_" + this.health.server);
     },
     diskTitle() {
       return this.health.disk
@@ -590,6 +732,7 @@ export default {
         action: "get-configuration",
         completed: (output) => {
           this.host = output.host;
+          this.diskAlertPercent = output.disk_alert_percent;
           this.loading.getConfiguration = false;
           // Before the first configuration there is no server to ask
           if (this.isConfigured) {
@@ -766,6 +909,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.card-rows {
+  text-align: center;
+}
+
 @import "../styles/carbon-utils";
 
 .break-word {
