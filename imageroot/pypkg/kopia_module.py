@@ -134,6 +134,13 @@ def save_client_hashes(values):
     _write_private(CLIENT_HASHES, json.dumps(values, indent=2))
 
 
+def set_user_hash(name, encoded, exists):
+    """Create or update a Kopia account. The hash goes through stdin, never on the command line."""
+    verb = "set" if exists else "add"
+    # name matches NAME_PATTERN on both sides of the @, so it needs no shell quoting
+    kopia([], stdin=encoded + "\n", script=f'read -r h; kopia server user {verb} {name} --user-password-hash="$h"')
+
+
 def set_client_password(name, users=None):
     """Give the account a new random password, store only its hash and return the password."""
     password = generate_password()
@@ -141,7 +148,7 @@ def set_client_password(name, users=None):
     if users is None:
         users = {u["username"] for u in kopia_json(["server", "user", "list"]) or []}
     # Account first: a failure leaves the stored hash matching the account
-    kopia(["server", "user", "set" if name in users else "add", name, f"--user-password-hash={encoded}"])
+    set_user_hash(name, encoded, exists=name in users)
     hashes = load_client_hashes()
     hashes[name] = encoded
     save_client_hashes(hashes)

@@ -16,12 +16,16 @@ if (-not (Test-Path $kopia)) {{
     winget install -e --id Kopia.KopiaUI --silent --accept-package-agreements --accept-source-agreements
 }}
 $env:KOPIA_PASSWORD = "{password}"
-& $kopia repository connect server `
-    --url "{url}" `
-    --server-cert-fingerprint "{fingerprint}" `
-    --override-username "{user}" `
-    --override-hostname "{machine}"
-Remove-Item Env:KOPIA_PASSWORD
+try {{
+    & $kopia repository connect server `
+        --url "{url}" `
+        --server-cert-fingerprint "{fingerprint}" `
+        --override-username "{user}" `
+        --override-hostname "{machine}"
+    if ($LASTEXITCODE -ne 0) {{ throw "kopia repository connect failed" }}
+}} finally {{
+    Remove-Item Env:KOPIA_PASSWORD -ErrorAction SilentlyContinue
+}}
 foreach ($folder in @("Documents", "Desktop", "Pictures")) {{
     $path = Join-Path $env:USERPROFILE $folder
     if (Test-Path $path) {{ & $kopia snapshot create $path }}
@@ -53,7 +57,7 @@ Description=Kopia snapshot of the home directory
 [Service]
 Type=oneshot
 # The home directory is named on purpose: --all finds nothing in a new repository after a server restore
-ExecStart=$(command -v kopia) snapshot create $HOME
+ExecStart=$(command -v kopia) snapshot create "$HOME"
 UNIT
     cat > "$HOME/.config/systemd/user/kopia-snapshot.timer" <<UNIT
 [Unit]

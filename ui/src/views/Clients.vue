@@ -577,7 +577,8 @@ export default {
           owner_email: this.newOwnerEmail,
         },
         title: this.$t("clients.adding_machine"),
-        isNotificationHidden: false,
+        // The output holds the machine password: keep it out of the notification list
+        isNotificationHidden: true,
         completed: (output) => {
           this.loading.addClient = false;
           this.isShownAddModal = false;
@@ -656,7 +657,8 @@ export default {
         action: "reset-client-password",
         data: { name: client.name },
         title: this.$t("clients.resetting_password", { name: client.name }),
-        isNotificationHidden: false,
+        // The output holds the machine password: keep it out of the notification list
+        isNotificationHidden: true,
         completed: (output) => {
           this.loading.resetClient = false;
           this.hideResetModal();

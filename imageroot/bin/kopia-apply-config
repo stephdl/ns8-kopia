@@ -55,7 +55,7 @@ def apply_users():
         verb = "set" if name in users else "add"
         print(f"Machine account {name}: {verb}", file=sys.stderr)
         # Same hash as before: the machine keeps working with the password in its keyring
-        km.kopia(["server", "user", verb, name, f"--user-password-hash={encoded}"])
+        km.set_user_hash(name, encoded, exists=name in users)
         changed = True
     return changed
 

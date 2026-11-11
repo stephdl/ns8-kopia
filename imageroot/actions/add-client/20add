@@ -39,5 +39,6 @@ km.save_clients(clients)
 client = clients[-1]
 password = km.set_client_password(name)
 km.server_refresh()
-# The only time the password leaves the module
+# The core keeps task outputs about 8 hours, readable by cluster admins only. They can read the
+# repository password anyway, which opens every backup.
 json.dump(kopia_enroll.enrollment(client, password), fp=sys.stdout)
