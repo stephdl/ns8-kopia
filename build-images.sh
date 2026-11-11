@@ -14,7 +14,6 @@ images=()
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
 reponame="kopia"
-# renovate: datasource=docker depName=docker.io/kopia/kopia
 kopia_image="docker.io/kopia/kopia:0.23.1"
 # Node.js 25+ no longer ships Corepack, install it from npm
 # renovate: datasource=npm packageName=corepack

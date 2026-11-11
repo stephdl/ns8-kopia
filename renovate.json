@@ -1,4 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>NethServer/.github:ns8-automerge"]
+  "extends": [
+    "local>NethServer/.github:ns8-automerge"
+  ],
+  "packageRules": [
+    {
+      "description": "Kopia 0.x minor releases can change the repository format: review them by hand",
+      "matchPackageNames": ["kopia/kopia"],
+      "matchUpdateTypes": ["minor", "major"],
+      "automerge": false
+    }
+  ]
 }
