@@ -111,7 +111,7 @@
         "enrollment_user_title": "In der Sitzung des Benutzers ausführen",
         "enrollment_user_description": "Führen Sie das Skript als der Benutzer aus, dem die Dateien gehören. Führen Sie es nicht als Administrator oder als SYSTEM aus.",
         "enrollment_secret_title": "Das Skript enthält ein Passwort",
-        "enrollment_secret_description": "Legen Sie das Skript nie im Klartext in einer GPO oder in Intune ab. Wer es liest, kann sich als dieser Rechner verbinden.",
+        "enrollment_secret_description": "Legen Sie das Skript nie im Klartext in einer GPO oder in Intune ab. Wer es liest, kann die Sicherungen dieses Rechners von überall lesen, wiederherstellen und löschen. Setzen Sie bei einem Leck das Passwort zurück.",
         "url": "Server-URL",
         "fingerprint": "Zertifikat-Fingerabdruck",
         "script_tabs": "Registrierungsskripte",

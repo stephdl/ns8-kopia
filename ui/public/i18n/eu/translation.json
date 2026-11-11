@@ -111,7 +111,7 @@
         "enrollment_user_title": "Exekutatu erabiltzailearen saioan",
         "enrollment_user_description": "Exekutatu scripta fitxategien jabea den erabiltzailearekin. Ez exekutatu administratzaile gisa edo SYSTEM gisa.",
         "enrollment_secret_title": "Scriptak pasahitz bat dauka",
-        "enrollment_secret_description": "Ez jarri inoiz scripta testu garbian GPO batean edo Intunen. Irakurtzen duen edonork makina honen gisa konekta daiteke.",
+        "enrollment_secret_description": "Ez jarri inoiz scripta testu garbian GPO batean edo Intunen. Irakurtzen duen edonork makina honen babeskopiak irakurri, leheneratu eta ezabatu ditzake, edonondik. Filtratzen bada, berrezarri pasahitza.",
         "url": "Zerbitzariaren URLa",
         "fingerprint": "Ziurtagiriaren hatz-marka",
         "script_tabs": "Izen-emateko scriptak",

@@ -111,7 +111,7 @@
         "enrollment_user_title": "Execute na sessão do usuário",
         "enrollment_user_description": "Execute o script com o usuário dono dos arquivos. Não execute como administrador nem como SYSTEM.",
         "enrollment_secret_title": "O script contém uma senha",
-        "enrollment_secret_description": "Nunca coloque o script em texto claro em uma GPO ou no Intune. Quem o ler pode se conectar como esta máquina.",
+        "enrollment_secret_description": "Nunca coloque o script em texto claro em uma GPO ou no Intune. Quem o ler pode ler, restaurar e apagar os backups desta máquina, de qualquer lugar. Se ele vazar, redefina a senha.",
         "url": "URL do servidor",
         "fingerprint": "Impressão digital do certificado",
         "script_tabs": "Scripts de registro",

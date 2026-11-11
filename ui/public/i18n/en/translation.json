@@ -111,7 +111,7 @@
         "enrollment_user_title": "Run it in the user session",
         "enrollment_user_description": "Run the script as the user who owns the files. Do not run it as administrator or as SYSTEM.",
         "enrollment_secret_title": "The script contains a password",
-        "enrollment_secret_description": "Never put the script in a GPO or in Intune in clear text. Anyone who reads it can connect as this machine.",
+        "enrollment_secret_description": "Never put the script in a GPO or in Intune in clear text. Anyone who reads it can read, restore and delete the backups of this machine, from anywhere. If it leaks, reset the password.",
         "url": "Server URL",
         "fingerprint": "Certificate fingerprint",
         "script_tabs": "Enrollment scripts",

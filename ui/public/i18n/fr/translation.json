@@ -111,7 +111,7 @@
         "enrollment_user_title": "Lancez-le dans la session de l'utilisateur",
         "enrollment_user_description": "Lancez le script avec l'utilisateur qui possède les fichiers. Ne le lancez pas en administrateur ni en SYSTEM.",
         "enrollment_secret_title": "Le script contient un mot de passe",
-        "enrollment_secret_description": "Ne mettez jamais le script en clair dans une GPO ou dans Intune. Quiconque le lit peut se connecter comme cette machine.",
+        "enrollment_secret_description": "Ne mettez jamais le script en clair dans une GPO ou dans Intune. Quiconque le lit peut lire, restaurer et supprimer les sauvegardes de cette machine, depuis n'importe où. En cas de fuite, réinitialisez le mot de passe.",
         "url": "URL du serveur",
         "fingerprint": "Empreinte du certificat",
         "script_tabs": "Scripts d'enrôlement",
