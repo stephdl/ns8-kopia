@@ -40,12 +40,19 @@ Take screenshots
     Close Browser
 
 Check if kopia can be configured
-    ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{}'
+    ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host": "kopia.test.example.org", "admin_password": "Admin-pass-2026", "repository_password": "Repo-pass-2026"}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
 
 Check if kopia works as expected
-    ${rc} =    Execute Command    true
+    ${rc} =    Execute Command    curl -sk -o /dev/null -w '\%{http_code}' https://127.0.0.1:51515/ | grep -q 401
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/add-client --data '{"username": "ci", "hostname": "runner"}'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Contain    ${output}    ci@runner
+    ${rc} =    Execute Command    api-cli run module/${module_id}/list-clients | grep -q never_seen
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
 
