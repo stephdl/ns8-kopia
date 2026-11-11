@@ -83,7 +83,17 @@
         />
       </cv-column>
     </cv-row>
-    <cv-row v-if="health.verify && !health.verify.ok">
+    <cv-row v-if="health.verify && health.verify.unfinished">
+      <cv-column>
+        <NsInlineNotification
+          kind="warning"
+          :title="$t('status.verify_unfinished_title')"
+          :description="$t('status.verify_unfinished_description')"
+          :showCloseButton="false"
+        />
+      </cv-column>
+    </cv-row>
+    <cv-row v-else-if="health.verify && !health.verify.ok">
       <cv-column>
         <NsInlineNotification
           kind="error"
@@ -255,7 +265,11 @@
                   </div>
                 </div>
                 <pre
-                  v-if="health.verify && !health.verify.ok"
+                  v-if="
+                    health.verify &&
+                    !health.verify.ok &&
+                    !health.verify.unfinished
+                  "
                   class="verify-details"
                   >{{ health.verify.details }}</pre
                 >
@@ -699,6 +713,9 @@ export default {
     verifyTitle() {
       if (!this.health.verify) {
         return this.$t("status.verify_never");
+      }
+      if (this.health.verify.unfinished) {
+        return this.$t("status.verify_unfinished");
       }
       return this.health.verify.ok
         ? this.$t("status.verify_ok")

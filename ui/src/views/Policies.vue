@@ -249,8 +249,12 @@ export default {
         ),
       ];
     },
+    verifyPercentNumber() {
+      // Number() refuses "10abc" and "10.5" passes as a non integer, unlike parseInt()
+      return Number(this.verifyPercent);
+    },
     verifyHelperText() {
-      const percent = parseInt(this.verifyPercent, 10);
+      const percent = this.verifyPercentNumber;
       if (percent === 0) {
         return this.$t("policies.verify_helper_none");
       }
@@ -328,7 +332,7 @@ export default {
       if (this.excludes.length > 200) {
         this.fail("excludes", "settings.excludes_too_many");
       }
-      if (!this.isCount(parseInt(this.verifyPercent, 10), 100)) {
+      if (!this.isCount(this.verifyPercentNumber, 100)) {
         this.fail("verify_percent", "settings.verify_percent_range");
       }
       if (this.firstError) {
@@ -359,7 +363,7 @@ export default {
         snapshot_interval: parseInt(this.snapshotInterval, 10),
         compression: this.compression,
         excludes: this.excludes,
-        verify_percent: parseInt(this.verifyPercent, 10),
+        verify_percent: this.verifyPercentNumber,
       };
       for (const field of KEEP_FIELDS) {
         data["keep_" + field] = this.keep[field];

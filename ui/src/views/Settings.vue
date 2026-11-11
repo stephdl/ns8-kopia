@@ -480,7 +480,7 @@ export default {
       if (this.isAdminPasswordActive) {
         data.admin_password = this.adminPassword;
       }
-      // Accepted only before the repository exists, a later change goes through its own action
+      // Accepted only before the repository exists: the password never changes afterwards
       if (this.isRepositoryPasswordRequired) {
         data.repository_password = this.repositoryPassword;
       }

@@ -22,7 +22,6 @@
         "reset-client-password": "Réinitialiser le mot de passe d'une machine",
         "get-client-enrollment": "Lire le script d'enrôlement",
         "get-repository-password": "Afficher le mot de passe du dépôt",
-        "change-repository-password": "Changer le mot de passe du dépôt",
         "send-test-mail": "Envoyer un mail de test"
     },
     "error": {
@@ -58,7 +57,7 @@
         "certificate": "Certificat du serveur",
         "certificate_expires": "Expire le :",
         "days_left": "Expire aujourd'hui | Expire dans {count} jour | Expire dans {count} jours",
-        "certificate_note": "Les machines l'épinglent. À son expiration, réinscrivez-les.",
+        "certificate_note": "Les machines l'épinglent. À son expiration, enrôlez-les à nouveau.",
         "certificate_near_title": "Le certificat du serveur expire bientôt",
         "certificate_near_description": "Chaque machine enrôlée mémorise ce certificat. Après son expiration, toutes les machines perdent leur connexion jusqu'à ce que vous relanciez le script d'enrôlement sur chacune.",
         "verify": "Contrôle d'intégrité",
@@ -83,7 +82,10 @@
         "failed_services": "Services en échec",
         "all_services_running": "Tous les services fonctionnent",
         "verify_duration": "Durée : {duration}",
-        "verify_percent": "Données contrôlées : {percent}%"
+        "verify_percent": "Données contrôlées : {percent}%",
+        "verify_unfinished": "Non terminé",
+        "verify_unfinished_title": "Le dernier contrôle d'intégrité n'a pas fini",
+        "verify_unfinished_description": "Il a manqué de temps avant de lire sa part des données. Aucune erreur dans la partie lue. Baissez la part des données à vérifier sur la page Politiques."
     },
     "clients": {
         "title": "Clients",
@@ -183,7 +185,7 @@
         "alert_sender_invalid": "Saisissez une adresse mail valide",
         "disk_percent_range": "Saisissez un nombre entier de 50 à 99",
         "route_missing_title": "L'hôte n'a pas de route",
-        "route_missing_description": "Une autre instance de ce node possède ce host et ce port client, comme après un clone sur le même node. Supprimez l'ancienne instance, puis enregistrez ces réglages pour démarrer celle-ci. Les machines continuent de fonctionner sans rien changer.",
+        "route_missing_description": "Une autre instance de ce nœud possède cet hôte et ce port client, comme après un clone sur le même nœud. Supprimez l'ancienne instance, puis enregistrez ces réglages pour démarrer celle-ci. Les machines continuent de fonctionner sans rien changer.",
         "domain_already_used_in_traefik": "Ce nom d'hôte est déjà utilisé par une autre application",
         "port_in_allocator_range": "Ce port est dans la plage 20000-45000 utilisée par le nœud. Choisissez un autre port.",
         "port_used_by_module": "Ce port est déjà utilisé par un autre module",

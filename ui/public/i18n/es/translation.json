@@ -22,7 +22,6 @@
         "reset-client-password": "Restablecer la contraseña de un equipo",
         "get-client-enrollment": "Leer el script de registro",
         "get-repository-password": "Mostrar la contraseña del repositorio",
-        "change-repository-password": "Cambiar la contraseña del repositorio",
         "send-test-mail": "Enviar un correo de prueba"
     },
     "error": {
@@ -83,7 +82,10 @@
         "failed_services": "Servicios con fallos",
         "all_services_running": "Todos los servicios funcionan",
         "verify_duration": "Duración: {duration}",
-        "verify_percent": "Datos comprobados: {percent}%"
+        "verify_percent": "Datos comprobados: {percent}%",
+        "verify_unfinished": "No terminada",
+        "verify_unfinished_title": "La última comprobación de integridad no terminó",
+        "verify_unfinished_description": "Se quedó sin tiempo antes de leer su parte de los datos. No hubo errores en la parte leída. Reduzca la parte de datos a comprobar en la página Políticas."
     },
     "clients": {
         "title": "Clientes",

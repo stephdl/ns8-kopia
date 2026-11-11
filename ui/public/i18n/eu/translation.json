@@ -22,7 +22,6 @@
         "reset-client-password": "Berrezarri makina baten pasahitza",
         "get-client-enrollment": "Irakurri izen-emateko scripta",
         "get-repository-password": "Erakutsi biltegiaren pasahitza",
-        "change-repository-password": "Aldatu biltegiaren pasahitza",
         "send-test-mail": "Bidali proba-posta"
     },
     "error": {
@@ -83,7 +82,10 @@
         "failed_services": "Huts egin duten zerbitzuak",
         "all_services_running": "Zerbitzu guztiak martxan daude",
         "verify_duration": "Iraupena: {duration}",
-        "verify_percent": "Egiaztatutako datuak: %{percent}"
+        "verify_percent": "Egiaztatutako datuak: %{percent}",
+        "verify_unfinished": "Amaitu gabe",
+        "verify_unfinished_title": "Azken osotasun-egiaztapena ez da amaitu",
+        "verify_unfinished_description": "Denbora agortu zaio bere datu-zatia irakurri aurretik. Irakurritako zatian ez dago errorerik. Jaitsi egiaztatu beharreko datu-zatia Politikak orrian."
     },
     "clients": {
         "title": "Bezeroak",

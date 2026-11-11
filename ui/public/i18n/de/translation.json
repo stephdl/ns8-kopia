@@ -22,7 +22,6 @@
         "reset-client-password": "Passwort eines Rechners zurücksetzen",
         "get-client-enrollment": "Registrierungsskript lesen",
         "get-repository-password": "Repository-Passwort anzeigen",
-        "change-repository-password": "Repository-Passwort ändern",
         "send-test-mail": "Testmail senden"
     },
     "error": {
@@ -83,7 +82,10 @@
         "failed_services": "Fehlgeschlagene Dienste",
         "all_services_running": "Alle Dienste laufen",
         "verify_duration": "Dauer: {duration}",
-        "verify_percent": "Geprüfte Daten: {percent}%"
+        "verify_percent": "Geprüfte Daten: {percent}%",
+        "verify_unfinished": "Nicht beendet",
+        "verify_unfinished_title": "Die letzte Integritätsprüfung wurde nicht beendet",
+        "verify_unfinished_description": "Die Zeit lief ab, bevor ihr Anteil der Daten gelesen war. Im gelesenen Teil gab es keinen Fehler. Senken Sie den Anteil der zu prüfenden Daten auf der Seite Richtlinien."
     },
     "clients": {
         "title": "Clients",

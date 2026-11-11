@@ -22,7 +22,6 @@
         "reset-client-password": "Repor a palavra-passe de uma máquina",
         "get-client-enrollment": "Ler o script de registo",
         "get-repository-password": "Mostrar a palavra-passe do repositório",
-        "change-repository-password": "Alterar a palavra-passe do repositório",
         "send-test-mail": "Enviar um email de teste"
     },
     "error": {
@@ -83,7 +82,10 @@
         "failed_services": "Serviços com falha",
         "all_services_running": "Todos os serviços estão a funcionar",
         "verify_duration": "Duração: {duration}",
-        "verify_percent": "Dados verificados: {percent}%"
+        "verify_percent": "Dados verificados: {percent}%",
+        "verify_unfinished": "Não terminada",
+        "verify_unfinished_title": "A última verificação de integridade não terminou",
+        "verify_unfinished_description": "Ficou sem tempo antes de ler a sua parte dos dados. Não houve erros na parte lida. Reduza a parte dos dados a verificar na página Políticas."
     },
     "clients": {
         "title": "Clientes",

@@ -66,7 +66,7 @@ flowchart TB
     T1["kopia-check.timer<br/>hourly"] --> CHECK["bin/kopia-check"]
     CHECK -- "snapshot list --all" --> K
     CHECK -- "stale and disk mails" --> SMTP["cluster smarthost"]
-    T2["kopia-verify.timer<br/>Sunday 03:00"] --> VERIFY["bin/kopia-verify<br/>content verify 10%"]
+    T2["kopia-verify.timer<br/>Sunday 03:00"] --> VERIFY["bin/kopia-verify<br/>content verify,<br/>share set in Policies"]
     VERIFY --> K
     K --- REPO[("kopia-repository<br/>NOT in the module backup")]
 ```
@@ -137,7 +137,7 @@ from the admin level to the owner level gets no mail: it backed up once, but it 
 | Disk almost full | `Backup disk almost full on <host>` | admin recipients | repository disk use reaches the threshold (default 85 %) |
 | Disk back to normal | `Backup disk back to normal on <host>` | admin recipients | disk use falls 2 points under the threshold |
 | Verification failed | `Backup verification failed on <host>` | admin recipients | the weekly `kopia content verify` finds errors |
-| Test | `Kopia test mail from <host>` | the address typed in Settings | the admin clicks "Send test mail" |
+| Test | `Kopia test mail from <host>` | the address typed on the Alerts page | the admin clicks "Send test mail" |
 
 Mails go through the cluster smarthost, from `noreply@<host>` unless a sender is set, in the
 language chosen in Settings: en, fr, it, de, es, pt, pt_BR or eu. Without a smarthost no mail
@@ -157,7 +157,17 @@ The output of the command returns the instance name, for example `kopia1`.
 
 ## Configure
 
-From the module UI, or:
+The module UI has three pages for this:
+
+- **Settings**: host, Let's Encrypt for the admin web UI, client port, admin password and the
+  repository password.
+- **Policies**: the global policy of every machine (schedule, retention, compression,
+  excludes) and the share of data read by the weekly integrity check.
+- **Alerts**: owner and admin thresholds, disk threshold, recipients, sender, language, and a
+  test mail.
+
+Each page saves only its own fields. From the command line, send only the fields to change.
+The first configuration needs `host`, `admin_password` and `repository_password`:
 
 ```sh
 api-cli run module/kopia1/configure-module --data - <<'EOF'
@@ -189,6 +199,12 @@ latest 10, 48 hourly, 14 daily, 8 weekly, 12 monthly and 2 annual snapshots, zst
 compression, and common excludes such as caches, temp folders, trash, `node_modules` and
 Windows swap files. Admin and repository passwords take 12 to 64 characters with an
 uppercase letter, a lowercase letter, a digit and a symbol among `.,_+:@%^=~-`.
+
+The weekly integrity check runs on Sunday at 03:00. It always checks the index and that every
+pack exists, then downloads and checks the share of data set on the Policies page
+(`verify_percent`, 10 % by default, 0 to 100). At 10 % the whole repository is read again
+within a few months. A check stops after 6 days and 23 hours: the Status page then shows it
+as not finished, with no error mail, and you should lower the share.
 
 Saving the settings restarts the server only when the host, the port, the image, a password
 or the certificate changed, since a restart cuts the running backups.
@@ -327,7 +343,8 @@ This deletes the repository volume and every backup in it.
   do not depend on them.
 - Policy actions (`--before-snapshot-root-action`) did not run in server mode in my tests.
 - Kopia is younger than restic or Borg. Rare repository corruption has been reported upstream.
-  The weekly `kopia content verify` reads about 10 % of the blobs each run.
+  The weekly `kopia content verify` reads the share of the blobs set in Policies, 10 % by
+  default.
 
 ## Testing
 

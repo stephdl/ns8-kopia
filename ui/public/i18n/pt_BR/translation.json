@@ -22,7 +22,6 @@
         "reset-client-password": "Redefinir a senha de uma máquina",
         "get-client-enrollment": "Ler o script de registro",
         "get-repository-password": "Mostrar a senha do repositório",
-        "change-repository-password": "Alterar a senha do repositório",
         "send-test-mail": "Enviar um e-mail de teste"
     },
     "error": {
@@ -83,7 +82,10 @@
         "failed_services": "Serviços com falha",
         "all_services_running": "Todos os serviços estão em execução",
         "verify_duration": "Duração: {duration}",
-        "verify_percent": "Dados verificados: {percent}%"
+        "verify_percent": "Dados verificados: {percent}%",
+        "verify_unfinished": "Não terminada",
+        "verify_unfinished_title": "A última verificação de integridade não terminou",
+        "verify_unfinished_description": "Ficou sem tempo antes de ler sua parte dos dados. Não houve erros na parte lida. Reduza a parte dos dados a verificar na página Políticas."
     },
     "clients": {
         "title": "Clientes",

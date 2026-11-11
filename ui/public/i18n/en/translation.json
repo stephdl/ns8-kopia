@@ -22,7 +22,6 @@
         "reset-client-password": "Reset the password of a machine",
         "get-client-enrollment": "Get the enrollment script",
         "get-repository-password": "Show the repository password",
-        "change-repository-password": "Change the repository password",
         "send-test-mail": "Send a test mail"
     },
     "error": {
@@ -83,7 +82,10 @@
         "failed_services": "Failed services",
         "all_services_running": "All services are running",
         "verify_duration": "Duration: {duration}",
-        "verify_percent": "Data checked: {percent}%"
+        "verify_percent": "Data checked: {percent}%",
+        "verify_unfinished": "Not finished",
+        "verify_unfinished_title": "The last integrity check did not finish",
+        "verify_unfinished_description": "It ran out of time before reading its share of the data. No error was found in the part it read. Lower the share of data to check on the Policies page."
     },
     "clients": {
         "title": "Clients",
