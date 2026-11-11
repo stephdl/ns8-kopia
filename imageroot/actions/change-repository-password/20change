@@ -19,7 +19,12 @@ secrets = km.read_env()
 # Step 05recover of the next run keeps the file that opens the repository.
 pending = dict(secrets, KOPIA_PASSWORD=password)
 km.write_env(pending, km.KOPIA_ENV + ".new")
-km.kopia([], stdin=password + "\n", script='read -r n; KOPIA_NEW_PASSWORD="$n" kopia repository change-password')
+try:
+    km.kopia([], stdin=password + "\n", script='read -r n; KOPIA_NEW_PASSWORD="$n" kopia repository change-password')
+except RuntimeError:
+    # Kopia refused the change: the repository keeps the old password, do not back up the new one
+    os.remove(km.KOPIA_ENV + ".new")
+    raise
 os.replace(km.KOPIA_ENV + ".new", km.KOPIA_ENV)
 print(agent.SD_NOTICE + "repository password changed", file=sys.stderr)
 

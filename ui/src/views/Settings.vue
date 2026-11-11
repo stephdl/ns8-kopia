@@ -875,7 +875,8 @@ export default {
       let focusAlreadySet = false;
       for (const validationError of validationErrors) {
         const param = validationError.parameter;
-        this.error[param] = this.$t("settings." + validationError.error);
+        // A key, translated by the template like the client side errors
+        this.error[param] = "settings." + validationError.error;
         if (!focusAlreadySet) {
           if (param === "admin_password") {
             this.focusAdminPassword = { element: "newPassword" };

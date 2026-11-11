@@ -69,7 +69,8 @@ def check_machines():
                 continue
             age = (now - datetime.fromisoformat(created)).total_seconds() / 3600
             last = kopia_mail.word("never", lang)
-        level = "admin" if age >= settings["admin_alert_hours"] else "owner" if age >= settings["owner_alert_hours"] else "ok"
+        # Same thresholds as the state shown on the Clients page
+        level = {"late_admin": "admin", "late": "owner"}.get(km.lateness(age, settings), "ok")
         previous = machines.get(name, "ok")
         if level == previous:
             continue

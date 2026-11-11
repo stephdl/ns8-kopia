@@ -289,6 +289,20 @@ def port_used_by_other_module(rdb, port, module_id, node_id):
 
 
 
+def own_route():
+    """Return the route of this instance, {} when it has none, None when Traefik does not answer.
+
+    agent.get_route() returns {} in both cases, so a slow Traefik would look like a missing route.
+    """
+    import agent
+    response = agent.tasks.run(agent_id=agent.resolve_agent_id("traefik@node"), action="get-route",
+                               data={"instance": os.environ["MODULE_ID"]},
+                               extra={"isNotificationHidden": True})
+    if response["exit_code"] != 0:
+        return None
+    return response["output"] or {}
+
+
 def volume_path(name="kopia-repository"):
     out = subprocess.run(["podman", "volume", "inspect", name, "--format", "{{.Mountpoint}}"],
                          capture_output=True, text=True)
@@ -405,6 +419,14 @@ def last_snapshots():
     return last
 
 
+def lateness(age_hours, settings):
+    if age_hours >= settings["admin_alert_hours"]:
+        return "late_admin"
+    if age_hours >= settings["owner_alert_hours"]:
+        return "late"
+    return "ok"
+
+
 def clients_status(settings=None):
     """Merge the machine list with the newest snapshot of each machine."""
     from datetime import datetime, timezone
@@ -418,12 +440,7 @@ def clients_status(settings=None):
             state, age = "never_seen", None
         else:
             age = (now - end).total_seconds() / 3600
-            if age >= settings["admin_alert_hours"]:
-                state = "late_admin"
-            elif age >= settings["owner_alert_hours"]:
-                state = "late"
-            else:
-                state = "ok"
+            state = lateness(age, settings)
         result.append(dict(client, last_backup=end.isoformat() if end else None,
                            age_hours=round(age, 1) if age is not None else None, state=state))
     return result

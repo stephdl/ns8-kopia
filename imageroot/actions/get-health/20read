@@ -6,6 +6,7 @@
 #
 
 import json
+import subprocess
 import sys
 from datetime import datetime, timezone
 import kopia_module as km
@@ -15,9 +16,14 @@ health = {"server": "up" if km.server_status() == 401 else "down"}
 disk = km.disk_usage()
 health["disk"] = disk
 
-expiry = datetime.strptime(km.cert_expiry(), "%b %d %H:%M:%S %Y %Z").replace(tzinfo=timezone.utc)
-health["certificate"] = {"expires": expiry.isoformat(), "days_left": (expiry - datetime.now(timezone.utc)).days,
-                         "fingerprint": km.cert_fingerprint()}
+try:
+    expiry = datetime.strptime(km.cert_expiry(), "%b %d %H:%M:%S %Y %Z").replace(tzinfo=timezone.utc)
+    health["certificate"] = {"expires": expiry.isoformat(), "days_left": (expiry - datetime.now(timezone.utc)).days,
+                             "fingerprint": km.cert_fingerprint()}
+except (subprocess.CalledProcessError, ValueError) as ex:
+    # The other cards still show without the certificate
+    print(f"cannot read the client certificate: {ex}", file=sys.stderr)
+    health["certificate"] = None
 
 try:
     with open("verify.json") as f:

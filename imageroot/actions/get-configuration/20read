@@ -25,7 +25,8 @@ config = {
     "smarthost_enabled": agent.get_smarthost_settings(rdb)["enabled"],
     "default_sender": f"noreply@{host}" if host else "",
     # Only a saved host can miss its route, like a clone that kept the host of its source
-    "route_missing": bool(host) and not agent.get_route(os.environ["MODULE_ID"]),
+    # None when Traefik does not answer: the UI then warns about nothing
+    "route_missing": bool(host) and km.own_route() == {},
 }
 config.update(km.read_settings())
 json.dump(config, fp=sys.stdout)
