@@ -290,6 +290,8 @@ SETTINGS = {
         ".cache", "Cache", "Caches", "cache2", "Temp", "tmp", "*.tmp", "~$*",
         "$RECYCLE.BIN", ".Trash-*", "node_modules", "Thumbs.db", ".DS_Store",
         "hiberfil.sys", "pagefile.sys", "swapfile.sys",
+        # The client keeps its own password there
+        "repository.config.kopia-password",
     ], list),
     "owner_alert_hours": ("OWNER_ALERT_HOURS", 48, int),
     "admin_alert_hours": ("ADMIN_ALERT_HOURS", 96, int),

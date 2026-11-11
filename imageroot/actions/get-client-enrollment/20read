@@ -67,11 +67,12 @@ elif command -v systemctl >/dev/null && systemctl --user show-environment >/dev/
     mkdir -p "$HOME/.config/systemd/user"
     cat > "$HOME/.config/systemd/user/kopia-snapshot.service" <<UNIT
 [Unit]
-Description=Kopia snapshot of all sources
+Description=Kopia snapshot of the home directory
 
 [Service]
 Type=oneshot
-ExecStart=$(command -v kopia) snapshot create --all
+# The home directory is named on purpose: --all finds nothing in a new repository after a server restore
+ExecStart=$(command -v kopia) snapshot create $HOME
 UNIT
     cat > "$HOME/.config/systemd/user/kopia-snapshot.timer" <<UNIT
 [Unit]
