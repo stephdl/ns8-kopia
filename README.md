@@ -119,19 +119,7 @@ policies, the host policy and the global policy. It can append content to the re
 which every backup needs. It cannot change any policy or its own account. Anyone holding the script can read, restore and delete the backups of that machine,
 from anywhere. If a script leaks, reset the password.
 
-Clients:
-
-- Windows: the script installs KopiaUI with winget when it is missing, connects, takes a first snapshot of
-  Documents, Desktop and Pictures, and starts KopiaUI. KopiaUI takes the scheduled snapshots
-  while it stays in the tray.
-- Linux: install `kopia` from <https://kopia.io/docs/installation/> first. The script connects,
-  takes a first snapshot of the home directory and adds the systemd user timer
-  `kopia-snapshot.timer` at the policy interval. In manual mode it adds no timer.
-- macOS: install the CLI with `brew install kopia/kopia/kopia` and run the shell script. The
-  script needs `kopia` in the PATH. Then start KopiaUI for the scheduled snapshots.
-
-Run the script in the session of the user who owns the files, not as administrator or SYSTEM.
-Otherwise the config and the keyring land in the wrong profile.
+The clients are covered in the next section.
 
 ### Alerts
 
@@ -207,6 +195,88 @@ or the certificate changed, since a restart cuts the running backups.
 All fields are listed in
 [configure-module/validate-input.json](imageroot/actions/configure-module/validate-input.json).
 The web UI user is always `admin`.
+
+## Enroll a machine
+
+### 1. Install the Kopia client
+
+Follow the Kopia installation guide: <https://kopia.io/docs/installation/>. Use the same
+version as the server when you can (0.23.1 today).
+
+| System | Install | What the module script needs |
+| --- | --- | --- |
+| Windows | KopiaUI ([guide](https://kopia.io/docs/installation/#windows-gui-installation)) or `winget install -e --id Kopia.KopiaUI` | nothing: the script installs KopiaUI with winget when it is missing |
+| Linux | `kopia` from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | the `kopia` command in the PATH |
+| macOS | `brew install kopia/kopia/kopia` for the CLI, and KopiaUI for the tray ([guide](https://kopia.io/docs/installation/#macos-cli-using-homebrew)) | the `kopia` command in the PATH |
+
+KopiaUI and the CLI share the same config file, so KopiaUI shows a machine enrolled by the
+script.
+
+### 2. Create the machine account
+
+In the module UI, open **Clients**, click **Add a machine**, and fill in:
+
+- **User name** and **host name**: the Kopia identity of the machine, `user@host`. Lowercase
+  letters, digits, dot, dash and underscore. Use one account per machine, for example
+  `accounting@pc-accounting-01`.
+- **Owner email** (optional): this person gets the first mail when the machine stops backing up.
+
+The page then shows the enrollment script, with a Windows tab (PowerShell) and a Linux and
+macOS tab (shell). **Copy it now**: it holds the password of the machine and is shown only
+once. Later, **Connection details** shows the URL, the certificate fingerprint and the
+identity, without the password.
+
+### 3. Run the script on the machine
+
+Run it as the user who owns the files, in that user's session. Do not run it as administrator,
+root or SYSTEM: the config and the password would land in another profile, and KopiaUI in the
+user session would see nothing.
+
+- Windows: open PowerShell as the user, paste the script and press Enter.
+- Linux and macOS: save it as `enroll.sh` and run `sh enroll.sh`, then delete the file.
+
+The script:
+
+1. connects to `https://<host>:<client port>` and pins the module certificate fingerprint;
+2. stores the password in the OS keyring (or in the Kopia config folder on Linux without a
+   keyring);
+3. takes a first snapshot: Documents, Desktop and Pictures on Windows, the home directory on
+   Linux and macOS;
+4. sets up the scheduled snapshots: KopiaUI starts on Windows, a `kopia-snapshot.timer` systemd
+   user timer is added on Linux at the policy interval (none in manual mode), and on macOS you
+   start KopiaUI.
+
+The machine then shows up as **OK** on the Clients page after its first snapshot.
+
+### 4. Check and restore
+
+On the machine, `kopia snapshot list` shows its snapshots, and KopiaUI lists them under
+Snapshots. To restore, use KopiaUI (Restore, or Mount to browse a snapshot as a folder), or:
+
+```sh
+kopia snapshot list
+kopia snapshot restore <snapshot id> /path/to/restore
+```
+
+A machine only sees its own snapshots. The admin sees every machine in the Kopia web UI at
+`https://<host>/`, user `admin`.
+
+### Reinstall a machine or replace a leaked script
+
+Click **Reset password** on the machine, run the new script on it, then delete the script. The
+old password stops working at once. The identity does not change, so the machine finds its
+old snapshots.
+
+### Notes
+
+- A machine that sleeps or stays off takes no snapshot. KopiaUI must stay in the tray on
+  Windows and macOS. A laptop outside the office backs up from anywhere the client port is
+  reachable.
+- Never put the script in a GPO or in Intune in clear text. Anyone who reads it can read,
+  restore and delete the backups of that machine.
+- Volume Shadow Copy on Windows needs administrator rights. The default script runs as the
+  user and backs up the user files. For a whole machine backup, enroll it in an elevated
+  session as a dedicated account instead.
 
 ## Actions
 
