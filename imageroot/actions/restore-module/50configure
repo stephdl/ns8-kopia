@@ -18,5 +18,6 @@ request = json.load(sys.stdin)
 data = kopia_configure.request_from_env(request["environment"])
 if not data["host"]:
     sys.exit(0)
+kopia_configure.ensure_free_port(data)
 response = agent.tasks.run(agent_id=os.environ["AGENT_ID"], action="configure-module", data=data)
 agent.assert_exp(response["exit_code"] == 0, "configure-module failed")

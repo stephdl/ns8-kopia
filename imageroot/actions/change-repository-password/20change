@@ -6,19 +6,26 @@
 #
 
 import json
+import os
 import subprocess
 import sys
 import agent
 import kopia_module as km
 
 password = json.load(sys.stdin)["repository_password"]
-km.kopia([], stdin=password + "\n", script='read -r n; KOPIA_NEW_PASSWORD="$n" kopia repository change-password')
-
-# The repository already uses the new password: keep it before anything else can fail
 secrets = km.read_env()
-secrets["KOPIA_PASSWORD"] = password
-km.write_env(secrets)
+
+# Written first: if the agent dies after the change, the new password is still on disk.
+# kopia-recover-password picks the file that opens the repository.
+pending = dict(secrets, KOPIA_PASSWORD=password)
+km.write_env(pending, km.KOPIA_ENV + ".new")
+km.kopia([], stdin=password + "\n", script='read -r n; KOPIA_NEW_PASSWORD="$n" kopia repository change-password')
+os.replace(km.KOPIA_ENV + ".new", km.KOPIA_ENV)
 print(agent.SD_NOTICE + "repository password changed", file=sys.stderr)
 
 subprocess.run(["systemctl", "--user", "restart", "kopia-server.service"], check=True)
 agent.assert_exp(km.wait_server(), "Kopia server did not restart")
+# The server already runs with the new secrets: the next configure-module must not restart it again
+fingerprint = subprocess.run(["runagent", "kopia-server-fingerprint"], capture_output=True, text=True, check=True).stdout
+with open(".server-config", "w") as f:
+    f.write(fingerprint)

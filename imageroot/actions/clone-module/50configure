@@ -12,20 +12,13 @@ import os
 import sys
 import agent
 import kopia_configure
-import kopia_module as km
 
 data = kopia_configure.request_from_env(os.environ)
 if not data["host"]:
     sys.exit(0)
 
-# On the same node the source keeps its port: move the clone to the next free one
-port = km.free_port(agent.redis_connect(), data["client_port"])
-if port != data["client_port"]:
-    print(agent.SD_WARNING + f"client port {data['client_port']} is taken on this node, the clone uses {port}", file=sys.stderr)
-    # The lock refuses a port change while machines exist, so set it before configure-module runs
-    agent.set_env("CLIENT_PORT", str(port))
-    agent.dump_env()
-    data["client_port"] = port
+# On the same node the source keeps its port
+kopia_configure.ensure_free_port(data)
 
 response = agent.tasks.run(agent_id=os.environ["AGENT_ID"], action="configure-module", data=data)
 agent.assert_exp(response["exit_code"] == 0, "configure-module failed")

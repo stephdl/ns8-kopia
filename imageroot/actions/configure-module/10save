@@ -28,7 +28,8 @@ for key, value in env.items():
 secrets = km.read_env()
 if data.get("admin_password"):
     secrets["KOPIA_SERVER_PASSWORD"] = data["admin_password"]
-if data.get("repository_password") and not secrets.get("KOPIA_PASSWORD"):
+# Once the repository exists, only change-repository-password changes it
+if data.get("repository_password") and not km.repository_exists():
     secrets["KOPIA_PASSWORD"] = data["repository_password"]
 km.write_env(secrets)
 

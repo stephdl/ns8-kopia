@@ -183,7 +183,8 @@ def kopia(args, stdin=None, script=None, check=True, timeout=600):
     proc = subprocess.run(cmd, input=stdin, capture_output=True, text=True, timeout=timeout)
     if check and proc.returncode != 0:
         log(proc.stderr.strip())
-        raise RuntimeError(f"kopia {' '.join(args) if not script else 'script'} failed ({proc.returncode})")
+        # Only the subcommand: later arguments can hold a password hash
+        raise RuntimeError(f"kopia {' '.join(args[:3]) if not script else 'script'} failed ({proc.returncode})")
     return proc
 
 
@@ -254,6 +255,11 @@ def volume_path(name="kopia-repository"):
     out = subprocess.run(["podman", "volume", "inspect", name, "--format", "{{.Mountpoint}}"],
                          capture_output=True, text=True)
     return out.stdout.strip() if out.returncode == 0 else None
+
+
+def repository_exists():
+    path = volume_path()
+    return bool(path) and os.path.exists(os.path.join(path, "data", "kopia.repository.f"))
 
 
 def disk_usage(name="kopia-repository"):
