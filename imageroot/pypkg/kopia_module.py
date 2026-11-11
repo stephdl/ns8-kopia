@@ -45,7 +45,6 @@ def log(*args):
     print(*args, file=sys.stderr)
 
 
-# --- secrets -----------------------------------------------------------------
 
 def _write_private(path, text):
     os.makedirs(os.path.dirname(path) or ".", mode=0o700, exist_ok=True)
@@ -91,7 +90,19 @@ def password_error(value):
     return None
 
 
-# --- machine accounts ----------------------------------------------------------
+
+class clients_lock:
+    """Serialize the actions that change clients.json and client-hashes.json."""
+
+    def __enter__(self):
+        import fcntl
+        self.fd = open(".clients.lock", "w")
+        fcntl.flock(self.fd, fcntl.LOCK_EX)
+        return self
+
+    def __exit__(self, *exc):
+        self.fd.close()
+
 
 def load_clients():
     try:
@@ -135,7 +146,10 @@ def set_user_hash(name, encoded, exists):
 
 
 def set_client_password(name, users=None):
-    """Give the account a new random password, store only its hash and return the password."""
+    """Give the account a new random password, store only its hash and return the password.
+
+    The caller holds clients_lock.
+    """
     password = generate_password()
     encoded = hash_password(password)
     if users is None:
@@ -152,7 +166,6 @@ def client_name(username, hostname):
     return f"{username}@{hostname}"
 
 
-# --- Kopia password hashes ------------------------------------------------------
 
 def _scrypt(password, salt):
     return hashlib.scrypt(password.encode(), salt=salt, n=SCRYPT_N, r=SCRYPT_R, p=SCRYPT_P,
@@ -179,7 +192,6 @@ def hash_matches(encoded, profile):
 
 
 
-# --- certificate -------------------------------------------------------------------
 
 def cert_fingerprint(path=CERT):
     out = subprocess.run(["openssl", "x509", "-in", path, "-noout", "-fingerprint", "-sha256"],
@@ -193,7 +205,6 @@ def cert_expiry(path=CERT):
     return out.strip().split("=", 1)[1]
 
 
-# --- Kopia commands ------------------------------------------------------------------
 
 def kopia(args, stdin=None, script=None, check=True, timeout=600):
     """Run kopia inside the server container with the current secrets.
@@ -254,25 +265,29 @@ def wait_server(attempts=60):
     return False
 
 
-# --- node ports -------------------------------------------------------------------------
 
 def port_listening(port):
     out = subprocess.run(["ss", "-Htln", f"sport = :{port}"], capture_output=True, text=True).stdout
     return bool(out.strip())
 
 
-def port_used_by_other_module(rdb, port, module_id, node_id):
+def ports_taken(rdb, module_id, node_id):
+    """Return {port: module} for the client ports of the other modules on this node."""
+    taken = {}
     for key in rdb.scan_iter("module/*/environment"):
         other = key.split("/")[1]
         if other == module_id:
             continue
-        env = rdb.hgetall(key)
-        if env.get("NODE_ID") == str(node_id) and env.get("CLIENT_PORT") == str(port):
-            return other
-    return None
+        env_node, env_port = rdb.hmget(key, "NODE_ID", "CLIENT_PORT")
+        if env_node == str(node_id) and env_port and env_port.isdigit():
+            taken[int(env_port)] = other
+    return taken
 
 
-# --- volume -------------------------------------------------------------------------------
+def port_used_by_other_module(rdb, port, module_id, node_id):
+    return ports_taken(rdb, module_id, node_id).get(int(port))
+
+
 
 def volume_path(name="kopia-repository"):
     out = subprocess.run(["podman", "volume", "inspect", name, "--format", "{{.Mountpoint}}"],
@@ -297,7 +312,6 @@ def disk_usage(name="kopia-repository"):
             "percent": round(used * 100 / total, 1) if total else 0}
 
 
-# --- settings -------------------------------------------------------------------------------
 
 # configure-module field: (environment variable, default, kind)
 SETTINGS = {
@@ -369,7 +383,6 @@ def global_policy_args(settings=None, current_ignore=()):
     return args
 
 
-# --- machine status --------------------------------------------------------------------------
 
 def parse_time(value):
     from datetime import datetime
@@ -416,7 +429,6 @@ def clients_status(settings=None):
     return result
 
 
-# --- mail -------------------------------------------------------------------------------------
 
 def send_mail(rdb, recipients, subject, body, sender=None):
     import smtplib
@@ -449,12 +461,7 @@ def send_mail(rdb, recipients, subject, body, sender=None):
 
 
 def free_port(rdb, start=DEFAULT_PORT):
-    taken = set()
-    for key in rdb.scan_iter("module/*/environment"):
-        if key.split("/")[1] != os.environ["MODULE_ID"]:
-            env = rdb.hmget(key, "NODE_ID", "CLIENT_PORT")
-            if env[0] == str(os.environ["NODE_ID"]) and env[1]:
-                taken.add(int(env[1]))
+    taken = ports_taken(rdb, os.environ["MODULE_ID"], os.environ["NODE_ID"])
     port = start
     while port in taken or port_listening(port):
         port += 1

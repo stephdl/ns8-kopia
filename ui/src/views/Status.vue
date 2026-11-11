@@ -391,6 +391,7 @@
 
 <script>
 import to from "await-to-js";
+import moduleTask from "@/mixins/moduleTask";
 import { mapState } from "vuex";
 import RestartModuleModal from "@/components/RestartModuleModal.vue";
 // Not in IconService.
@@ -414,6 +415,7 @@ export default {
   name: "Status",
   components: { RestartModuleModal },
   mixins: [
+    moduleTask,
     TaskService,
     QueryParamService,
     IconService,
@@ -577,194 +579,78 @@ export default {
     goToWebapp() {
       window.open(`https://${this.host}/`, "_blank", "noopener");
     },
-    async getConfiguration() {
+    getConfiguration() {
       this.loading.getConfiguration = true;
       this.error.getConfiguration = "";
-      const taskAction = "get-configuration";
-      const eventId = this.getUuid();
-
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.getConfigurationAborted
-      );
-
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.getConfigurationCompleted
-      );
-
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          extra: {
-            title: this.$t("action." + taskAction),
-            isNotificationHidden: true,
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.getConfiguration = this.getErrorMessage(err);
+      const fail = (message) => {
+        this.error.getConfiguration = message;
         this.loading.getConfiguration = false;
-        return;
-      }
+      };
+      this.runModuleTask({
+        action: "get-configuration",
+        completed: (output) => {
+          this.host = output.host;
+          this.loading.getConfiguration = false;
+          // Before the first configuration there is no server to ask
+          if (this.isConfigured) {
+            this.getHealth();
+            this.listClients();
+          }
+        },
+        aborted: fail,
+        failed: fail,
+      });
     },
-    getConfigurationAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.getConfiguration = this.$t("error.generic_error");
-      this.loading.getConfiguration = false;
-    },
-    getConfigurationCompleted(taskContext, taskResult) {
-      this.host = taskResult.output.host;
-      this.loading.getConfiguration = false;
-      // Before the first configuration there is no server to ask
-      if (this.isConfigured) {
-        this.getHealth();
-        this.listClients();
-      }
-    },
-    async getHealth() {
+    getHealth() {
       this.loading.getHealth = true;
       this.error.getHealth = "";
-      const taskAction = "get-health";
-      const eventId = this.getUuid();
-
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.getHealthAborted
-      );
-
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.getHealthCompleted
-      );
-
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          extra: {
-            title: this.$t("action." + taskAction),
-            isNotificationHidden: true,
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.getHealth = this.getErrorMessage(err);
+      const fail = (message) => {
+        this.error.getHealth = message;
         this.loading.getHealth = false;
-        return;
-      }
+      };
+      this.runModuleTask({
+        action: "get-health",
+        completed: (output) => {
+          this.health = output;
+          this.loading.getHealth = false;
+        },
+        aborted: fail,
+        failed: fail,
+      });
     },
-    getHealthAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.getHealth = this.$t("error.generic_error");
-      this.loading.getHealth = false;
-    },
-    getHealthCompleted(taskContext, taskResult) {
-      this.health = taskResult.output;
-      this.loading.getHealth = false;
-    },
-    async listClients() {
+    listClients() {
       this.loading.listClients = true;
       this.error.listClients = "";
-      const taskAction = "list-clients";
-      const eventId = this.getUuid();
-
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.listClientsAborted
-      );
-
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.listClientsCompleted
-      );
-
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          extra: {
-            title: this.$t("action." + taskAction),
-            isNotificationHidden: true,
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.listClients = this.getErrorMessage(err);
+      const fail = (message) => {
+        this.error.listClients = message;
         this.loading.listClients = false;
-        return;
-      }
+      };
+      this.runModuleTask({
+        action: "list-clients",
+        completed: (output) => {
+          this.clients = output.clients;
+          this.loading.listClients = false;
+        },
+        aborted: fail,
+        failed: fail,
+      });
     },
-    listClientsAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.listClients = this.$t("error.generic_error");
-      this.loading.listClients = false;
-    },
-    listClientsCompleted(taskContext, taskResult) {
-      this.clients = taskResult.output.clients;
-      this.loading.listClients = false;
-    },
-    async getStatus() {
+    getStatus() {
       this.loading.getStatus = true;
       this.error.getStatus = "";
-      const taskAction = "get-status";
-      const eventId = this.getUuid();
-
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.getStatusAborted
-      );
-
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.getStatusCompleted
-      );
-
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          extra: {
-            title: this.$t("action." + taskAction),
-            isNotificationHidden: true,
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.getStatus = this.getErrorMessage(err);
+      const fail = (message) => {
+        this.error.getStatus = message;
         this.loading.getStatus = false;
-        return;
-      }
-    },
-    getStatusAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.getStatus = this.$t("error.generic_error");
-      this.loading.getStatus = false;
-    },
-    getStatusCompleted(taskContext, taskResult) {
-      this.status = taskResult.output;
-      this.loading.getStatus = false;
+      };
+      this.runModuleTask({
+        action: "get-status",
+        completed: (output) => {
+          this.status = output;
+          this.loading.getStatus = false;
+        },
+        aborted: fail,
+        failed: fail,
+      });
     },
     async listBackupRepositories() {
       this.loading.listBackupRepositories = true;
