@@ -172,14 +172,6 @@
                     @click="isShownShowPasswordModal = true"
                     >{{ $t("settings.show_repository_password") }}</NsButton
                   >
-                  <NsButton
-                    type="button"
-                    kind="danger--tertiary"
-                    :icon="Password20"
-                    :disabled="stillLoading"
-                    @click="isShownChangePasswordModal = true"
-                    >{{ $t("settings.change_repository_password") }}</NsButton
-                  >
                 </div>
               </template>
             </div>
@@ -217,11 +209,6 @@
       :visible="isShownShowPasswordModal"
       @hide="isShownShowPasswordModal = false"
     />
-    <ChangeRepositoryPasswordModal
-      :visible="isShownChangePasswordModal"
-      @hide="isShownChangePasswordModal = false"
-      @changed="onRepositoryPasswordChanged"
-    />
   </cv-grid>
 </template>
 
@@ -240,7 +227,6 @@ import ModuleTask from "@/mixins/moduleTask";
 import { passwordError } from "@/lib/password";
 import RepositoryPasswordInput from "@/components/RepositoryPasswordInput.vue";
 import ShowRepositoryPasswordModal from "@/components/ShowRepositoryPasswordModal.vue";
-import ChangeRepositoryPasswordModal from "@/components/ChangeRepositoryPasswordModal.vue";
 
 export default {
   name: "Settings",
@@ -255,7 +241,6 @@ export default {
   components: {
     RepositoryPasswordInput,
     ShowRepositoryPasswordModal,
-    ChangeRepositoryPasswordModal,
   },
   pageTitle() {
     return this.$t("settings.title") + " - " + this.appName;
@@ -285,7 +270,6 @@ export default {
       repositoryPasswordWritten: false,
       focusRepositoryPassword: { element: "" },
       isShownShowPasswordModal: false,
-      isShownChangePasswordModal: false,
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -393,10 +377,6 @@ export default {
     },
     goToCertificates() {
       this.core.$router.push("/settings/tls-certificates");
-    },
-    onRepositoryPasswordChanged() {
-      this.isShownChangePasswordModal = false;
-      this.getConfiguration();
     },
     getConfiguration() {
       this.loading.getConfiguration = true;

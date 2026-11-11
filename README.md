@@ -174,8 +174,9 @@ EOF
 
 The repository is created at the first configuration. Its password is chosen by the admin and
 cannot be recovered: without it every backup is lost. Write it down outside the server. It
-can be shown again from Settings, and changed when the old one is known. The data key does not
-change. Older module backups still hold the old password.
+can be shown again from Settings, but it never changes: every module backup holds it, so a
+backup taken before a change could not open the repository. If it leaks, install a new
+instance and enroll the machines again.
 
 Choose the host and the client port before the first machine. Both are in the URL of every
 enrolled machine, so the module refuses to change them while machines exist.
@@ -291,7 +292,6 @@ old snapshots.
 | `list-clients` | machines with last backup and state: `ok`, `late`, `late_admin`, `never_seen`, or `unknown` when the server does not answer |
 | `get-health` | server, disk use, certificate expiry, last integrity check |
 | `get-repository-password` | show the repository password |
-| `change-repository-password` | change it, then restart the server |
 | `send-test-mail` | send a test mail to `recipient` through the smarthost |
 
 ## Backup, restore, clone and move
