@@ -540,6 +540,7 @@ import {
   PageTitleService,
 } from "@nethserver/ns8-ui-lib";
 
+const LONG_RUNNING_SERVICES = ["kopia", "kopia-server"];
 const CERTIFICATE_WARNING_DAYS = 30;
 const CLIENT_STATES = ["ok", "late", "late_admin", "never_seen", "unknown"];
 
@@ -610,7 +611,13 @@ export default {
   },
   computed: {
     failedServices() {
-      return (this.status.services || []).filter((service) => service.failed);
+      // A stopped server is not "failed" for systemd, but it must run. The check and verify
+      // services are one-shot jobs, inactive between two runs.
+      return (this.status.services || []).filter(
+        (service) =>
+          service.failed ||
+          (LONG_RUNNING_SERVICES.includes(service.name) && !service.active)
+      );
     },
     i18nImagesTableColumns() {
       return this.imagesTableColumns.map((col) => this.$t(`status.${col}`));
