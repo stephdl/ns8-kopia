@@ -184,194 +184,6 @@
               </template>
             </div>
             <cv-skeleton-text v-else :paragraph="true" :line-count="3" />
-            <!-- backup policy -->
-            <cv-accordion ref="accordionPolicy" class="maxwidth mg-bottom">
-              <cv-accordion-item>
-                <template slot="title">{{
-                  $t("settings.backup_policy")
-                }}</template>
-                <template slot="content">
-                  <p class="mg-bottom">
-                    {{ $t("settings.backup_policy_description") }}
-                  </p>
-                  <NsComboBox
-                    v-model="snapshotInterval"
-                    :options="intervalOptions"
-                    auto-highlight
-                    :title="$t('settings.snapshot_interval')"
-                    :label="$t('settings.choose_snapshot_interval')"
-                    :invalid-message="$t(error.snapshot_interval)"
-                    :disabled="stillLoading"
-                    class="mg-bottom"
-                    ref="snapshot_interval"
-                  />
-                  <NsTextInput
-                    v-for="field in keepFields"
-                    :key="field"
-                    type="number"
-                    min="0"
-                    :max="field === 'annual' ? 100 : 1000"
-                    v-model.number="keep[field]"
-                    :label="$t('settings.keep_' + field)"
-                    :invalid-message="$t(error['keep_' + field])"
-                    :disabled="stillLoading"
-                    class="mg-bottom"
-                  />
-                  <NsComboBox
-                    v-model="compression"
-                    :options="compressionOptions"
-                    auto-highlight
-                    :title="$t('settings.compression')"
-                    :label="$t('settings.choose_compression')"
-                    :invalid-message="$t(error.compression)"
-                    :disabled="stillLoading"
-                    class="mg-bottom"
-                    ref="compression"
-                  />
-                  <cv-text-area
-                    v-model="excludesText"
-                    :label="$t('settings.excludes')"
-                    :helper-text="$t('settings.excludes_helper')"
-                    :invalid-message="$t(error.excludes)"
-                    :disabled="stillLoading"
-                    placeholder="node_modules"
-                    class="mg-bottom"
-                    ref="excludes"
-                  />
-                </template>
-              </cv-accordion-item>
-            </cv-accordion>
-            <!-- alerts -->
-            <cv-accordion ref="accordionAlerts" class="maxwidth mg-bottom">
-              <cv-accordion-item>
-                <template slot="title">{{ $t("settings.alerts") }}</template>
-                <template slot="content">
-                  <NsInlineNotification
-                    v-if="!smarthostEnabled"
-                    kind="warning"
-                    :title="$t('settings.smarthost_missing_title')"
-                    :description="$t('settings.smarthost_missing_description')"
-                    :actionLabel="$t('settings.go_to_smarthost')"
-                    @action="goToSmarthost"
-                    :showCloseButton="false"
-                  />
-                  <NsTextInput
-                    type="number"
-                    min="1"
-                    max="8760"
-                    v-model.number="ownerAlertHours"
-                    :label="$t('settings.owner_alert_hours')"
-                    :helper-text="$t('settings.owner_alert_hours_helper')"
-                    :invalid-message="$t(error.owner_alert_hours)"
-                    :disabled="stillLoading"
-                    class="mg-bottom"
-                    ref="owner_alert_hours"
-                  />
-                  <NsTextInput
-                    type="number"
-                    min="1"
-                    max="8760"
-                    v-model.number="adminAlertHours"
-                    :label="$t('settings.admin_alert_hours')"
-                    :helper-text="$t('settings.admin_alert_hours_helper')"
-                    :invalid-message="$t(error.admin_alert_hours)"
-                    :disabled="stillLoading"
-                    class="mg-bottom"
-                    ref="admin_alert_hours"
-                  />
-                  <cv-text-area
-                    v-model="adminRecipientsText"
-                    :label="$t('settings.admin_recipients')"
-                    :helper-text="$t('settings.admin_recipients_helper')"
-                    :invalid-message="$t(error.admin_recipients)"
-                    :disabled="stillLoading"
-                    placeholder="it@example.org"
-                    class="mg-bottom"
-                    ref="admin_recipients"
-                  />
-                  <NsTextInput
-                    v-model.trim="alertSender"
-                    :label="$t('settings.alert_sender')"
-                    :placeholder="defaultSender || 'default_sender'"
-                    :helper-text="$t('settings.alert_sender_helper')"
-                    :invalid-message="$t(error.alert_sender)"
-                    :disabled="stillLoading"
-                    class="mg-bottom"
-                    ref="alert_sender"
-                  />
-                  <NsComboBox
-                    v-model="alertLanguage"
-                    :options="languageOptions"
-                    auto-highlight
-                    :title="$t('settings.alert_language')"
-                    :label="$t('settings.choose_alert_language')"
-                    :invalid-message="$t(error.alert_language)"
-                    :disabled="stillLoading"
-                    class="mg-bottom"
-                    ref="alert_language"
-                  />
-                  <NsTextInput
-                    type="number"
-                    min="50"
-                    max="99"
-                    v-model.number="diskAlertPercent"
-                    :label="$t('settings.disk_alert_percent')"
-                    :helper-text="$t('settings.disk_alert_percent_helper')"
-                    :invalid-message="$t(error.disk_alert_percent)"
-                    :disabled="stillLoading"
-                    class="mg-bottom"
-                    ref="disk_alert_percent"
-                  />
-                  <h6 class="mg-bottom">{{ $t("settings.test_mail") }}</h6>
-                  <div class="test-mail-row">
-                    <NsTextInput
-                      v-model.trim="testRecipient"
-                      type="email"
-                      :label="$t('settings.test_mail_recipient')"
-                      placeholder="it@example.org"
-                      :invalid-message="$t(error.recipient)"
-                      :disabled="stillLoading || !smarthostEnabled"
-                      class="test-mail-field"
-                      ref="recipient"
-                    />
-                    <NsButton
-                      type="button"
-                      kind="tertiary"
-                      size="field"
-                      :icon="Email20"
-                      :loading="loading.sendTestMail"
-                      :disabled="
-                        stillLoading ||
-                        !smarthostEnabled ||
-                        loading.sendTestMail ||
-                        !isEmail(testRecipient)
-                      "
-                      class="test-mail-button"
-                      @click="sendTestMail"
-                      >{{ $t("settings.send_test_mail") }}</NsButton
-                    >
-                  </div>
-                  <NsInlineNotification
-                    v-if="testMailSent"
-                    kind="success"
-                    :title="$t('settings.test_mail_sent')"
-                    :description="
-                      $t('settings.test_mail_sent_description', {
-                        recipient: testMailSent,
-                      })
-                    "
-                    :showCloseButton="false"
-                  />
-                  <NsInlineNotification
-                    v-if="error.sendTestMail"
-                    kind="error"
-                    :title="$t('action.send-test-mail')"
-                    :description="error.sendTestMail"
-                    :showCloseButton="false"
-                  />
-                </template>
-              </cv-accordion-item>
-            </cv-accordion>
             <cv-row v-if="error.configureModule">
               <cv-column>
                 <NsInlineNotification
@@ -430,35 +242,6 @@ import RepositoryPasswordInput from "@/components/RepositoryPasswordInput.vue";
 import ShowRepositoryPasswordModal from "@/components/ShowRepositoryPasswordModal.vue";
 import ChangeRepositoryPasswordModal from "@/components/ChangeRepositoryPasswordModal.vue";
 
-const INTERVALS = [0, 1, 2, 4, 6, 8, 12, 24];
-const COMPRESSIONS = [
-  "none",
-  "zstd",
-  "zstd-fastest",
-  "zstd-better-compression",
-  "s2-default",
-  "pgzip",
-];
-// Language names stay in their own language, like in a language switcher
-const LANGUAGES = {
-  en: "English",
-  fr: "Français",
-  it: "Italiano",
-  de: "Deutsch",
-  es: "Español",
-  pt: "Português",
-  pt_BR: "Português (Brasil)",
-  eu: "Euskara",
-};
-const KEEP_FIELDS = [
-  "latest",
-  "hourly",
-  "daily",
-  "weekly",
-  "monthly",
-  "annual",
-];
-
 export default {
   name: "Settings",
   mixins: [
@@ -491,8 +274,6 @@ export default {
       clientPort: 0,
       clientsCount: 0,
       routeMissing: false,
-      smarthostEnabled: true,
-      defaultSender: "",
       adminPasswordSet: false,
       adminPassword: "",
       adminPasswordValidation: null,
@@ -505,59 +286,19 @@ export default {
       focusRepositoryPassword: { element: "" },
       isShownShowPasswordModal: false,
       isShownChangePasswordModal: false,
-      // Empty until the configuration is loaded: NsComboBox writes its label only
-      // when the value changes while the option already exists
-      snapshotInterval: "",
-      keepFields: KEEP_FIELDS,
-      keep: {
-        latest: 10,
-        hourly: 48,
-        daily: 14,
-        weekly: 8,
-        monthly: 12,
-        annual: 2,
-      },
-      compression: "",
-      excludesText: "",
-      ownerAlertHours: 48,
-      adminAlertHours: 96,
-      adminRecipientsText: "",
-      alertSender: "",
-      alertLanguage: "",
-      diskAlertPercent: 85,
-      testRecipient: "",
-      testMailSent: "",
       loading: {
         getConfiguration: false,
         configureModule: false,
-        sendTestMail: false,
       },
       error: {
         getConfiguration: "",
         configureModule: "",
-        sendTestMail: "",
         host: "",
         client_port: "",
         admin_password: "",
         admin_password_confirm: "",
         repository_password: "",
         repository_password_confirm: "",
-        snapshot_interval: "",
-        keep_latest: "",
-        keep_hourly: "",
-        keep_daily: "",
-        keep_weekly: "",
-        keep_monthly: "",
-        keep_annual: "",
-        compression: "",
-        excludes: "",
-        owner_alert_hours: "",
-        admin_alert_hours: "",
-        admin_recipients: "",
-        alert_sender: "",
-        alert_language: "",
-        disk_alert_percent: "",
-        recipient: "",
       },
     };
   },
@@ -574,10 +315,6 @@ export default {
       this.adminPassword = "";
       this.error.admin_password = "";
       this.error.admin_password_confirm = "";
-    },
-    testRecipient() {
-      this.testMailSent = "";
-      this.error.sendTestMail = "";
     },
   },
   computed: {
@@ -606,46 +343,6 @@ export default {
         return false;
       }
       return !this.adminPasswordSet || this.isChangeAdminPassword;
-    },
-    intervalOptions() {
-      return INTERVALS.map((hours) => ({
-        name: "interval-" + hours,
-        value: String(hours),
-        label: hours
-          ? this.$tc("settings.interval_hours", hours, { count: hours })
-          : this.$t("settings.interval_manual"),
-      }));
-    },
-    compressionOptions() {
-      return COMPRESSIONS.map((name) => ({
-        name,
-        value: name,
-        label: this.$t("settings.compression_" + name.replace(/-/g, "_")),
-      }));
-    },
-    languageOptions() {
-      return Object.keys(LANGUAGES).map((code) => ({
-        name: code,
-        value: code,
-        label: LANGUAGES[code],
-      }));
-    },
-    excludes() {
-      return [
-        ...new Set(
-          this.excludesText
-            .split("\n")
-            .map((line) => line.trim())
-            .filter((line) => line !== "")
-        ),
-      ];
-    },
-    adminRecipients() {
-      return [
-        ...new Set(
-          this.adminRecipientsText.split(/[\s,;]+/).filter((r) => r !== "")
-        ),
-      ];
     },
     isRepositoryPasswordRequired() {
       return !this.loading.getConfiguration && !this.repositoryPasswordSet;
@@ -688,23 +385,11 @@ export default {
     next();
   },
   methods: {
-    isEmail(value) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-    },
     isPort(value) {
       return Number.isInteger(value) && value >= 1024 && value <= 65535;
     },
-    isHours(value, max = 8760) {
-      return Number.isInteger(value) && value >= 1 && value <= max;
-    },
-    isCount(value, max) {
-      return Number.isInteger(value) && value >= 0 && value <= max;
-    },
     onAdminPasswordValidation(validation) {
       this.adminPasswordValidation = validation;
-    },
-    goToSmarthost() {
-      this.core.$router.push("/settings/smarthost");
     },
     goToCertificates() {
       this.core.$router.push("/settings/tls-certificates");
@@ -736,40 +421,10 @@ export default {
       this.clientPort = config.client_port;
       this.clientsCount = config.clients_count;
       this.routeMissing = config.route_missing;
-      this.smarthostEnabled = config.smarthost_enabled;
-      this.defaultSender = config.default_sender || "";
       this.adminPasswordSet = config.admin_password_set;
       this.repositoryPasswordSet = config.repository_password_set;
-      this.snapshotInterval = String(config.snapshot_interval);
-      for (const field of KEEP_FIELDS) {
-        this.keep[field] = config["keep_" + field];
-      }
-      this.compression = config.compression;
-      this.excludesText = (config.excludes || []).join("\n");
-      this.ownerAlertHours = config.owner_alert_hours;
-      this.adminAlertHours = config.admin_alert_hours;
-      this.adminRecipientsText = (config.admin_recipients || []).join("\n");
-      this.alertSender = config.alert_sender || "";
-      this.alertLanguage = config.alert_language;
-      this.diskAlertPercent = config.disk_alert_percent;
       this.loading.getConfiguration = false;
       this.focusElement("host");
-    },
-    // Opens the accordion that holds the field, so the error is visible
-    openAccordion(name) {
-      const accordion = this.$refs[name];
-      if (accordion && accordion.$children[0]) {
-        accordion.$children[0].dataVisible = true;
-      }
-    },
-    fail(field, message, accordion) {
-      this.error[field] = message;
-      if (!this.firstError) {
-        this.firstError = field;
-        if (accordion) {
-          this.openAccordion(accordion);
-        }
-      }
     },
     validateConfigureModule() {
       this.clearErrors(this);
@@ -806,65 +461,6 @@ export default {
           this.firstError = this.firstError || "repository_password";
         }
       }
-      for (const field of KEEP_FIELDS) {
-        const max = field === "annual" ? 100 : 1000;
-        if (!this.isCount(this.keep[field], max)) {
-          this.fail("keep_" + field, "settings.keep_range", "accordionPolicy");
-        }
-      }
-      if (this.excludes.some((pattern) => pattern.length > 255)) {
-        this.fail("excludes", "settings.excludes_too_long", "accordionPolicy");
-      }
-      if (this.excludes.length > 200) {
-        this.fail("excludes", "settings.excludes_too_many", "accordionPolicy");
-      }
-      if (!this.isHours(this.ownerAlertHours)) {
-        this.fail(
-          "owner_alert_hours",
-          "settings.hours_range",
-          "accordionAlerts"
-        );
-      }
-      if (!this.isHours(this.adminAlertHours)) {
-        this.fail(
-          "admin_alert_hours",
-          "settings.hours_range",
-          "accordionAlerts"
-        );
-      } else if (
-        this.isHours(this.ownerAlertHours) &&
-        this.adminAlertHours <= this.ownerAlertHours
-      ) {
-        this.fail(
-          "admin_alert_hours",
-          "settings.admin_after_owner",
-          "accordionAlerts"
-        );
-      }
-      if (this.adminRecipients.some((r) => !this.isEmail(r))) {
-        this.fail(
-          "admin_recipients",
-          "settings.recipients_invalid",
-          "accordionAlerts"
-        );
-      }
-      if (this.alertSender && !this.isEmail(this.alertSender)) {
-        this.fail(
-          "alert_sender",
-          "settings.alert_sender_invalid",
-          "accordionAlerts"
-        );
-      }
-      if (
-        !this.isCount(this.diskAlertPercent, 99) ||
-        this.diskAlertPercent < 50
-      ) {
-        this.fail(
-          "disk_alert_percent",
-          "settings.disk_percent_range",
-          "accordionAlerts"
-        );
-      }
       if (this.firstError && !this.firstError.endsWith("password")) {
         this.focusElement(this.firstError);
       }
@@ -899,19 +495,7 @@ export default {
         host: this.host,
         lets_encrypt: this.isLetsEncryptEnabled,
         client_port: this.clientPort,
-        snapshot_interval: parseInt(this.snapshotInterval, 10),
-        compression: this.compression,
-        excludes: this.excludes,
-        owner_alert_hours: this.ownerAlertHours,
-        admin_alert_hours: this.adminAlertHours,
-        admin_recipients: this.adminRecipients,
-        alert_sender: this.alertSender,
-        alert_language: this.alertLanguage,
-        disk_alert_percent: this.diskAlertPercent,
       };
-      for (const field of KEEP_FIELDS) {
-        data["keep_" + field] = this.keep[field];
-      }
       // Without a new password the backend keeps the current one
       if (this.isAdminPasswordActive) {
         data.admin_password = this.adminPassword;
@@ -948,35 +532,6 @@ export default {
       this.repositoryPasswordWritten = false;
       this.getConfiguration();
     },
-    sendTestMail() {
-      this.error.recipient = "";
-      this.error.sendTestMail = "";
-      this.testMailSent = "";
-      this.loading.sendTestMail = true;
-      const recipient = this.testRecipient;
-      this.runModuleTask({
-        action: "send-test-mail",
-        data: { recipient },
-        completed: () => {
-          this.testMailSent = recipient;
-          this.loading.sendTestMail = false;
-        },
-        validationFailed: (validationErrors) => {
-          this.loading.sendTestMail = false;
-          this.error.sendTestMail = this.$t(
-            "settings." + validationErrors[0].error
-          );
-        },
-        aborted: (message) => {
-          this.error.sendTestMail = message;
-          this.loading.sendTestMail = false;
-        },
-        failed: (message) => {
-          this.error.sendTestMail = message;
-          this.loading.sendTestMail = false;
-        },
-      });
-    },
   },
 };
 </script>
@@ -997,22 +552,5 @@ export default {
   flex-wrap: wrap;
   gap: $spacing-05;
   margin-top: $spacing-05;
-}
-
-.test-mail-row {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: $spacing-05;
-  margin-bottom: $spacing-05;
-}
-
-.test-mail-field {
-  flex: 0 1 20rem;
-}
-
-// Level with the field, not with its label
-.test-mail-button {
-  margin-top: $spacing-06;
 }
 </style>

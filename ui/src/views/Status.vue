@@ -236,8 +236,23 @@
           >
             <template slot="content">
               <div>
-                <div v-if="health.verify">
-                  {{ formatDateTime(health.verify.finished) }}
+                <div v-if="health.verify" class="card-rows">
+                  <div>{{ formatDateTime(health.verify.finished) }}</div>
+                  <div v-if="verifyDuration" class="mg-top-sm">
+                    {{
+                      $t("status.verify_duration", { duration: verifyDuration })
+                    }}
+                  </div>
+                  <div
+                    v-if="Number.isInteger(health.verify.percent)"
+                    class="mg-top-sm"
+                  >
+                    {{
+                      $t("status.verify_percent", {
+                        percent: health.verify.percent,
+                      })
+                    }}
+                  </div>
                 </div>
                 <pre
                   v-if="health.verify && !health.verify.ok"
@@ -610,6 +625,16 @@ export default {
     };
   },
   computed: {
+    verifyDuration() {
+      const verify = this.health.verify;
+      if (!verify || !verify.started || !verify.finished) {
+        return "";
+      }
+      const seconds = Math.round(
+        (new Date(verify.finished) - new Date(verify.started)) / 1000
+      );
+      return isNaN(seconds) || seconds < 0 ? "" : this.formatDuration(seconds);
+    },
     failedServices() {
       // A stopped server is not "failed" for systemd, but it must run. The check and verify
       // services are one-shot jobs, inactive between two runs.
@@ -705,6 +730,17 @@ export default {
   methods: {
     byteFormat(value) {
       return this.$options.filters.byteFormat(value);
+    },
+    formatDuration(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      if (hours) {
+        return `${hours} h ${minutes} min`;
+      }
+      if (minutes) {
+        return `${minutes} min`;
+      }
+      return `${seconds} s`;
     },
     formatDateTime(value) {
       if (!value) {
