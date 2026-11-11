@@ -5,8 +5,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# Weekly integrity check. Each run downloads about 10% of the blobs, so the whole repository
-# is read again within a few months.
+# Weekly integrity check. Each run downloads the share of the blobs set in Settings (10% by default):
+# at 10% the whole repository is read again within a few months.
 
 import json
 import os
@@ -19,7 +19,8 @@ import kopia_module as km
 
 started = datetime.now(timezone.utc)
 try:
-    proc = km.kopia([], script="timeout 23h kopia content verify --download-percent=10", check=False, timeout=24 * 3600)
+    percent = km.read_settings()["verify_percent"]
+    proc = km.kopia([], script=f"timeout 23h kopia content verify --download-percent={percent}", check=False, timeout=24 * 3600)
     output, code = (proc.stdout + proc.stderr).strip(), proc.returncode
 except subprocess.TimeoutExpired:
     output, code = "verification did not finish within 24 hours", 1
@@ -27,6 +28,7 @@ result = {
     "started": started.isoformat(timespec="seconds"),
     "finished": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     "ok": code == 0,
+    "percent": percent,
     # The tail is enough to see what failed, the journal keeps the rest
     "details": "\n".join(output.splitlines()[-20:]),
 }

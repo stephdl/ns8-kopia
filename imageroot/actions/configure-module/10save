@@ -12,6 +12,8 @@ import agent
 import kopia_module as km
 
 data = json.load(sys.stdin)
+# A page that saves only its own fields keeps the saved host
+data.setdefault("host", os.environ.get("TRAEFIK_HOST", ""))
 
 env = {"TRAEFIK_HOST": data["host"]}
 if "lets_encrypt" in data:

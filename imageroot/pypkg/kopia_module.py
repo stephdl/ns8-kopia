@@ -350,6 +350,7 @@ SETTINGS = {
     "alert_sender": ("ALERT_SENDER", "", str),
     "alert_language": ("ALERT_LANGUAGE", "en", str),
     "disk_alert_percent": ("DISK_ALERT_PERCENT", 85, int),
+    "verify_percent": ("VERIFY_PERCENT", 10, int),
 }
 
 
