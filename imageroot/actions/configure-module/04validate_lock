@@ -20,6 +20,9 @@ host_changed = bool(os.environ.get("TRAEFIK_HOST")) and data["host"] != os.envir
 port_changed = bool(os.environ.get("CLIENT_PORT")) and "client_port" in data and str(data["client_port"]) != os.environ["CLIENT_PORT"]
 if not (host_changed or port_changed):
     sys.exit(0)
+# A clone has the host of its source but no route: no machine reaches it yet, it needs a new host
+if host_changed and not port_changed and not agent.get_route(os.environ["MODULE_ID"]):
+    sys.exit(0)
 
 try:
     count = len(km.load_clients())

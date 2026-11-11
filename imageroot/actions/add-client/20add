@@ -31,13 +31,13 @@ clients = km.load_clients()
 if any(c["name"] == name for c in clients):
     fail("hostname", "client_exists")
 
-clients.append({"name": name, "username": username, "hostname": hostname,
-                "owner_email": data.get("owner_email", ""),
-                "created": datetime.now(timezone.utc).isoformat(timespec="seconds")})
-km.save_clients(clients)
-
-client = clients[-1]
+client = {"name": name, "username": username, "hostname": hostname,
+          "owner_email": data.get("owner_email", ""),
+          "created": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+# Account first: if Kopia fails, nothing is stored and the admin can retry
 password = km.set_client_password(name)
+clients.append(client)
+km.save_clients(clients)
 km.server_refresh()
 # The core keeps task outputs about 8 hours, readable by cluster admins only. They can read the
 # repository password anyway, which opens every backup.

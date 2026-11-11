@@ -15,6 +15,9 @@ fi
 
 systemctl --user daemon-reload
 systemctl --user enable kopia-check.timer kopia-verify.timer
-systemctl --user try-restart kopia.service kopia-server.service
+# restart, not try-restart: a stopped server must come back, apply-config waits for it
+systemctl --user restart kopia.service kopia-server.service
+# The server now runs the new image: the next configure-module must not restart it again
+runagent kopia-server-fingerprint > .server-config
 systemctl --user start kopia-check.timer kopia-verify.timer
 runagent kopia-apply-config

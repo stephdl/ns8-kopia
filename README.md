@@ -24,7 +24,7 @@ flowchart LR
     subgraph NS8["NS8 node"]
         T["Traefik :443<br/>Let's Encrypt"]
         FW["firewall<br/>service kopiaN"]
-        subgraph Pod["rootless pod kopiaN"]
+        subgraph Pod["rootless pod of kopiaN"]
             K["kopia server start<br/>0.0.0.0:CLIENT_PORT<br/>module certificate"]
         end
         V[("volume<br/>kopia-repository")]
@@ -115,18 +115,20 @@ identity, so it finds its old snapshots. Until the new script runs, the old pass
 keyring stops working.
 
 Default ACLs: a machine sees, creates and deletes only its own snapshots. It reads its
-policies, the host policy and the global policy. It cannot change any policy or its own
-account. Anyone holding the script can read, restore and delete the backups of that machine,
+policies, the host policy and the global policy. It can append content to the repository,
+which every backup needs. It cannot change any policy or its own account. Anyone holding the script can read, restore and delete the backups of that machine,
 from anywhere. If a script leaks, reset the password.
 
 Clients:
 
-- Windows: the script installs KopiaUI with winget, connects, takes a first snapshot of
+- Windows: the script installs KopiaUI with winget when it is missing, connects, takes a first snapshot of
   Documents, Desktop and Pictures, and starts KopiaUI. KopiaUI takes the scheduled snapshots
   while it stays in the tray.
 - Linux: install `kopia` from <https://kopia.io/docs/installation/> first. The script connects,
-  takes a first snapshot of the home directory and adds a systemd user timer.
-- macOS: install KopiaUI or `brew install kopia/kopia/kopia`, then run the shell script.
+  takes a first snapshot of the home directory and adds the systemd user timer
+  `kopia-snapshot.timer` at the policy interval. In manual mode it adds no timer.
+- macOS: install the CLI with `brew install kopia/kopia/kopia` and run the shell script. The
+  script needs `kopia` in the PATH. Then start KopiaUI for the scheduled snapshots.
 
 Run the script in the session of the user who owns the files, not as administrator or SYSTEM.
 Otherwise the config and the keyring land in the wrong profile.
@@ -136,18 +138,26 @@ Otherwise the config and the keyring land in the wrong profile.
 `kopia-check` runs every hour and computes the age of the newest complete snapshot of each
 machine. A machine that never backed up counts from the day its account was created.
 
-| Age | Mail |
-| --- | --- |
-| over the owner threshold (default 48 h) | to the owner email of the machine |
-| over the admin threshold (default 96 h) | to the admin recipients |
-| back under the owner threshold | to the owner, and to the admins if they were warned |
+One mail goes out when a threshold is crossed, never one per run. A machine that comes back
+from the admin level to the owner level gets no mail: it backed up once, but it is still late.
 
-One mail goes out per threshold crossing, never one per run. The same check mails the admins
-when the repository disk use goes over its threshold (default 85 %), and again when it is
-back. The volume holds a 1 GB file, `RESERVED-SPACE-delete-if-disk-full`: delete it to give
-Kopia room when the disk is full. A full disk can damage a filesystem repository.
+| Mail | Subject (English) | Sent to | When |
+| --- | --- | --- | --- |
+| Owner late | `Backup late: <machine>` | owner email of the machine | last backup reaches the owner threshold (default 48 h) |
+| Admin late | `Backup late: <machine> (<hours> h)` | admin recipients | last backup reaches the admin threshold (default 96 h) |
+| Back to normal | `Backup back to normal: <machine>` | owner, plus admins if they were warned | a new backup brings the age under the owner threshold |
+| Disk almost full | `Backup disk almost full on <host>` | admin recipients | repository disk use reaches the threshold (default 85 %) |
+| Disk back to normal | `Backup disk back to normal on <host>` | admin recipients | disk use falls 2 points under the threshold |
+| Verification failed | `Backup verification failed on <host>` | admin recipients | the weekly `kopia content verify` finds errors |
+| Test | `Kopia test mail from <host>` | the address typed in Settings | the admin clicks "Send test mail" |
 
-Mails go through the cluster smarthost, in the language chosen in Settings.
+Mails go through the cluster smarthost, from `noreply@<host>` unless a sender is set, in the
+language chosen in Settings: en, fr, it, de, es, pt, pt_BR or eu. Without a smarthost no mail
+leaves, and the states stay visible on the Clients and Status pages.
+
+When more than 3 GB are free at creation, the volume gets a 1 GB file,
+`RESERVED-SPACE-delete-if-disk-full`. Delete it to give Kopia room when the disk is full. A
+full disk can damage a filesystem repository.
 
 ## Install
 
@@ -185,6 +195,15 @@ enrolled machine, so the module refuses to change them while machines exist.
 The client port must be free on the node and outside the NS8 port allocator range
 (20000 to 45000). A second instance on the same node starts on the next free port.
 
+Defaults of the global policy: a snapshot every 4 hours (0 means manual only), keep the
+latest 10, 48 hourly, 14 daily, 8 weekly, 12 monthly and 2 annual snapshots, zstd
+compression, and common excludes such as caches, temp folders, trash, `node_modules` and
+Windows swap files. Admin and repository passwords take 12 to 64 characters with an
+uppercase letter, a lowercase letter, a digit and a symbol among `.,_+:@%^=~-`.
+
+Saving the settings restarts the server only when the host, the port, the image, a password
+or the certificate changed, since a restart cuts the running backups.
+
 All fields are listed in
 [configure-module/validate-input.json](imageroot/actions/configure-module/validate-input.json).
 The web UI user is always `admin`.
@@ -199,11 +218,11 @@ The web UI user is always `admin`.
 | `reset-client-password` | new password, return the new scripts |
 | `get-client-enrollment` | URL, fingerprint and identity, without the password |
 | `remove-client` | remove the account, its snapshots stay in the repository |
-| `list-clients` | machines with last backup and state: `ok`, `late`, `late_admin`, `never_seen` |
+| `list-clients` | machines with last backup and state: `ok`, `late`, `late_admin`, `never_seen`, or `unknown` when the server does not answer |
 | `get-health` | server, disk use, certificate expiry, last integrity check |
 | `get-repository-password` | show the repository password |
 | `change-repository-password` | change it, then restart the server |
-| `send-test-mail` | send a test mail through the smarthost |
+| `send-test-mail` | send a test mail to `recipient` through the smarthost |
 
 ## Backup, restore, clone and move
 
@@ -213,8 +232,9 @@ The module backup holds the configuration and the secrets: `state/secrets`, `sta
 - Restore on another node: same certificate, same passwords, a new empty repository. The
   machine accounts come back from their stored hashes. Point the host name to the new node,
   and the machines reconnect with their old config. They start a new snapshot history.
-- Clone and move copy the repository volume too, so the history is kept. A clone keeps the
-  host of its source and has no route until you pick a new host. A move keeps everything.
+- Clone and move copy the `kopia-repository` volume too, so the history is kept. A clone
+  keeps the host of its source and has no route until you pick a new host, which the module
+  allows even with machines. A move keeps everything.
 - On a node where the saved client port is taken, a restored or cloned instance moves to the
   next free port. Its machines need a new script then.
 
@@ -239,4 +259,4 @@ This deletes the repository volume and every backup in it.
 ## Testing
 
 The Robot Framework tests in [tests/](tests/) run in CI on a fresh NS8 node: install,
-configure, then remove the module.
+configure, add a machine, check its state, then remove the module.

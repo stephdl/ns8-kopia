@@ -18,7 +18,7 @@ config = {
     "host": host,
     "lets_encrypt": os.environ.get("TRAEFIK_LETS_ENCRYPT") == "True",
     # Before the first configuration, suggest the first free port
-    "client_port": int(os.environ.get("CLIENT_PORT") or km.free_port(agent.redis_connect(use_replica=True))),
+    "client_port": int(os.environ.get("CLIENT_PORT") or km.free_port(rdb)),
     "admin_password_set": bool(secrets.get("KOPIA_SERVER_PASSWORD")),
     "repository_password_set": bool(secrets.get("KOPIA_PASSWORD")),
     "clients_count": len(km.load_clients()),

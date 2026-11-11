@@ -47,6 +47,8 @@ KOPIA_PASSWORD='{password}' kopia repository connect server \\
 kopia snapshot create "$HOME"
 if [ "$(uname)" = "Darwin" ]; then
     echo "Start KopiaUI and keep it running: it takes the scheduled snapshots."
+elif [ "{interval}" = "0" ]; then
+    echo "Manual snapshots only: no timer installed. Run: kopia snapshot create ~"
 elif command -v systemctl >/dev/null && systemctl --user show-environment >/dev/null 2>&1; then
     # Without KopiaUI, a user timer takes the snapshots
     mkdir -p "$HOME/.config/systemd/user"
@@ -85,7 +87,7 @@ def enrollment(client, password):
         "machine": client["hostname"],
         "url": f"https://{os.environ['TRAEFIK_HOST']}:{os.environ['CLIENT_PORT']}",
         "fingerprint": km.cert_fingerprint(),
-        "interval": km.read_settings()["snapshot_interval"] or 24,
+        "interval": km.read_settings()["snapshot_interval"],
         # Without a password the script cannot connect: the UI offers a reset instead
         "password": password or "PASSWORD-SHOWN-ONLY-ONCE",
     }

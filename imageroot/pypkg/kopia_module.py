@@ -7,7 +7,6 @@
 
 import base64
 import hashlib
-import hmac
 import json
 import os
 import re
@@ -20,7 +19,6 @@ import sys
 import urllib.error
 import urllib.request
 
-SECRETS_DIR = "secrets"
 KOPIA_ENV = "secrets/kopia.env"
 # Only scrypt hashes: the password of a machine is shown once, when it is created or reset
 CLIENT_HASHES = "secrets/client-hashes.json"
@@ -28,12 +26,7 @@ CLIENT_HASHES = "secrets/client-hashes.json"
 OLD_CLIENT_SECRETS = "secrets/clients.json"
 CLIENTS = "clients.json"
 CERT = "certs/client.pem"
-CERT_KEY = "certs/client-key.pem"
 CONTAINER = "kopia-server"
-IMAGE_ENV = "KOPIA_IMAGE"
-SERVER_USER = "server"
-SERVER_HOST = "kopia"
-ADMIN_USER = "admin"
 CONTROL_USER = "server-control"
 DEFAULT_PORT = 51515
 # Ports handed out by the node port allocator, see node.ports_manager
@@ -456,7 +449,13 @@ def send_mail(rdb, recipients, subject, body, sender=None):
 
 
 def free_port(rdb, start=DEFAULT_PORT):
+    taken = set()
+    for key in rdb.scan_iter("module/*/environment"):
+        if key.split("/")[1] != os.environ["MODULE_ID"]:
+            env = rdb.hmget(key, "NODE_ID", "CLIENT_PORT")
+            if env[0] == str(os.environ["NODE_ID"]) and env[1]:
+                taken.add(int(env[1]))
     port = start
-    while port_listening(port) or port_used_by_other_module(rdb, port, os.environ["MODULE_ID"], os.environ["NODE_ID"]):
+    while port in taken or port_listening(port):
         port += 1
     return port

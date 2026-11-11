@@ -62,8 +62,12 @@ def check_machines():
             age = client["age_hours"]
             last = client["last_backup"][:16].replace("T", " ") + " UTC"
         else:
-            # A machine that never backed up is late from the day its account was created
-            age = (now - datetime.fromisoformat(client["created"])).total_seconds() / 3600
+            # A machine that never backed up is late from the day its account was created. Without a
+            # creation date nothing is known: skip it rather than stop the check of every machine
+            created = client.get("created")
+            if not created:
+                continue
+            age = (now - datetime.fromisoformat(created)).total_seconds() / 3600
             last = kopia_mail.word("never", lang)
         level = "admin" if age >= settings["admin_alert_hours"] else "owner" if age >= settings["owner_alert_hours"] else "ok"
         previous = machines.get(name, "ok")

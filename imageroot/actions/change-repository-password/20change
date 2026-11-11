@@ -16,7 +16,7 @@ password = json.load(sys.stdin)["repository_password"]
 secrets = km.read_env()
 
 # Written first: if the agent dies after the change, the new password is still on disk.
-# kopia-recover-password picks the file that opens the repository.
+# Step 05recover of the next run keeps the file that opens the repository.
 pending = dict(secrets, KOPIA_PASSWORD=password)
 km.write_env(pending, km.KOPIA_ENV + ".new")
 km.kopia([], stdin=password + "\n", script='read -r n; KOPIA_NEW_PASSWORD="$n" kopia repository change-password')
