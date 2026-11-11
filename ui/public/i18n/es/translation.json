@@ -222,7 +222,7 @@
         "test_mail_sent": "Correo de prueba enviado",
         "test_mail_sent_description": "Se envió un correo de prueba a {recipient}.",
         "route_missing_title": "El host no tiene ruta",
-        "route_missing_description": "Otra instancia de este nodo posee este host, como tras un clon en el mismo nodo. La interfaz web de administración sigue accesible en https://{host}:{port}/ y los equipos siguen funcionando en ese puerto.",
+        "route_missing_description": "Otra instancia de este nodo posee este host y este puerto de cliente, como tras un clon en el mismo nodo. Elimine la instancia antigua y guarde estos ajustes para iniciar esta. Los equipos siguen funcionando sin ningún cambio.",
         "domain_already_used_in_traefik": "Este nombre de host ya lo usa otra aplicación",
         "port_in_allocator_range": "Este puerto está en el rango 20000-45000 que usa el nodo. Elija otro puerto.",
         "port_used_by_module": "Este puerto ya lo usa otro módulo",

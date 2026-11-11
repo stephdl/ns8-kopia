@@ -222,7 +222,7 @@
         "test_mail_sent": "Proba-posta bidali da",
         "test_mail_sent_description": "Proba-posta bat bidali da {recipient} helbidera.",
         "route_missing_title": "Ostalariak ez du ibilbiderik",
-        "route_missing_description": "Nodo honetako beste instantzia batek du host hau, nodo berean klonatu ondoren bezala. Administrazio web interfazea https://{host}:{port}/ helbidean eskuragarri dago, eta makinek ataka horretan jarraitzen dute.",
+        "route_missing_description": "Nodo honetako beste instantzia batek du host hau eta bezero-ataka hau, nodo berean klonatu ondoren bezala. Kendu instantzia zaharra, eta gorde ezarpen hauek hau abiarazteko. Makinek aldaketarik gabe jarraitzen dute.",
         "domain_already_used_in_traefik": "Ostalari-izen hau beste aplikazio batek erabiltzen du jada",
         "port_in_allocator_range": "Ataka hau nodoak erabiltzen duen 20000-45000 tartean dago. Aukeratu beste ataka bat.",
         "port_used_by_module": "Ataka hau beste modulu batek erabiltzen du jada",

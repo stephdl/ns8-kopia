@@ -222,7 +222,7 @@
         "test_mail_sent": "Testmail gesendet",
         "test_mail_sent_description": "Eine Testmail wurde an {recipient} gesendet.",
         "route_missing_title": "Der Host hat keine Route",
-        "route_missing_description": "Eine andere Instanz auf diesem Knoten besitzt diesen Host, wie nach einem Klon auf demselben Knoten. Die Admin-Weboberfläche bleibt unter https://{host}:{port}/ erreichbar, und die Rechner arbeiten weiter über diesen Port.",
+        "route_missing_description": "Eine andere Instanz auf diesem Knoten besitzt diesen Host und diesen Client-Port, wie nach einem Klon auf demselben Knoten. Entfernen Sie die alte Instanz und speichern Sie dann diese Einstellungen, um diese Instanz zu starten. Die Rechner arbeiten ohne Änderung weiter.",
         "domain_already_used_in_traefik": "Dieser Hostname wird schon von einer anderen Anwendung verwendet",
         "port_in_allocator_range": "Dieser Port liegt im Bereich 20000-45000, den der Knoten verwendet. Wählen Sie einen anderen Port.",
         "port_used_by_module": "Dieser Port wird schon von einem anderen Modul verwendet",
