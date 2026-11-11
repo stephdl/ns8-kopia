@@ -1,0 +1,36 @@
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# This unit creates the pod. The Kopia server joins it.
+
+[Unit]
+Description=Podman kopia.service
+Requires=kopia-server.service
+Before=kopia-server.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=-%E/state/environment
+WorkingDirectory=%E/state
+Restart=always
+TimeoutStopSec=70
+ExecStartPre=/bin/rm -f %t/kopia.pid %t/kopia.pod-id
+# Clients reach the client port from outside, Traefik reaches it on 127.0.0.1 for the admin UI.
+# allow_host_loopback lets the pod reach services of the node at 10.0.2.2.
+ExecStartPre=/usr/bin/podman pod create --infra-conmon-pidfile %t/kopia.pid \
+    --pod-id-file %t/kopia.pod-id \
+    --name kopia \
+    --hostname ${TRAEFIK_HOST} \
+    --network=slirp4netns:allow_host_loopback=true \
+    --publish ${CLIENT_PORT}:${CLIENT_PORT} \
+    --replace
+ExecStart=/usr/bin/podman pod start --pod-id-file %t/kopia.pod-id
+ExecStop=/usr/bin/podman pod stop --ignore --pod-id-file %t/kopia.pod-id -t 10
+ExecStopPost=/usr/bin/podman pod rm --ignore -f --pod-id-file %t/kopia.pod-id
+PIDFile=%t/kopia.pid
+Type=forking
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import sys
+import agent
+import kopia_module as km
+
+env = os.environ
+module_id = os.environ["MODULE_ID"]
+host = env["TRAEFIK_HOST"]
+
+# A clone starts with the host of its source. While the source owns that route, keep this one off:
+# the UI shows the missing route and the admin picks a new host.
+route = km.own_route()
+agent.assert_exp(route is not None, "Traefik did not answer, the route was not updated")
+if not route and agent.http_route_in_use(domain=host):
+    print(agent.SD_WARNING + f"host {host} is routed to another instance, route of {module_id} not created", file=sys.stderr)
+    sys.exit(0)
+
+agent.set_route({
+    "instance": module_id,
+    "url": f"https://127.0.0.1:{env['CLIENT_PORT']}",
+    "host": host,
+    "http2https": True,
+    "skip_cert_verify": True,
+    "lets_encrypt": env.get("TRAEFIK_LETS_ENCRYPT") == "True",
+})

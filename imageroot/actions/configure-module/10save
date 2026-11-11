@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import agent
+import kopia_module as km
+
+data = km.configure_request()
+
+env = {"TRAEFIK_HOST": data["host"]}
+if "lets_encrypt" in data:
+    env["TRAEFIK_LETS_ENCRYPT"] = str(data["lets_encrypt"])
+if "client_port" in data:
+    env["CLIENT_PORT"] = str(data["client_port"])
+elif "CLIENT_PORT" not in os.environ:
+    # A second instance on the node starts on the next free port
+    env["CLIENT_PORT"] = str(km.free_port(agent.redis_connect()))
+env.update(km.settings_to_env(data))
+for key, value in env.items():
+    agent.set_env(key, value)
+
+secrets = km.read_env()
+if data.get("admin_password"):
+    secrets["KOPIA_SERVER_PASSWORD"] = data["admin_password"]
+# Once the repository exists its password never changes: older module backups hold it
+if data.get("repository_password") and not km.repository_exists():
+    secrets["KOPIA_PASSWORD"] = data["repository_password"]
+km.write_env(secrets)
+
+# The systemd units read the environment file: write it before 80start_services
+agent.dump_env()

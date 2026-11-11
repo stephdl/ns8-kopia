@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Machines pin the fingerprint of this certificate, so it is created once and never renewed
+# automatically. The host name is not needed: pinning ignores it.
+
+set -e
+exec 1>&2
+
+if [[ -f certs/client.pem && -f certs/client-key.pem ]]; then
+    exit 0
+fi
+
+mkdir -p certs
+chmod 0700 certs
+openssl req -x509 -newkey rsa:2048 -nodes -days 3650 -subj "/CN=${MODULE_ID}" \
+    -keyout certs/client-key.pem -out certs/client.pem 2>/dev/null
+# The container reads them as root of its user namespace, the module home is 0700
+chmod 0644 certs/client.pem certs/client-key.pem

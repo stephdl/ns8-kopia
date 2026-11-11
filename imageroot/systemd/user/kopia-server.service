@@ -1,0 +1,41 @@
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+[Unit]
+Description=Podman kopia-server.service
+BindsTo=kopia.service
+After=kopia.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%E/state/environment
+WorkingDirectory=%E/state
+Restart=always
+TimeoutStopSec=70
+Type=forking
+ExecStartPre=/bin/rm -f %t/kopia-server.pid %t/kopia-server.ctr-id
+# The UI login is "admin" with KOPIA_SERVER_PASSWORD. Machines log in with their own repository user.
+ExecStart=/usr/bin/podman run --conmon-pidfile %t/kopia-server.pid \
+    --cidfile %t/kopia-server.ctr-id --cgroups=no-conmon \
+    --pod-id-file %t/kopia.pod-id --replace -d --name kopia-server \
+    --env-file ./secrets/kopia.env \
+    --volume kopia-repository:/repo:z \
+    --volume kopia-config:/app/config:z \
+    --volume kopia-cache:/app/cache:z \
+    --volume kopia-logs:/app/logs:z \
+    --volume ./certs:/certs:ro,z \
+    ${KOPIA_IMAGE} server start \
+    --address=0.0.0.0:${CLIENT_PORT} \
+    --tls-cert-file=/certs/client.pem \
+    --tls-key-file=/certs/client-key.pem \
+    --server-username=admin \
+    --server-control-username=server-control
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/kopia-server.ctr-id -t 60
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/kopia-server.ctr-id
+PIDFile=%t/kopia-server.pid
+SyslogIdentifier=%u
+
+[Install]
+WantedBy=default.target

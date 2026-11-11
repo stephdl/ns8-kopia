@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+set -e
+exec 1>&2
+
+if [[ ! -f secrets/kopia.env ]] || ! grep -q '^KOPIA_PASSWORD=' secrets/kopia.env; then
+    # Not configured yet: nothing runs
+    exit 0
+fi
+
+systemctl --user daemon-reload
+systemctl --user enable kopia-check.timer kopia-verify.timer
+# A stopped server must come back too: apply-config waits for it
+runagent kopia-restart-server --force
+systemctl --user start kopia-check.timer kopia-verify.timer
+runagent kopia-apply-config

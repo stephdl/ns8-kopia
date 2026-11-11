@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Weekly integrity check. Each run downloads the share of the blobs set in Policies (10% by default):
+# at 10% the whole repository is read again within a few months.
+
+import json
+import os
+import subprocess
+import sys
+from datetime import datetime, timezone
+import agent
+import kopia_mail
+import kopia_module as km
+
+# A big repository at a high share can take days: stop just before the next weekly run
+LIMIT_HOURS = 6 * 24 + 23
+# Exit code of timeout(1) when it stops the command
+TIMED_OUT = 124
+
+started = datetime.now(timezone.utc)
+percent = km.read_settings()["verify_percent"]
+try:
+    proc = km.kopia([], script=f"timeout {LIMIT_HOURS}h kopia content verify --download-percent={percent}",
+                    check=False, timeout=(LIMIT_HOURS + 1) * 3600)
+    output, code = (proc.stdout + proc.stderr).strip(), proc.returncode
+except subprocess.TimeoutExpired:
+    output, code = "", TIMED_OUT
+unfinished = code == TIMED_OUT
+if unfinished:
+    output = (output + f"\nThe check did not finish within {LIMIT_HOURS} hours. Lower the share of data to check.").strip()
+result = {
+    "started": started.isoformat(timespec="seconds"),
+    "finished": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    "ok": code == 0,
+    # Not a corruption: the check ran out of time before reading its share of the data
+    "unfinished": unfinished,
+    "percent": percent,
+    # The tail is enough to see what failed, the journal keeps the rest
+    "details": "\n".join(output.splitlines()[-20:]),
+}
+print(output, file=sys.stderr)
+with open("verify.json", "w") as f:
+    json.dump(result, f, indent=2)
+
+if unfinished:
+    print(agent.SD_WARNING + "integrity check unfinished, no error found in the part that was read", file=sys.stderr)
+    sys.exit(0)
+
+if not result["ok"]:
+    settings = km.read_settings()
+    if settings["admin_recipients"]:
+        subject, body = kopia_mail.render("verify_failed", settings["alert_language"],
+                                          host=os.environ.get("TRAEFIK_HOST", ""), details=result["details"])
+        try:
+            km.send_mail(agent.redis_connect(use_replica=True), settings["admin_recipients"], subject, body)
+        except Exception as ex:
+            print(agent.SD_WARNING + f"verify mail not sent: {ex}", file=sys.stderr)
+    sys.exit(1)

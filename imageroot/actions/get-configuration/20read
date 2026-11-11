@@ -1,14 +1,32 @@
 #!/usr/bin/env python3
 
 #
-# Copyright (C) 2023 Nethesis S.r.l.
+# Copyright (C) 2026 Nethesis S.r.l.
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
 import json
+import os
 import sys
 import agent
+import kopia_module as km
 
-config = {}
-
+rdb = agent.redis_connect(use_replica=True)
+secrets = km.read_env()
+host = os.environ.get("TRAEFIK_HOST", "")
+config = {
+    "host": host,
+    "lets_encrypt": os.environ.get("TRAEFIK_LETS_ENCRYPT") == "True",
+    # Before the first configuration, suggest the first free port
+    "client_port": int(os.environ.get("CLIENT_PORT") or km.free_port(rdb)),
+    "admin_password_set": bool(secrets.get("KOPIA_SERVER_PASSWORD")),
+    "repository_password_set": bool(secrets.get("KOPIA_PASSWORD")),
+    "clients_count": len(km.load_clients()),
+    "smarthost_enabled": agent.get_smarthost_settings(rdb)["enabled"],
+    "default_sender": f"noreply@{host}" if host else "",
+    # Only a saved host can miss its route, like a clone that kept the host of its source
+    # None when Traefik does not answer: the UI then warns about nothing
+    "route_missing": bool(host) and km.own_route() == {},
+}
+config.update(km.read_settings())
 json.dump(config, fp=sys.stdout)

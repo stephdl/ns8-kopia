@@ -13,7 +13,8 @@ images=()
 # The image will be pushed to GitHub container registry
 repobase="${REPOBASE:-ghcr.io/nethserver}"
 # Configure the image name
-reponame="kickstart"
+reponame="kopia"
+kopia_image="docker.io/kopia/kopia:0.23.1"
 # Node.js 25+ no longer ships Corepack, install it from npm
 # renovate: datasource=npm packageName=corepack
 corepack_version=0.36.0
@@ -21,29 +22,36 @@ corepack_version=0.36.0
 # Create a new empty container image
 container=$(buildah from scratch)
 
-# Reuse existing nodebuilder-kickstart container, to speed up builds
-if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-kickstart; then
+# Reuse existing nodebuilder-kopia container, to speed up builds
+if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-kopia; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-kickstart -v "${PWD}:/usr/src:Z" docker.io/library/node:26.13.0-slim
-    buildah run nodebuilder-kickstart sh -c "npm install -g corepack@${corepack_version} && corepack enable"
+    buildah from --name nodebuilder-kopia -v "${PWD}:/usr/src:Z" docker.io/library/node:26.13.0-slim
+    buildah run nodebuilder-kopia sh -c "npm install -g corepack@${corepack_version} && corepack enable"
 fi
+
+# The About page shows the upstream version: take it from the image tag, restore the file on exit
+cp ui/public/metadata.json ui/public/metadata.json.orig
+trap 'mv -f ui/public/metadata.json.orig ui/public/metadata.json' EXIT
+jq --arg v "${kopia_image##*:}" '.upstream_name |= gsub("version set automatically"; $v)' \
+    ui/public/metadata.json.orig > ui/public/metadata.json
 
 echo "Build static UI files with node..."
 buildah run \
     --workingdir=/usr/src/ui \
     --env="NODE_OPTIONS=--openssl-legacy-provider" \
-    nodebuilder-kickstart \
+    nodebuilder-kopia \
     sh -c "yarn install && yarn build"
 
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot
 buildah add "${container}" ui/dist /ui
-# Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
+# The client port is a setting of the module, so no port is taken from the node allocator
 buildah config --entrypoint=/ \
-    --label="org.nethserver.authorizations=traefik@node:routeadm" \
-    --label="org.nethserver.tcp-ports-demand=1" \
+    --label="org.nethserver.authorizations=traefik@node:routeadm node:fwadm" \
+    --label="org.nethserver.tcp-ports-demand=0" \
     --label="org.nethserver.rootfull=0" \
-    --label="org.nethserver.images=docker.io/jmalloc/echo-server:latest" \
+    --label="org.nethserver.volumes=kopia-repository" \
+    --label="org.nethserver.images=${kopia_image}" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"

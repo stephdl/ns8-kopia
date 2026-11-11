@@ -22,6 +22,27 @@
         <span>{{ $t("status.title") }}</span>
       </cv-side-nav-link>
       <cv-side-nav-link
+        @click="goToAppPage(instanceName, 'clients')"
+        :class="{ 'current-page': isLinkActive('clients') }"
+      >
+        <template v-slot:nav-icon><Devices20 /></template>
+        <span>{{ $t("clients.title") }}</span>
+      </cv-side-nav-link>
+      <cv-side-nav-link
+        @click="goToAppPage(instanceName, 'policies')"
+        :class="{ 'current-page': isLinkActive('policies') }"
+      >
+        <template v-slot:nav-icon><Rule20 /></template>
+        <span>{{ $t("policies.title") }}</span>
+      </cv-side-nav-link>
+      <cv-side-nav-link
+        @click="goToAppPage(instanceName, 'alerts')"
+        :class="{ 'current-page': isLinkActive('alerts') }"
+      >
+        <template v-slot:nav-icon><Notification20 /></template>
+        <span>{{ $t("alerts.title") }}</span>
+      </cv-side-nav-link>
+      <cv-side-nav-link
         @click="goToAppPage(instanceName, 'settings')"
         :class="{ 'current-page': isLinkActive('settings') }"
       >
@@ -43,6 +64,9 @@
 import Settings20 from "@carbon/icons-vue/es/settings/20";
 import Information20 from "@carbon/icons-vue/es/information/20";
 import Activity20 from "@carbon/icons-vue/es/activity/20";
+import Devices20 from "@carbon/icons-vue/es/devices/20";
+import Rule20 from "@carbon/icons-vue/es/rule/20";
+import Notification20 from "@carbon/icons-vue/es/notification/20";
 import { mapState } from "vuex";
 import { QueryParamService, UtilService } from "@nethserver/ns8-ui-lib";
 
@@ -52,6 +76,9 @@ export default {
     Settings20,
     Information20,
     Activity20,
+    Devices20,
+    Rule20,
+    Notification20,
   },
   mixins: [QueryParamService, UtilService],
   data() {

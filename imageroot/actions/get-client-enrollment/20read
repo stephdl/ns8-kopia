@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# The password is shown only by add-client and reset-client-password: this returns the
+# connection facts without it.
+
+import json
+import sys
+import agent
+import kopia_enroll
+import kopia_module as km
+
+name = json.load(sys.stdin)["name"]
+client = next((c for c in km.load_clients() if c["name"] == name), None)
+agent.assert_exp(client is not None, "client not found")
+json.dump(kopia_enroll.enrollment(client, None), fp=sys.stdout)

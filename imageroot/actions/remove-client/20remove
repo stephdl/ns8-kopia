@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import agent
+import kopia_module as km
+
+name = json.load(sys.stdin)["name"]
+with km.clients_lock():
+    clients = km.load_clients()
+    agent.assert_exp(any(c["name"] == name for c in clients), "client not found")
+
+    users = {u["username"] for u in km.kopia_json(["server", "user", "list"]) or []}
+    if name in users:
+        km.kopia(["server", "user", "delete", name])
+    km.save_clients([c for c in clients if c["name"] != name])
+    hashes = km.load_client_hashes()
+    hashes.pop(name, None)
+    km.save_client_hashes(hashes)
+km.server_refresh()

@@ -1,12 +1,15 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2023 Nethesis S.r.l.
+# Copyright (C) 2026 Nethesis S.r.l.
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# If the control reaches this step, the service can be enabled and started
+set -e
+exec 1>&2
 
-touch smarthost.env
+systemctl --user daemon-reload
+systemctl --user enable kopia.service kopia-check.timer kopia-verify.timer
+systemctl --user start kopia-check.timer kopia-verify.timer
 
-systemctl --user enable --now kickstart.service
+runagent kopia-restart-server

@@ -69,9 +69,7 @@
                   v-if="loading.version"
                   class="version-skeleton"
                 ></cv-skeleton-text>
-                <span v-else>
-                  {{ version }}
-                </span>
+                <span v-else> {{ version }} ({{ app.upstream_name }}) </span>
               </span>
             </div>
             <div class="key-value-setting">

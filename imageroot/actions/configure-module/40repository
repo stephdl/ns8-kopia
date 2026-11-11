@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Create the repository once. An existing repository is only connected, never created again or wiped.
+# The fixed identity server@kopia owns the maintenance, so a host change does not stop it.
+
+set -e
+exec 1>&2
+
+for vol in kopia-repository kopia-config kopia-cache kopia-logs; do
+    podman volume exists "${vol}" || podman volume create "${vol}" >/dev/null
+done
+
+if systemctl --user -q is-active kopia-server.service; then
+    exit 0
+fi
+
+podman run --rm -i --env-file ./secrets/kopia.env \
+    --volume kopia-repository:/repo:z --volume kopia-config:/app/config:z \
+    --volume kopia-cache:/app/cache:z --volume kopia-logs:/app/logs:z \
+    --entrypoint /bin/sh "${KOPIA_IMAGE}" -s <<'SCRIPT'
+set -e
+identity="--override-username=server --override-hostname=kopia"
+if [ -f /app/config/repository.config ] && kopia repository status >/dev/null 2>&1; then
+    echo "Repository already connected"
+elif [ -f /repo/data/kopia.repository.f ]; then
+    echo "Connecting the existing repository"
+    kopia repository connect filesystem --path=/repo/data $identity
+else
+    echo "Creating the repository"
+    mkdir -p /repo/data
+    kopia repository create filesystem --path=/repo/data $identity
+fi
+# Space kept free on purpose: deleting this file lets Kopia finish its work when the disk is full
+reserve=/repo/RESERVED-SPACE-delete-if-disk-full
+free_kb=$(df -Pk /repo | awk 'NR==2 {print $4}')
+if [ ! -f "$reserve" ] && [ "$free_kb" -gt 3145728 ]; then
+    fallocate -l 1G "$reserve" || dd if=/dev/zero of="$reserve" bs=1M count=1024 status=none
+fi
+SCRIPT

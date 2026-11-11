@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Restart the Kopia server only when something it reads at start changed, since a restart cuts
+# the running backups. With --force it always restarts. Either way it records what it started with.
+
+set -e
+exec 1>&2
+
+fingerprint=$( (grep -E '^(TRAEFIK_HOST|CLIENT_PORT|KOPIA_IMAGE)=' environment; cat secrets/kopia.env certs/client.pem) | sha256sum | cut -d' ' -f1)
+if [[ "$1" == "--force" || "$(cat .server-config 2>/dev/null)" != "${fingerprint}" ]] || ! systemctl --user -q is-active kopia-server.service; then
+    systemctl --user restart kopia.service kopia-server.service
+fi
+echo "${fingerprint}" > .server-config
