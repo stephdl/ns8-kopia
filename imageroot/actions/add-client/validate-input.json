@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "add-client input",
+    "$id": "http://schema.nethserver.org/kopia/add-client-input.json",
+    "description": "Create the Kopia account of a machine. Its identity is username@hostname.",
+    "examples": [{"username": "accounting", "hostname": "pc-accounting-01", "owner_email": "anna@example.org"}],
+    "type": "object",
+    "required": ["username", "hostname"],
+    "properties": {
+        "username": {"type": "string", "minLength": 1, "maxLength": 64, "description": "Lowercase letters, digits, dot, dash and underscore."},
+        "hostname": {"type": "string", "minLength": 1, "maxLength": 64, "description": "Lowercase letters, digits, dot, dash and underscore."},
+        "owner_email": {"type": "string", "anyOf": [{"const": ""}, {"format": "email"}], "description": "Owner of the machine, who gets the first stale backup mail."}
+    }
+}

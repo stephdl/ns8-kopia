@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import os
+import sys
+import agent
+import kopia_module as km
+
+agent.set_weight(os.path.basename(__file__), 0)
+
+data = json.load(sys.stdin)
+port = data.get("client_port")
+if port is None or str(port) == os.environ.get("CLIENT_PORT"):
+    sys.exit(0)
+
+
+def fail(error):
+    agent.set_status("validation-failed")
+    json.dump([{"field": "client_port", "parameter": "client_port", "value": port, "error": error}], fp=sys.stdout)
+    sys.exit(3)
+
+
+if km.ALLOCATOR_RANGE[0] <= port <= km.ALLOCATOR_RANGE[1]:
+    fail("port_in_allocator_range")
+rdb = agent.redis_connect()
+if km.port_used_by_other_module(rdb, port, os.environ["MODULE_ID"], os.environ["NODE_ID"]):
+    fail("port_used_by_module")
+if km.port_listening(port):
+    fail("port_in_use")

@@ -1,0 +1,16 @@
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+[Unit]
+Description=Verify part of the repository content
+Requisite=kopia-server.service
+After=kopia-server.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=%E/state/environment
+WorkingDirectory=%E/state
+SyslogIdentifier=%N
+ExecStart=runagent kopia-verify

@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import subprocess
+import sys
+import agent
+import kopia_module as km
+
+password = json.load(sys.stdin)["repository_password"]
+km.kopia([], stdin=password + "\n", script='read -r n; KOPIA_NEW_PASSWORD="$n" kopia repository change-password')
+
+# The repository already uses the new password: keep it before anything else can fail
+secrets = km.read_env()
+secrets["KOPIA_PASSWORD"] = password
+km.write_env(secrets)
+print(agent.SD_NOTICE + "repository password changed", file=sys.stderr)
+
+subprocess.run(["systemctl", "--user", "restart", "kopia-server.service"], check=True)
+agent.assert_exp(km.wait_server(), "Kopia server did not restart")

@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import kopia_module as km
+
+try:
+    clients = km.clients_status()
+except (RuntimeError, OSError, ValueError) as ex:
+    # Without the server the list still comes from the module state, with an unknown state
+    print(f"cannot read snapshots: {ex}", file=sys.stderr)
+    clients = [dict(c, last_backup=None, age_hours=None, state="unknown") for c in km.load_clients()]
+json.dump({"clients": clients}, fp=sys.stdout)

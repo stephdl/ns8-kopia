@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+from datetime import datetime, timezone
+import kopia_module as km
+
+health = {"server": "up" if km.server_status() == 401 else "down"}
+
+disk = km.disk_usage()
+health["disk"] = disk
+
+expiry = datetime.strptime(km.cert_expiry(), "%b %d %H:%M:%S %Y %Z").replace(tzinfo=timezone.utc)
+health["certificate"] = {"expires": expiry.isoformat(), "days_left": (expiry - datetime.now(timezone.utc)).days,
+                         "fingerprint": km.cert_fingerprint()}
+
+try:
+    with open("verify.json") as f:
+        health["verify"] = json.load(f)
+except (FileNotFoundError, ValueError):
+    health["verify"] = None
+
+json.dump(health, fp=sys.stdout)

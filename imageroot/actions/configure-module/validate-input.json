@@ -1,8 +1,54 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "configure-module input",
+    "title": "Configure kopia",
     "$id": "http://schema.nethserver.org/kopia/configure-module-input.json",
-    "description": "Configure kopia",
-    "examples": [],
-    "type": "object"
+    "description": "Configure the Kopia repository server",
+    "examples": [
+        {
+            "host": "kopia.example.org",
+            "lets_encrypt": true,
+            "client_port": 51515,
+            "admin_password": "Admin-pass-2026",
+            "repository_password": "Write-it-down-2026",
+            "snapshot_interval": 4,
+            "keep_latest": 10,
+            "keep_hourly": 48,
+            "keep_daily": 14,
+            "keep_weekly": 8,
+            "keep_monthly": 12,
+            "keep_annual": 2,
+            "compression": "zstd",
+            "excludes": ["node_modules", "*.tmp"],
+            "owner_alert_hours": 48,
+            "admin_alert_hours": 96,
+            "admin_recipients": ["it@example.org"],
+            "alert_sender": "",
+            "alert_language": "en",
+            "disk_alert_percent": 85
+        }
+    ],
+    "type": "object",
+    "required": ["host"],
+    "properties": {
+        "host": {"type": "string", "format": "hostname", "pattern": "\\.", "description": "Public host name of the server. Machines use it with the client port."},
+        "lets_encrypt": {"type": "boolean", "description": "Request a Let's Encrypt certificate for the admin web UI. The client port keeps the module certificate."},
+        "client_port": {"type": "integer", "minimum": 1024, "maximum": 65535, "description": "Public TCP port of the Kopia server, for the machines."},
+        "admin_password": {"type": "string", "minLength": 12, "maxLength": 64, "description": "Password of the admin user of the web UI. Omit to keep the current one."},
+        "repository_password": {"type": "string", "minLength": 12, "maxLength": 64, "description": "Password that encrypts the repository. Accepted only before the repository exists."},
+        "snapshot_interval": {"type": "integer", "enum": [0, 1, 2, 4, 6, 8, 12, 24], "description": "Hours between two snapshots of a machine. 0 means manual snapshots only."},
+        "keep_latest": {"type": "integer", "minimum": 0, "maximum": 1000},
+        "keep_hourly": {"type": "integer", "minimum": 0, "maximum": 1000},
+        "keep_daily": {"type": "integer", "minimum": 0, "maximum": 1000},
+        "keep_weekly": {"type": "integer", "minimum": 0, "maximum": 1000},
+        "keep_monthly": {"type": "integer", "minimum": 0, "maximum": 1000},
+        "keep_annual": {"type": "integer", "minimum": 0, "maximum": 100},
+        "compression": {"type": "string", "enum": ["none", "zstd", "zstd-fastest", "zstd-better-compression", "s2-default", "pgzip"]},
+        "excludes": {"type": "array", "maxItems": 200, "items": {"type": "string", "minLength": 1, "maxLength": 255, "pattern": "^[^\\n\\r]+$"}, "uniqueItems": true, "description": "Patterns ignored by every machine, gitignore syntax."},
+        "owner_alert_hours": {"type": "integer", "minimum": 1, "maximum": 8760, "description": "Hours without a backup before the owner of the machine gets a mail."},
+        "admin_alert_hours": {"type": "integer", "minimum": 1, "maximum": 8760, "description": "Hours without a backup before the admins get a mail."},
+        "admin_recipients": {"type": "array", "items": {"type": "string", "format": "email"}, "uniqueItems": true},
+        "alert_sender": {"type": "string", "anyOf": [{"const": ""}, {"format": "email"}], "description": "Sender of the alert mails. Empty means noreply@ followed by the host name."},
+        "alert_language": {"type": "string", "enum": ["en", "fr", "it", "de", "es", "pt", "pt_BR", "eu"]},
+        "disk_alert_percent": {"type": "integer", "minimum": 50, "maximum": 99, "description": "Repository disk use that sends a mail to the admins."}
+    }
 }

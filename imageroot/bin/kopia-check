@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Hourly check of stale backups and repository disk space. alerts.json keeps what was already
+# sent, so one mail goes out when a threshold is crossed and one when things are back to normal.
+
+import json
+import os
+import sys
+from datetime import datetime, timezone
+import agent
+import kopia_mail
+import kopia_module as km
+
+ALERTS = "alerts.json"
+LEVELS = {"ok": 0, "owner": 1, "admin": 2}
+
+try:
+    with open(ALERTS) as f:
+        alerts = json.load(f)
+except (FileNotFoundError, ValueError):
+    alerts = {}
+machines = alerts.setdefault("machines", {})
+
+settings = km.read_settings()
+lang = settings["alert_language"]
+host = os.environ.get("TRAEFIK_HOST", "")
+admins = settings["admin_recipients"]
+rdb = agent.redis_connect(use_replica=True)
+now = datetime.now(timezone.utc)
+
+
+def send(recipients, kind, **values):
+    """Return True when the mail left, or when nobody has to get it."""
+    recipients = [r for r in recipients if r]
+    if not recipients:
+        return True
+    subject, body = kopia_mail.render(kind, lang, host=host, **values)
+    try:
+        km.send_mail(rdb, recipients, subject, body)
+        print(f"mail {kind} sent to {', '.join(recipients)}", file=sys.stderr)
+        return True
+    except Exception as ex:
+        print(agent.SD_WARNING + f"mail {kind} not sent: {ex}", file=sys.stderr)
+        return False
+
+
+def check_machines():
+    try:
+        statuses = km.clients_status(settings)
+    except (RuntimeError, OSError, ValueError) as ex:
+        # Without snapshot data nothing is known: keep the previous alert state
+        print(agent.SD_ERR + f"cannot read snapshots: {ex}", file=sys.stderr)
+        return False
+    for client in statuses:
+        name = client["name"]
+        if client["last_backup"]:
+            age = client["age_hours"]
+            last = client["last_backup"][:16].replace("T", " ") + " UTC"
+        else:
+            # A machine that never backed up is late from the day its account was created
+            age = (now - datetime.fromisoformat(client["created"])).total_seconds() / 3600
+            last = kopia_mail.word("never", lang)
+        level = "admin" if age >= settings["admin_alert_hours"] else "owner" if age >= settings["owner_alert_hours"] else "ok"
+        previous = machines.get(name, "ok")
+        if level == previous:
+            continue
+        values = {"machine": name, "hours": int(age), "last": last, "owner": client.get("owner_email") or "-"}
+        sent = True
+        if LEVELS[level] > LEVELS[previous]:
+            if LEVELS[previous] < 1 <= LEVELS[level]:
+                sent = send([client.get("owner_email")], "owner_late", **values) and sent
+            if level == "admin":
+                sent = send(admins, "admin_late", **values) and sent
+        elif level == "ok":
+            notified = [client.get("owner_email")] + (admins if previous == "admin" else [])
+            sent = send(notified, "back_ok", **values)
+        else:
+            # From admin back to owner level: a backup happened but the machine is still late, no mail
+            pass
+        if sent:
+            machines[name] = level
+    # Forget removed machines
+    for name in set(machines) - {c["name"] for c in statuses}:
+        machines.pop(name)
+    return True
+
+
+def check_disk():
+    disk = km.disk_usage()
+    if not disk:
+        return
+    previous = alerts.get("disk", "ok")
+    threshold = settings["disk_alert_percent"]
+    values = {"percent": disk["percent"], "free": round(disk["free"] / 1e9, 1)}
+    # Two points of margin so a disk around the threshold does not send a mail every hour
+    if previous == "ok" and disk["percent"] >= threshold:
+        if send(admins, "disk_high", **values):
+            alerts["disk"] = "high"
+    elif previous == "high" and disk["percent"] < threshold - 2:
+        if send(admins, "disk_ok", **values):
+            alerts["disk"] = "ok"
+
+
+ok = check_machines()
+check_disk()
+tmp = ALERTS + ".tmp"
+with open(tmp, "w") as f:
+    json.dump(alerts, f, indent=2)
+os.replace(tmp, ALERTS)
+sys.exit(0 if ok else 1)

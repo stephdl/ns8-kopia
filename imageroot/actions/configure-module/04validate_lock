@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Host and client port are in the URL of every enrolled machine: changing one disconnects them all.
+
+import json
+import os
+import sys
+import agent
+import kopia_module as km
+
+agent.set_weight(os.path.basename(__file__), 0)
+
+data = json.load(sys.stdin)
+host_changed = bool(os.environ.get("TRAEFIK_HOST")) and data["host"] != os.environ["TRAEFIK_HOST"]
+port_changed = bool(os.environ.get("CLIENT_PORT")) and "client_port" in data and str(data["client_port"]) != os.environ["CLIENT_PORT"]
+if not (host_changed or port_changed):
+    sys.exit(0)
+
+try:
+    count = len(km.load_clients())
+except (OSError, ValueError):
+    count = None
+
+errors = []
+if host_changed:
+    errors.append({"field": "host", "parameter": "host", "value": data["host"],
+                   "error": "cannot_check_agents" if count is None else "host_locked_by_agents"})
+if port_changed:
+    errors.append({"field": "client_port", "parameter": "client_port", "value": data["client_port"],
+                   "error": "cannot_check_agents" if count is None else "port_locked_by_agents"})
+if count is None or count > 0:
+    agent.set_status("validation-failed")
+    json.dump(errors, fp=sys.stdout)
+    sys.exit(5)

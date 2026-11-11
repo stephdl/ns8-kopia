@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Push the module settings into Kopia: ACLs, global policy and machine accounts.
+# Idempotent. It never deletes a machine account: only remove-client does that.
+
+import sys
+import agent
+import kopia_module as km
+
+# Each machine sees and manages only its own snapshots, reads its policies and cannot change
+# its own account: the module state stays the only source of passwords.
+ACLS = [
+    ("type=content", "APPEND"),
+    ("type=policy,policyType=global", "READ"),
+    ("type=policy,policyType=host,hostname=OWN_HOST", "READ"),
+    ("type=policy,username=OWN_USER,hostname=OWN_HOST", "READ"),
+    ("type=snapshot,username=OWN_USER,hostname=OWN_HOST", "FULL"),
+]
+
+
+def target_dict(target):
+    return dict(item.split("=", 1) for item in target.split(","))
+
+
+def apply_acls():
+    current = sorted((e["user"], sorted(e["target"].items()), e["access"]) for e in km.kopia_json(["server", "acl", "list"]) or [])
+    wanted = sorted(("*@*", sorted(target_dict(t).items()), a) for t, a in ACLS)
+    if current == wanted:
+        return False
+    print("Setting the module ACLs", file=sys.stderr)
+    if current:
+        km.kopia(["server", "acl", "delete", "--all", "--delete"])
+    for target, access in ACLS:
+        km.kopia(["server", "acl", "add", "--user=*@*", f"--target={target}", f"--access={access}"])
+    return True
+
+
+def apply_users():
+    users = {u["username"]: u for u in km.kopia_json(["server", "user", "list"]) or []}
+    secrets = km.load_client_secrets()
+    changed = False
+    for client in km.load_clients():
+        name = client["name"]
+        password = secrets.get(name)
+        if not password:
+            print(agent.SD_WARNING + f"no password stored for {name}, account skipped", file=sys.stderr)
+            continue
+        if name in users and km.check_password(password, users[name]):
+            continue
+        verb = "set" if name in users else "add"
+        print(f"Machine account {name}: {verb}", file=sys.stderr)
+        km.kopia(["server", "user", verb, name, f"--user-password-hash={km.hash_password(password)}"])
+        changed = True
+    return changed
+
+
+if not km.wait_server():
+    print(agent.SD_ERR + "Kopia server did not answer", file=sys.stderr)
+    sys.exit(1)
+
+changed = apply_acls()
+km.kopia(km.global_policy_args())
+changed = apply_users() or changed
+if changed:
+    km.server_refresh()

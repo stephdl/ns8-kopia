@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import sys
+import kopia_module as km
+
+print("repository password read by an administrator", file=sys.stderr)
+json.dump({"repository_password": km.read_env().get("KOPIA_PASSWORD", "")}, fp=sys.stdout)

@@ -1,12 +1,20 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2023 Nethesis S.r.l.
+# Copyright (C) 2026 Nethesis S.r.l.
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# If the control reaches this step, the service can be enabled and started
+set -e
+exec 1>&2
 
-touch smarthost.env
+systemctl --user daemon-reload
+systemctl --user enable kopia.service kopia-check.timer kopia-verify.timer
+systemctl --user start kopia-check.timer kopia-verify.timer
 
-systemctl --user enable --now kopia.service
+# Restart only when something the server reads at start changed: a restart cuts the running backups
+fingerprint=$( (grep -E '^(TRAEFIK_HOST|CLIENT_PORT|KOPIA_IMAGE)=' environment; cat secrets/kopia.env certs/client.pem) | sha256sum | cut -d' ' -f1)
+if [[ "$(cat .server-config 2>/dev/null)" != "${fingerprint}" ]] || ! systemctl --user -q is-active kopia-server.service; then
+    systemctl --user restart kopia.service kopia-server.service
+    echo "${fingerprint}" > .server-config
+fi
