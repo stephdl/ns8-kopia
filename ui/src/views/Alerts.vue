@@ -126,7 +126,6 @@
                 placeholder="it@example.org"
                 :invalid-message="$t(error.recipient)"
                 :disabled="stillLoading || !smarthostEnabled"
-                class="test-mail-field"
                 ref="recipient"
               />
               <NsButton
@@ -493,20 +492,33 @@ export default {
   }
 }
 
+// Same two columns as the fields above
 .test-mail-row {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: $spacing-05;
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 1rem;
+  row-gap: $spacing-03;
+  align-items: start;
+  max-width: 38rem;
   margin-bottom: $spacing-05;
 }
 
-.test-mail-field {
-  flex: 0 1 20rem;
+@media (min-width: 672px) {
+  .test-mail-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-// Level with the field, not with its label
+// Down by the height of the field label, so the button sits on the input line
 .test-mail-button {
-  margin-top: $spacing-06;
+  width: 100%;
+  max-width: none;
+  margin-top: 1.625rem;
+}
+
+@media (max-width: 671px) {
+  .test-mail-button {
+    margin-top: 0;
+  }
 }
 </style>
