@@ -103,11 +103,11 @@
         "name_format": "Utilisez des lettres minuscules, chiffres, point, tiret et tiret bas. Commencez et finissez par une lettre ou un chiffre.",
         "client_exists": "Cette machine existe déjà",
         "adding_machine": "Ajout de la machine",
-        "show_enrollment": "Afficher le script d'enrôlement",
+        "show_enrollment": "Détails de connexion",
         "reset_password": "Réinitialiser le mot de passe",
         "remove": "Supprimer",
         "enrollment_title": "Enrôlement de {name}",
-        "enrollment_intro": "Lancez ce script sur la machine pour la connecter au serveur. Relancez le même script pour réinstaller la machine. Elle retrouve ses anciens instantanés.",
+        "enrollment_intro": "Lancez ce script sur la machine pour la connecter au serveur. Pour réinstaller une machine, réinitialisez son mot de passe et lancez le nouveau script. Elle retrouve ses anciens instantanés.",
         "enrollment_user_title": "Lancez-le dans la session de l'utilisateur",
         "enrollment_user_description": "Lancez le script avec l'utilisateur qui possède les fichiers. Ne le lancez pas en administrateur ni en SYSTEM.",
         "enrollment_secret_title": "Le script contient un mot de passe",
@@ -125,7 +125,11 @@
         "remove_title": "Supprimer {name}",
         "remove_warning": "Le compte de cette machine est supprimé. La machine ne peut plus sauvegarder.",
         "remove_snapshots": "Ses instantanés restent dans le dépôt. Un administrateur peut les parcourir dans l'interface web Kopia.",
-        "removing_machine": "Suppression de {name}"
+        "removing_machine": "Suppression de {name}",
+        "enrollment_once_title": "Copiez le script maintenant",
+        "enrollment_once_description": "Il contient le mot de passe de la machine. Il ne sera plus affiché. Pour obtenir un nouveau script, réinitialisez le mot de passe.",
+        "enrollment_hidden_title": "Le mot de passe n'est affiché qu'une fois",
+        "enrollment_hidden_description": "Le script d'enrôlement a été affiché à l'ajout de la machine ou à la réinitialisation de son mot de passe. Pour installer ou réinstaller la machine, réinitialisez son mot de passe : vous obtenez un nouveau script."
     },
     "settings": {
         "title": "Paramètres",

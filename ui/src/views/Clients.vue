@@ -241,14 +241,32 @@
           :showCloseButton="false"
         />
         <template v-if="enrollment">
+          <NsInlineNotification
+            v-if="enrollment.password"
+            kind="warning"
+            :title="$t('clients.enrollment_once_title')"
+            :description="$t('clients.enrollment_once_description')"
+            :showCloseButton="false"
+          />
+          <NsInlineNotification
+            v-else
+            kind="info"
+            :title="$t('clients.enrollment_hidden_title')"
+            :description="$t('clients.enrollment_hidden_description')"
+            :actionLabel="$t('clients.reset_password')"
+            @action="resetFromEnrollment"
+            :showCloseButton="false"
+          />
           <p class="mg-bottom">{{ $t("clients.enrollment_intro") }}</p>
           <NsInlineNotification
+            v-if="enrollment.password"
             kind="warning"
             :title="$t('clients.enrollment_user_title')"
             :description="$t('clients.enrollment_user_description')"
             :showCloseButton="false"
           />
           <NsInlineNotification
+            v-if="enrollment.password"
             kind="warning"
             :title="$t('clients.enrollment_secret_title')"
             :description="$t('clients.enrollment_secret_description')"
@@ -264,7 +282,11 @@
               <code class="break-word">{{ enrollment.fingerprint }}</code>
             </div>
           </div>
-          <NsTabs :container="false" :aria-label="$t('clients.script_tabs')">
+          <NsTabs
+            v-if="enrollment.password"
+            :container="false"
+            :aria-label="$t('clients.script_tabs')"
+          >
             <cv-tab
               id="tab-windows"
               :label="$t('clients.tab_windows')"
@@ -560,7 +582,7 @@ export default {
           this.loading.addClient = false;
           this.isShownAddModal = false;
           this.listClients();
-          this.showEnrollment({ name: output.name });
+          this.showEnrollment({ name: output.name }, output);
         },
         validationFailed: (validationErrors) => {
           this.loading.addClient = false;
@@ -573,10 +595,17 @@ export default {
         failed: fail,
       });
     },
-    showEnrollment(client) {
+    showEnrollment(client, output = null) {
       this.enrollment = null;
       this.enrollmentName = client.name;
       this.error.getEnrollment = "";
+      if (output) {
+        // add-client and reset-client-password are the only actions that return the password
+        this.enrollment = output;
+        this.loading.getEnrollment = false;
+        this.isShownEnrollmentModal = true;
+        return;
+      }
       this.loading.getEnrollment = true;
       this.isShownEnrollmentModal = true;
       const fail = (message) => {
@@ -598,6 +627,13 @@ export default {
       // The scripts hold the machine password: do not keep them in memory
       this.isShownEnrollmentModal = false;
       this.enrollment = null;
+    },
+    resetFromEnrollment() {
+      const name = this.enrollmentName;
+      this.hideEnrollmentModal();
+      this.showResetModal(
+        this.clients.find((c) => c.name === name) || { name }
+      );
     },
     showResetModal(client) {
       this.clientToReset = client;
@@ -621,10 +657,10 @@ export default {
         data: { name: client.name },
         title: this.$t("clients.resetting_password", { name: client.name }),
         isNotificationHidden: false,
-        completed: () => {
+        completed: (output) => {
           this.loading.resetClient = false;
           this.hideResetModal();
-          this.showEnrollment(client);
+          this.showEnrollment(client, output);
         },
         aborted: fail,
         failed: fail,

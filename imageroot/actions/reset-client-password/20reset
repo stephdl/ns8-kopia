@@ -8,15 +8,14 @@
 import json
 import sys
 import agent
+import kopia_enroll
 import kopia_module as km
 
 name = json.load(sys.stdin)["name"]
-agent.assert_exp(any(c["name"] == name for c in km.load_clients()), "client not found")
+client = next((c for c in km.load_clients() if c["name"] == name), None)
+agent.assert_exp(client is not None, "client not found")
 
-password = km.generate_password()
-users = {u["username"] for u in km.kopia_json(["server", "user", "list"]) or []}
-km.kopia(["server", "user", "set" if name in users else "add", name, f"--user-password-hash={km.hash_password(password)}"])
-secrets = km.load_client_secrets()
-secrets[name] = password
-km.save_client_secrets(secrets)
+password = km.set_client_password(name)
 km.server_refresh()
+# The only time the new password leaves the module
+json.dump(kopia_enroll.enrollment(client, password), fp=sys.stdout)

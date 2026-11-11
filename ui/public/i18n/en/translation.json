@@ -103,11 +103,11 @@
         "name_format": "Use lowercase letters, digits, dot, dash and underscore. Start and end with a letter or a digit.",
         "client_exists": "This machine already exists",
         "adding_machine": "Adding the machine",
-        "show_enrollment": "Show enrollment script",
+        "show_enrollment": "Connection details",
         "reset_password": "Reset password",
         "remove": "Remove",
         "enrollment_title": "Enrollment of {name}",
-        "enrollment_intro": "Run this script on the machine to connect it to the server. Run the same script again to reinstall the machine. It gets its old snapshots back.",
+        "enrollment_intro": "Run this script on the machine to connect it to the server. To reinstall a machine, reset its password and run the new script. It gets its old snapshots back.",
         "enrollment_user_title": "Run it in the user session",
         "enrollment_user_description": "Run the script as the user who owns the files. Do not run it as administrator or as SYSTEM.",
         "enrollment_secret_title": "The script contains a password",
@@ -125,7 +125,11 @@
         "remove_title": "Remove {name}",
         "remove_warning": "The account of this machine is removed. The machine cannot back up any more.",
         "remove_snapshots": "Its snapshots stay in the repository. An administrator can browse them in the Kopia web UI.",
-        "removing_machine": "Removing {name}"
+        "removing_machine": "Removing {name}",
+        "enrollment_once_title": "Copy the script now",
+        "enrollment_once_description": "It holds the password of the machine. It will not be shown again. To get a new script, reset the password.",
+        "enrollment_hidden_title": "The password is shown only once",
+        "enrollment_hidden_description": "The enrollment script was shown when the machine was added or its password reset. To install or reinstall the machine, reset its password: you get a new script."
     },
     "settings": {
         "title": "Settings",

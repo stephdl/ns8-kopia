@@ -5,92 +5,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# Rebuild the enrollment scripts from the module state. The same script reinstalls a machine:
-# same identity, same password, so it finds its old snapshots.
+# The password is shown only by add-client and reset-client-password: this returns the
+# connection facts without it.
 
 import json
-import os
 import sys
 import agent
+import kopia_enroll
 import kopia_module as km
 
 name = json.load(sys.stdin)["name"]
 client = next((c for c in km.load_clients() if c["name"] == name), None)
 agent.assert_exp(client is not None, "client not found")
-password = km.load_client_secrets().get(name)
-agent.assert_exp(bool(password), "no password stored for this client")
-
-host = os.environ["TRAEFIK_HOST"]
-port = os.environ["CLIENT_PORT"]
-url = f"https://{host}:{port}"
-fingerprint = km.cert_fingerprint()
-interval = km.read_settings()["snapshot_interval"] or 24
-user, machine = client["username"], client["hostname"]
-
-powershell = f"""# Kopia enrollment of {name}
-# Run it in the session of the user who owns the files, not as administrator.
-$ErrorActionPreference = "Stop"
-$kopia = "$env:LOCALAPPDATA\\Programs\\KopiaUI\\resources\\server\\kopia.exe"
-if (-not (Test-Path $kopia)) {{
-    winget install -e --id Kopia.KopiaUI --silent --accept-package-agreements --accept-source-agreements
-}}
-$env:KOPIA_PASSWORD = "{password}"
-& $kopia repository connect server `
-    --url "{url}" `
-    --server-cert-fingerprint "{fingerprint}" `
-    --override-username "{user}" `
-    --override-hostname "{machine}"
-Remove-Item Env:KOPIA_PASSWORD
-foreach ($folder in @("Documents", "Desktop", "Pictures")) {{
-    $path = Join-Path $env:USERPROFILE $folder
-    if (Test-Path $path) {{ & $kopia snapshot create $path }}
-}}
-# KopiaUI runs the scheduled snapshots while it stays in the tray
-Start-Process "$env:LOCALAPPDATA\\Programs\\KopiaUI\\KopiaUI.exe"
-"""
-
-shell = f"""#!/bin/sh
-# Kopia enrollment of {name}
-# Run it as the user who owns the files. Install kopia first: https://kopia.io/docs/installation/
-set -e
-command -v kopia >/dev/null || {{ echo "kopia is not installed" >&2; exit 1; }}
-KOPIA_PASSWORD='{password}' kopia repository connect server \\
-    --url='{url}' \\
-    --server-cert-fingerprint='{fingerprint}' \\
-    --override-username='{user}' \\
-    --override-hostname='{machine}'
-kopia snapshot create "$HOME"
-if [ "$(uname)" = "Darwin" ]; then
-    echo "Start KopiaUI and keep it running: it takes the scheduled snapshots."
-elif command -v systemctl >/dev/null && systemctl --user show-environment >/dev/null 2>&1; then
-    # Without KopiaUI, a user timer takes the snapshots
-    mkdir -p "$HOME/.config/systemd/user"
-    cat > "$HOME/.config/systemd/user/kopia-snapshot.service" <<UNIT
-[Unit]
-Description=Kopia snapshot of the home directory
-
-[Service]
-Type=oneshot
-# The home directory is named on purpose: --all finds nothing in a new repository after a server restore
-ExecStart=$(command -v kopia) snapshot create $HOME
-UNIT
-    cat > "$HOME/.config/systemd/user/kopia-snapshot.timer" <<UNIT
-[Unit]
-Description=Kopia snapshot every {interval} hours
-
-[Timer]
-OnCalendar=0/{interval}:00
-RandomizedDelaySec=15min
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-UNIT
-    systemctl --user daemon-reload
-    systemctl --user enable --now kopia-snapshot.timer
-    echo "Snapshots scheduled every {interval} hours by kopia-snapshot.timer"
-fi
-"""
-
-json.dump({"name": name, "url": url, "fingerprint": fingerprint, "username": user, "hostname": machine,
-           "password": password, "powershell": powershell, "shell": shell}, fp=sys.stdout)
+json.dump(kopia_enroll.enrollment(client, None), fp=sys.stdout)

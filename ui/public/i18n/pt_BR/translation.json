@@ -103,11 +103,11 @@
         "name_format": "Use letras minúsculas, dígitos, ponto, hífen e sublinhado. Comece e termine com uma letra ou um dígito.",
         "client_exists": "Esta máquina já existe",
         "adding_machine": "Adicionando a máquina",
-        "show_enrollment": "Mostrar o script de registro",
+        "show_enrollment": "Dados de conexão",
         "reset_password": "Redefinir a senha",
         "remove": "Remover",
         "enrollment_title": "Registro de {name}",
-        "enrollment_intro": "Execute este script na máquina para conectá-la ao servidor. Execute o mesmo script de novo para reinstalar a máquina. Ela recupera seus snapshots antigos.",
+        "enrollment_intro": "Execute este script na máquina para conectá-la ao servidor. Para reinstalar uma máquina, redefina a senha e execute o novo script. Ela recupera os backups anteriores.",
         "enrollment_user_title": "Execute na sessão do usuário",
         "enrollment_user_description": "Execute o script com o usuário dono dos arquivos. Não execute como administrador nem como SYSTEM.",
         "enrollment_secret_title": "O script contém uma senha",
@@ -125,7 +125,11 @@
         "remove_title": "Remover {name}",
         "remove_warning": "A conta desta máquina é removida. A máquina deixa de poder fazer backup.",
         "remove_snapshots": "Os snapshots dela ficam no repositório. Um administrador pode navegar neles na interface web do Kopia.",
-        "removing_machine": "Removendo {name}"
+        "removing_machine": "Removendo {name}",
+        "enrollment_once_title": "Copie o script agora",
+        "enrollment_once_description": "Ele contém a senha da máquina. Não será mostrado de novo. Para obter um novo script, redefina a senha.",
+        "enrollment_hidden_title": "A senha é mostrada só uma vez",
+        "enrollment_hidden_description": "O script de registro foi mostrado ao adicionar a máquina ou ao redefinir a senha. Para instalar ou reinstalar a máquina, redefina a senha: você recebe um novo script."
     },
     "settings": {
         "title": "Configurações",

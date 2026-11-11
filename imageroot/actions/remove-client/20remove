@@ -18,7 +18,7 @@ users = {u["username"] for u in km.kopia_json(["server", "user", "list"]) or []}
 if name in users:
     km.kopia(["server", "user", "delete", name])
 km.save_clients([c for c in clients if c["name"] != name])
-secrets = km.load_client_secrets()
-secrets.pop(name, None)
-km.save_client_secrets(secrets)
+hashes = km.load_client_hashes()
+hashes.pop(name, None)
+km.save_client_hashes(hashes)
 km.server_refresh()

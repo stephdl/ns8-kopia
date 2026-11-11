@@ -103,11 +103,11 @@
         "name_format": "Usa lettere minuscole, cifre, punto, trattino e trattino basso. Inizia e finisci con una lettera o una cifra.",
         "client_exists": "Questa macchina esiste già",
         "adding_machine": "Aggiunta della macchina",
-        "show_enrollment": "Mostra lo script di registrazione",
+        "show_enrollment": "Dettagli di connessione",
         "reset_password": "Reimposta la password",
         "remove": "Rimuovi",
         "enrollment_title": "Registrazione di {name}",
-        "enrollment_intro": "Esegui questo script sulla macchina per collegarla al server. Esegui lo stesso script di nuovo per reinstallare la macchina. Ritrova i suoi vecchi snapshot.",
+        "enrollment_intro": "Esegui questo script sulla macchina per collegarla al server. Per reinstallare una macchina, reimposta la sua password ed esegui il nuovo script. Ritrova i suoi vecchi snapshot.",
         "enrollment_user_title": "Eseguilo nella sessione dell'utente",
         "enrollment_user_description": "Esegui lo script con l'utente che possiede i file. Non eseguirlo come amministratore o come SYSTEM.",
         "enrollment_secret_title": "Lo script contiene una password",
@@ -125,7 +125,11 @@
         "remove_title": "Rimuovi {name}",
         "remove_warning": "L'account di questa macchina viene rimosso. La macchina non può più fare backup.",
         "remove_snapshots": "I suoi snapshot restano nel repository. Un amministratore può sfogliarli nell'interfaccia web di Kopia.",
-        "removing_machine": "Rimozione di {name}"
+        "removing_machine": "Rimozione di {name}",
+        "enrollment_once_title": "Copia lo script ora",
+        "enrollment_once_description": "Contiene la password della macchina. Non verrà più mostrato. Per avere un nuovo script, reimposta la password.",
+        "enrollment_hidden_title": "La password viene mostrata una sola volta",
+        "enrollment_hidden_description": "Lo script di registrazione è stato mostrato quando la macchina è stata aggiunta o la sua password reimpostata. Per installare o reinstallare la macchina, reimposta la sua password: otterrai un nuovo script."
     },
     "settings": {
         "title": "Impostazioni",

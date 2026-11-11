@@ -103,11 +103,11 @@
         "name_format": "Verwenden Sie Kleinbuchstaben, Ziffern, Punkt, Bindestrich und Unterstrich. Beginnen und enden Sie mit einem Buchstaben oder einer Ziffer.",
         "client_exists": "Dieser Rechner existiert bereits",
         "adding_machine": "Rechner wird hinzugefügt",
-        "show_enrollment": "Registrierungsskript anzeigen",
+        "show_enrollment": "Verbindungsdaten",
         "reset_password": "Passwort zurücksetzen",
         "remove": "Entfernen",
         "enrollment_title": "Registrierung von {name}",
-        "enrollment_intro": "Führen Sie dieses Skript auf dem Rechner aus, um ihn mit dem Server zu verbinden. Führen Sie dasselbe Skript erneut aus, um den Rechner neu zu installieren. Er bekommt seine alten Snapshots zurück.",
+        "enrollment_intro": "Führen Sie dieses Skript auf dem Rechner aus, um ihn mit dem Server zu verbinden. Um einen Rechner neu zu installieren, setzen Sie sein Passwort zurück und führen Sie das neue Skript aus. Er erhält seine alten Snapshots zurück.",
         "enrollment_user_title": "In der Sitzung des Benutzers ausführen",
         "enrollment_user_description": "Führen Sie das Skript als der Benutzer aus, dem die Dateien gehören. Führen Sie es nicht als Administrator oder als SYSTEM aus.",
         "enrollment_secret_title": "Das Skript enthält ein Passwort",
@@ -125,7 +125,11 @@
         "remove_title": "{name} entfernen",
         "remove_warning": "Das Konto dieses Rechners wird entfernt. Der Rechner kann nicht mehr sichern.",
         "remove_snapshots": "Seine Snapshots bleiben im Repository. Ein Administrator kann sie in der Kopia-Weboberfläche durchsuchen.",
-        "removing_machine": "{name} wird entfernt"
+        "removing_machine": "{name} wird entfernt",
+        "enrollment_once_title": "Kopieren Sie das Skript jetzt",
+        "enrollment_once_description": "Es enthält das Passwort des Rechners. Es wird nicht noch einmal angezeigt. Für ein neues Skript setzen Sie das Passwort zurück.",
+        "enrollment_hidden_title": "Das Passwort wird nur einmal angezeigt",
+        "enrollment_hidden_description": "Das Registrierungsskript wurde beim Hinzufügen des Rechners oder beim Zurücksetzen seines Passworts angezeigt. Um den Rechner zu installieren oder neu zu installieren, setzen Sie sein Passwort zurück: Sie erhalten ein neues Skript."
     },
     "settings": {
         "title": "Einstellungen",

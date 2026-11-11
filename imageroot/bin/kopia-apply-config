@@ -42,19 +42,20 @@ def apply_acls():
 
 def apply_users():
     users = {u["username"]: u for u in km.kopia_json(["server", "user", "list"]) or []}
-    secrets = km.load_client_secrets()
+    hashes = km.load_client_hashes()
     changed = False
     for client in km.load_clients():
         name = client["name"]
-        password = secrets.get(name)
-        if not password:
-            print(agent.SD_WARNING + f"no password stored for {name}, account skipped", file=sys.stderr)
+        encoded = hashes.get(name)
+        if not encoded:
+            print(agent.SD_WARNING + f"no password stored for {name}, account skipped: reset its password", file=sys.stderr)
             continue
-        if name in users and km.check_password(password, users[name]):
+        if name in users and km.hash_matches(encoded, users[name]):
             continue
         verb = "set" if name in users else "add"
         print(f"Machine account {name}: {verb}", file=sys.stderr)
-        km.kopia(["server", "user", verb, name, f"--user-password-hash={km.hash_password(password)}"])
+        # Same hash as before: the machine keeps working with the password in its keyring
+        km.kopia(["server", "user", verb, name, f"--user-password-hash={encoded}"])
         changed = True
     return changed
 

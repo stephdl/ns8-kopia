@@ -9,6 +9,7 @@ import json
 import sys
 from datetime import datetime, timezone
 import agent
+import kopia_enroll
 import kopia_module as km
 
 data = json.load(sys.stdin)
@@ -30,16 +31,13 @@ clients = km.load_clients()
 if any(c["name"] == name for c in clients):
     fail("hostname", "client_exists")
 
-password = km.generate_password()
-secrets = km.load_client_secrets()
-secrets[name] = password
-km.save_client_secrets(secrets)
 clients.append({"name": name, "username": username, "hostname": hostname,
                 "owner_email": data.get("owner_email", ""),
                 "created": datetime.now(timezone.utc).isoformat(timespec="seconds")})
 km.save_clients(clients)
 
-users = {u["username"] for u in km.kopia_json(["server", "user", "list"]) or []}
-km.kopia(["server", "user", "set" if name in users else "add", name, f"--user-password-hash={km.hash_password(password)}"])
+client = clients[-1]
+password = km.set_client_password(name)
 km.server_refresh()
-json.dump({"name": name}, fp=sys.stdout)
+# The only time the password leaves the module
+json.dump(kopia_enroll.enrollment(client, password), fp=sys.stdout)

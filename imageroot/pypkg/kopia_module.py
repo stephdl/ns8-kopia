@@ -22,7 +22,10 @@ import urllib.request
 
 SECRETS_DIR = "secrets"
 KOPIA_ENV = "secrets/kopia.env"
-CLIENT_SECRETS = "secrets/clients.json"
+# Only scrypt hashes: the password of a machine is shown once, when it is created or reset
+CLIENT_HASHES = "secrets/client-hashes.json"
+# Clear passwords kept by the first versions, converted on first read
+OLD_CLIENT_SECRETS = "secrets/clients.json"
 CLIENTS = "clients.json"
 CERT = "certs/client.pem"
 CERT_KEY = "certs/client-key.pem"
@@ -112,16 +115,37 @@ def save_clients(clients):
     os.replace(tmp, CLIENTS)
 
 
-def load_client_secrets():
+def load_client_hashes():
     try:
-        with open(CLIENT_SECRETS) as f:
-            return json.load(f)
+        with open(CLIENT_HASHES) as f:
+            hashes = json.load(f)
     except FileNotFoundError:
-        return {}
+        hashes = {}
+    if os.path.exists(OLD_CLIENT_SECRETS):
+        with open(OLD_CLIENT_SECRETS) as f:
+            for name, password in json.load(f).items():
+                hashes.setdefault(name, hash_password(password))
+        save_client_hashes(hashes)
+        os.remove(OLD_CLIENT_SECRETS)
+    return hashes
 
 
-def save_client_secrets(values):
-    _write_private(CLIENT_SECRETS, json.dumps(values, indent=2))
+def save_client_hashes(values):
+    _write_private(CLIENT_HASHES, json.dumps(values, indent=2))
+
+
+def set_client_password(name, users=None):
+    """Give the account a new random password, store only its hash and return the password."""
+    password = generate_password()
+    encoded = hash_password(password)
+    if users is None:
+        users = {u["username"] for u in kopia_json(["server", "user", "list"]) or []}
+    # Account first: a failure leaves the stored hash matching the account
+    kopia(["server", "user", "set" if name in users else "add", name, f"--user-password-hash={encoded}"])
+    hashes = load_client_hashes()
+    hashes[name] = encoded
+    save_client_hashes(hashes)
+    return password
 
 
 def client_name(username, hostname):
@@ -143,17 +167,16 @@ def hash_password(password):
     return base64.b64encode(json.dumps(doc, separators=(",", ":")).encode()).decode()
 
 
-def check_password(password, profile):
-    """True when the password matches a profile of `kopia server user list --json`."""
-    if profile.get("passwordHashVersion", SCRYPT_HASH_VERSION) != SCRYPT_HASH_VERSION:
-        return False
+def hash_matches(encoded, profile):
+    """True when an encoded hash of hash_password() is the one of a `server user list --json` profile."""
     try:
-        payload = base64.b64decode(profile.get("passwordHash", ""))
+        doc = json.loads(base64.b64decode(encoded))
     except ValueError:
         return False
-    if len(payload) != SALT_LEN + HASH_LEN:
-        return False
-    return hmac.compare_digest(payload[SALT_LEN:], _scrypt(password, payload[:SALT_LEN]))
+    return (doc.get("passwordHashVersion") == profile.get("passwordHashVersion", SCRYPT_HASH_VERSION)
+            and doc.get("passwordHash") == profile.get("passwordHash"))
+
+
 
 
 # --- certificate -------------------------------------------------------------------

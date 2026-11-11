@@ -103,11 +103,11 @@
         "name_format": "Erabili letra xeheak, zifrak, puntua, gidoia eta azpimarra. Hasi eta amaitu letra edo zifra batekin.",
         "client_exists": "Makina hau badago jada",
         "adding_machine": "Makina gehitzen",
-        "show_enrollment": "Erakutsi izen-emateko scripta",
+        "show_enrollment": "Konexio-xehetasunak",
         "reset_password": "Berrezarri pasahitza",
         "remove": "Kendu",
         "enrollment_title": "{name} makinaren izen-ematea",
-        "enrollment_intro": "Exekutatu script hau makinan zerbitzariarekin konektatzeko. Exekutatu script bera berriro makina berrinstalatzeko. Bere snapshot zaharrak berreskuratzen ditu.",
+        "enrollment_intro": "Exekutatu script hau makinan zerbitzarira konektatzeko. Makina bat berrinstalatzeko, berrezarri pasahitza eta exekutatu script berria. Bere snapshot zaharrak berreskuratzen ditu.",
         "enrollment_user_title": "Exekutatu erabiltzailearen saioan",
         "enrollment_user_description": "Exekutatu scripta fitxategien jabea den erabiltzailearekin. Ez exekutatu administratzaile gisa edo SYSTEM gisa.",
         "enrollment_secret_title": "Scriptak pasahitz bat dauka",
@@ -125,7 +125,11 @@
         "remove_title": "Kendu {name}",
         "remove_warning": "Makina honen kontua kentzen da. Makinak ezin du babeskopiarik egin.",
         "remove_snapshots": "Bere snapshotak biltegian geratzen dira. Administratzaile batek Kopiaren web interfazean arakatu ditzake.",
-        "removing_machine": "{name} kentzen"
+        "removing_machine": "{name} kentzen",
+        "enrollment_once_title": "Kopiatu scripta orain",
+        "enrollment_once_description": "Makinaren pasahitza dauka. Ez da berriro erakutsiko. Script berri bat lortzeko, berrezarri pasahitza.",
+        "enrollment_hidden_title": "Pasahitza behin bakarrik erakusten da",
+        "enrollment_hidden_description": "Erregistro-scripta makina gehitzean edo pasahitza berrezartzean erakutsi zen. Makina instalatu edo berrinstalatzeko, berrezarri pasahitza: script berri bat jasoko duzu."
     },
     "settings": {
         "title": "Ezarpenak",

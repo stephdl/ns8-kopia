@@ -103,11 +103,11 @@
         "name_format": "Use letras minúsculas, dígitos, ponto, hífen e sublinhado. Comece e termine com uma letra ou um dígito.",
         "client_exists": "Esta máquina já existe",
         "adding_machine": "A adicionar a máquina",
-        "show_enrollment": "Mostrar o script de registo",
+        "show_enrollment": "Dados de ligação",
         "reset_password": "Repor a palavra-passe",
         "remove": "Remover",
         "enrollment_title": "Registo de {name}",
-        "enrollment_intro": "Execute este script na máquina para a ligar ao servidor. Execute o mesmo script outra vez para reinstalar a máquina. Ela recupera os seus instantâneos antigos.",
+        "enrollment_intro": "Execute este script na máquina para a ligar ao servidor. Para reinstalar uma máquina, reponha a palavra-passe e execute o novo script. Ela recupera as cópias anteriores.",
         "enrollment_user_title": "Execute-o na sessão do utilizador",
         "enrollment_user_description": "Execute o script com o utilizador dono dos ficheiros. Não o execute como administrador nem como SYSTEM.",
         "enrollment_secret_title": "O script contém uma palavra-passe",
@@ -125,7 +125,11 @@
         "remove_title": "Remover {name}",
         "remove_warning": "A conta desta máquina é removida. A máquina deixa de poder fazer cópias.",
         "remove_snapshots": "Os seus instantâneos ficam no repositório. Um administrador pode explorá-los na interface web do Kopia.",
-        "removing_machine": "A remover {name}"
+        "removing_machine": "A remover {name}",
+        "enrollment_once_title": "Copie o script agora",
+        "enrollment_once_description": "Contém a palavra-passe da máquina. Não voltará a ser mostrado. Para obter um novo script, reponha a palavra-passe.",
+        "enrollment_hidden_title": "A palavra-passe só é mostrada uma vez",
+        "enrollment_hidden_description": "O script de registo foi mostrado ao adicionar a máquina ou ao repor a palavra-passe. Para instalar ou reinstalar a máquina, reponha a palavra-passe: obtém um novo script."
     },
     "settings": {
         "title": "Definições",

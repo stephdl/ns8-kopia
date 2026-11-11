@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Earlier versions kept the clear password of each machine: keep only its hash from now on
+import kopia_module as km
+
+km.load_client_hashes()

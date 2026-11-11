@@ -103,11 +103,11 @@
         "name_format": "Use letras minúsculas, dígitos, punto, guion y guion bajo. Empiece y termine con una letra o un dígito.",
         "client_exists": "Este equipo ya existe",
         "adding_machine": "Añadiendo el equipo",
-        "show_enrollment": "Mostrar el script de registro",
+        "show_enrollment": "Datos de conexión",
         "reset_password": "Restablecer la contraseña",
         "remove": "Quitar",
         "enrollment_title": "Registro de {name}",
-        "enrollment_intro": "Ejecute este script en el equipo para conectarlo al servidor. Ejecute el mismo script otra vez para reinstalar el equipo. Recupera sus instantáneas anteriores.",
+        "enrollment_intro": "Ejecute este script en el equipo para conectarlo al servidor. Para reinstalar un equipo, restablezca su contraseña y ejecute el nuevo script. Recupera sus instantáneas anteriores.",
         "enrollment_user_title": "Ejecútelo en la sesión del usuario",
         "enrollment_user_description": "Ejecute el script con el usuario que posee los archivos. No lo ejecute como administrador ni como SYSTEM.",
         "enrollment_secret_title": "El script contiene una contraseña",
@@ -125,7 +125,11 @@
         "remove_title": "Quitar {name}",
         "remove_warning": "Se quita la cuenta de este equipo. El equipo ya no puede hacer copias.",
         "remove_snapshots": "Sus instantáneas siguen en el repositorio. Un administrador puede explorarlas en la interfaz web de Kopia.",
-        "removing_machine": "Quitando {name}"
+        "removing_machine": "Quitando {name}",
+        "enrollment_once_title": "Copie el script ahora",
+        "enrollment_once_description": "Contiene la contraseña del equipo. No se volverá a mostrar. Para obtener un nuevo script, restablezca la contraseña.",
+        "enrollment_hidden_title": "La contraseña se muestra una sola vez",
+        "enrollment_hidden_description": "El script de registro se mostró al añadir el equipo o al restablecer su contraseña. Para instalar o reinstalar el equipo, restablezca su contraseña: obtendrá un nuevo script."
     },
     "settings": {
         "title": "Ajustes",
