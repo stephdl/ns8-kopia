@@ -370,6 +370,13 @@ def _decode(raw, default, kind):
 SETTINGS_DEFAULTS = {env: _encode(default, kind) for env, default, kind in SETTINGS.values()}
 
 
+def configure_request():
+    """Read the configure-module request. A page that saves only its own fields keeps the saved host."""
+    data = json.load(sys.stdin)
+    data.setdefault("host", os.environ.get("TRAEFIK_HOST", ""))
+    return data
+
+
 def read_settings(env=None):
     env = os.environ if env is None else env
     return {field: _decode(env.get(var), default, kind) for field, (var, default, kind) in SETTINGS.items()}

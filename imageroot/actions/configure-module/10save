@@ -5,15 +5,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-import json
 import os
-import sys
 import agent
 import kopia_module as km
 
-data = json.load(sys.stdin)
-# A page that saves only its own fields keeps the saved host
-data.setdefault("host", os.environ.get("TRAEFIK_HOST", ""))
+data = km.configure_request()
 
 env = {"TRAEFIK_HOST": data["host"]}
 if "lets_encrypt" in data:

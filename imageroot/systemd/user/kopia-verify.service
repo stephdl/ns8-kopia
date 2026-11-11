@@ -4,7 +4,7 @@
 #
 
 [Unit]
-Description=Verify part of the repository content
+Description=Verify the repository content
 Requisite=kopia-server.service
 After=kopia-server.service
 

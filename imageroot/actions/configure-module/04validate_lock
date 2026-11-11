@@ -15,9 +15,7 @@ import kopia_module as km
 
 agent.set_weight(os.path.basename(__file__), 0)
 
-data = json.load(sys.stdin)
-# A page that saves only its own fields keeps the saved host
-data.setdefault("host", os.environ.get("TRAEFIK_HOST", ""))
+data = km.configure_request()
 host_changed = bool(os.environ.get("TRAEFIK_HOST")) and data["host"] != os.environ["TRAEFIK_HOST"]
 port_changed = bool(os.environ.get("CLIENT_PORT")) and "client_port" in data and str(data["client_port"]) != os.environ["CLIENT_PORT"]
 if not (host_changed or port_changed):
