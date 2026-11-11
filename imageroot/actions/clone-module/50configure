@@ -28,10 +28,11 @@ if owner:
     # list, or it would fight the source for the port. configure-module enables it later.
     units = "default-target.clone-module"
     if os.path.exists(units):
+        # One line of unit names separated by spaces, see the core transfer-state action
         with open(units) as f:
-            kept = [line for line in f if line.strip() not in ("kopia.service", "kopia-server.service")]
+            kept = [u for u in f.read().split() if u not in ("kopia.service", "kopia-server.service")]
         with open(units, "w") as f:
-            f.writelines(kept)
+            f.write(" ".join(kept) + "\n")
     sys.exit(0)
 
 response = agent.tasks.run(agent_id=os.environ["AGENT_ID"], action="configure-module", data=data)
