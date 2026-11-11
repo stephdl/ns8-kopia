@@ -64,7 +64,8 @@ if not km.wait_server():
     sys.exit(1)
 
 changed = apply_acls()
-km.kopia(km.global_policy_args())
+current = km.kopia_json(["policy", "show", "--global"]) or {}
+km.kopia(km.global_policy_args(current_ignore=current.get("files", {}).get("ignore", [])))
 changed = apply_users() or changed
 if changed:
     km.server_refresh()

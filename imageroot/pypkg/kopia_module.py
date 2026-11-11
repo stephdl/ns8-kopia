@@ -324,15 +324,17 @@ def alert_sender(settings=None):
     return settings["alert_sender"] or f"noreply@{os.environ.get('TRAEFIK_HOST') or socket.getfqdn()}"
 
 
-def global_policy_args(settings=None):
+def global_policy_args(settings=None, current_ignore=()):
+    """current_ignore is the ignore list stored now: Kopia drops --add-ignore when --clear-ignore is given."""
     s = settings or read_settings()
     args = ["policy", "set", "--global",
             f"--snapshot-interval={s['snapshot_interval']}h" if s["snapshot_interval"] else "--manual",
             f"--keep-latest={s['keep_latest']}", f"--keep-hourly={s['keep_hourly']}",
             f"--keep-daily={s['keep_daily']}", f"--keep-weekly={s['keep_weekly']}",
             f"--keep-monthly={s['keep_monthly']}", f"--keep-annual={s['keep_annual']}",
-            f"--compression={s['compression']}", "--clear-ignore"]
-    args += [f"--add-ignore={pattern}" for pattern in s["excludes"]]
+            f"--compression={s['compression']}"]
+    args += [f"--remove-ignore={pattern}" for pattern in current_ignore if pattern not in s["excludes"]]
+    args += [f"--add-ignore={pattern}" for pattern in s["excludes"] if pattern not in current_ignore]
     return args
 
 
