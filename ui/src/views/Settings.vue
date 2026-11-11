@@ -24,7 +24,12 @@
         <NsInlineNotification
           kind="warning"
           :title="$t('settings.route_missing_title')"
-          :description="$t('settings.route_missing_description')"
+          :description="
+            $t('settings.route_missing_description', {
+              host: host,
+              port: clientPort,
+            })
+          "
           :showCloseButton="false"
         />
       </cv-column>

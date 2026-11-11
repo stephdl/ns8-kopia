@@ -222,7 +222,7 @@
         "test_mail_sent": "E-mail de teste enviado",
         "test_mail_sent_description": "Um e-mail de teste foi enviado para {recipient}.",
         "route_missing_title": "O host não tem rota",
-        "route_missing_description": "O host salvo não tem rota neste servidor. Isso acontece depois de uma clonagem. Escolha um novo host e salve.",
+        "route_missing_description": "Outra instância deste nó possui este host, como depois de um clone no mesmo nó. A interface web de administração continua acessível em https://{host}:{port}/ e as máquinas continuam funcionando nessa porta.",
         "domain_already_used_in_traefik": "Este nome de host já é usado por outro aplicativo",
         "port_in_allocator_range": "Esta porta está no intervalo 20000-45000 usado pelo nó. Escolha outra porta.",
         "port_used_by_module": "Esta porta já é usada por outro módulo",

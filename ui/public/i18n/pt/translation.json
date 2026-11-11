@@ -222,7 +222,7 @@
         "test_mail_sent": "Email de teste enviado",
         "test_mail_sent_description": "Foi enviado um email de teste para {recipient}.",
         "route_missing_title": "O anfitrião não tem rota",
-        "route_missing_description": "O anfitrião guardado não tem rota neste servidor. Isto acontece após uma clonagem. Escolha um novo anfitrião e guarde.",
+        "route_missing_description": "Outra instância deste nó possui este host, como depois de um clone no mesmo nó. A interface web de administração continua acessível em https://{host}:{port}/ e as máquinas continuam a funcionar nessa porta.",
         "domain_already_used_in_traefik": "Este nome de anfitrião já é usado por outra aplicação",
         "port_in_allocator_range": "Esta porta está no intervalo 20000-45000 usado pelo nó. Escolha outra porta.",
         "port_used_by_module": "Esta porta já é usada por outro módulo",

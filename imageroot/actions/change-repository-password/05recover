@@ -9,6 +9,7 @@
 # secrets file. Keep the password that opens the repository.
 
 import os
+import subprocess
 import sys
 import agent
 import kopia_module as km
@@ -20,8 +21,13 @@ if not os.path.exists(pending):
     sys.exit(0)
 # Decide only when the server answers: a stopped container says nothing about the password
 agent.assert_exp(km.server_status() == 401, "Kopia server is not running")
-if km.kopia(["repository", "status"], check=False).returncode == 0:
+current = km.kopia(["repository", "status"], check=False)
+if current.returncode == 0:
     os.remove(pending)
-else:
-    print(agent.SD_WARNING + "the pending repository password opens the repository, keeping it", file=sys.stderr)
-    os.replace(pending, km.KOPIA_ENV)
+    sys.exit(0)
+# Switch only when the pending password provably opens the repository
+proc = subprocess.run(["podman", "exec", "-i", "--env-file", pending, km.CONTAINER, "kopia", "repository", "status"],
+                      capture_output=True, text=True, timeout=120)
+agent.assert_exp(proc.returncode == 0, "neither the current nor the pending repository password works, nothing changed")
+print(agent.SD_WARNING + "the pending repository password opens the repository, keeping it", file=sys.stderr)
+os.replace(pending, km.KOPIA_ENV)

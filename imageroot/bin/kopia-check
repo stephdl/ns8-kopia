@@ -77,9 +77,13 @@ def check_machines():
         sent = True
         if LEVELS[level] > LEVELS[previous]:
             if LEVELS[previous] < 1 <= LEVELS[level]:
-                sent = send([client.get("owner_email")], "owner_late", **values) and sent
+                if not send([client.get("owner_email")], "owner_late", **values):
+                    continue
+                # The owner got the mail: a failed admin mail must not send it again next hour
+                machines[name] = "owner"
             if level == "admin":
-                sent = send(admins, "admin_late", **values) and sent
+                # Without admins the level stays at owner, so the mail goes out once someone is set
+                sent = bool(admins) and send(admins, "admin_late", **values)
         elif level == "ok":
             notified = [client.get("owner_email")] + (admins if previous == "admin" else [])
             sent = send(notified, "back_ok", **values)
@@ -96,7 +100,8 @@ def check_machines():
 
 def check_disk():
     disk = km.disk_usage()
-    if not disk:
+    # Without recipients nothing is recorded, so the mail goes out once someone is set
+    if not disk or not admins:
         return
     previous = alerts.get("disk", "ok")
     threshold = settings["disk_alert_percent"]

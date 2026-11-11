@@ -222,7 +222,7 @@
         "test_mail_sent": "Mail de test envoyé",
         "test_mail_sent_description": "Un mail de test a été envoyé à {recipient}.",
         "route_missing_title": "L'hôte n'a pas de route",
-        "route_missing_description": "L'hôte enregistré n'a pas de route sur ce serveur. Cela arrive après un clone. Choisissez un nouvel hôte et enregistrez.",
+        "route_missing_description": "Une autre instance de ce node possède ce host, comme après un clone sur le même node. L'interface web admin reste joignable sur https://{host}:{port}/ et les machines continuent de fonctionner sur ce port.",
         "domain_already_used_in_traefik": "Ce nom d'hôte est déjà utilisé par une autre application",
         "port_in_allocator_range": "Ce port est dans la plage 20000-45000 utilisée par le nœud. Choisissez un autre port.",
         "port_used_by_module": "Ce port est déjà utilisé par un autre module",

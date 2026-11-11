@@ -222,7 +222,7 @@
         "test_mail_sent": "Test mail sent",
         "test_mail_sent_description": "A test mail was sent to {recipient}.",
         "route_missing_title": "The host has no route",
-        "route_missing_description": "The saved host has no route on this server. This happens after a clone. Choose a new host and save.",
+        "route_missing_description": "Another instance owns this host on this node, as after a clone on the same node. The admin web UI stays reachable at https://{host}:{port}/ and the machines keep working on that port.",
         "domain_already_used_in_traefik": "This host name is already used by another application",
         "port_in_allocator_range": "This port is in the range 20000-45000 used by the node. Choose another port.",
         "port_used_by_module": "This port is already used by another module",

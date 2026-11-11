@@ -232,9 +232,10 @@ The module backup holds the configuration and the secrets: `state/secrets`, `sta
 - Restore on another node: same certificate, same passwords, a new empty repository. The
   machine accounts come back from their stored hashes. Point the host name to the new node,
   and the machines reconnect with their old config. They start a new snapshot history.
-- Clone and move copy the `kopia-repository` volume too, so the history is kept. A clone
-  keeps the host of its source and has no route until you pick a new host, which the module
-  allows even with machines. A move keeps everything.
+- Clone and move copy the `kopia-repository` volume too, so the history is kept. A clone is an
+  exact copy with the same host. On another node it gets its own route. On the same node the
+  source keeps the route: the clone serves its admin web UI and its machines on its own client
+  port only. A move keeps everything.
 - On a node where the saved client port is taken, a restored or cloned instance moves to the
   next free port. Its machines need a new script then.
 

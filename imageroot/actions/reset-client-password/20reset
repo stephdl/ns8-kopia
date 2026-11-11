@@ -15,7 +15,8 @@ name = json.load(sys.stdin)["name"]
 client = next((c for c in km.load_clients() if c["name"] == name), None)
 agent.assert_exp(client is not None, "client not found")
 
-password = km.set_client_password(name)
+with km.clients_lock():
+    password = km.set_client_password(name)
 km.server_refresh()
 # The core keeps task outputs about 8 hours, readable by cluster admins only. They can read the
 # repository password anyway, which opens every backup.

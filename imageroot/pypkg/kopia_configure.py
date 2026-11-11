@@ -10,7 +10,8 @@ import kopia_module as km
 
 def request_from_env(env):
     data = {
-        "host": env["TRAEFIK_HOST"],
+        # An instance saved before its first configuration has no host yet
+        "host": env.get("TRAEFIK_HOST", ""),
         "lets_encrypt": env.get("TRAEFIK_LETS_ENCRYPT") == "True",
         "client_port": int(env.get("CLIENT_PORT", km.DEFAULT_PORT)),
     }

@@ -222,7 +222,7 @@
         "test_mail_sent": "Mail di prova inviata",
         "test_mail_sent_description": "Una mail di prova è stata inviata a {recipient}.",
         "route_missing_title": "L'host non ha una route",
-        "route_missing_description": "L'host salvato non ha una route su questo server. Succede dopo un clone. Scegli un nuovo host e salva.",
+        "route_missing_description": "Un'altra istanza di questo nodo possiede questo host, come dopo un clone sullo stesso nodo. L'interfaccia web di amministrazione resta raggiungibile su https://{host}:{port}/ e le macchine continuano a funzionare su quella porta.",
         "domain_already_used_in_traefik": "Questo nome host è già usato da un'altra applicazione",
         "port_in_allocator_range": "Questa porta è nell'intervallo 20000-45000 usato dal nodo. Scegli un'altra porta.",
         "port_used_by_module": "Questa porta è già usata da un altro modulo",
