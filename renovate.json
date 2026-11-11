@@ -5,9 +5,21 @@
   ],
   "packageRules": [
     {
+      "description": "Kopia also publishes nightly tags like 20261110.0.231742: follow releases only",
+      "matchPackageNames": [
+        "kopia/kopia"
+      ],
+      "allowedVersions": "/^\\d+\\.\\d+\\.\\d+$/"
+    },
+    {
       "description": "Kopia 0.x minor releases can change the repository format: review them by hand",
-      "matchPackageNames": ["kopia/kopia"],
-      "matchUpdateTypes": ["minor", "major"],
+      "matchPackageNames": [
+        "kopia/kopia"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "major"
+      ],
       "automerge": false
     }
   ]
