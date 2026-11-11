@@ -9,7 +9,7 @@
       "matchPackageNames": [
         "kopia/kopia"
       ],
-      "allowedVersions": "/^\\d+\\.\\d+\\.\\d+$/"
+      "allowedVersions": "/^\\d{1,3}\\.\\d+\\.\\d+$/"
     },
     {
       "description": "Kopia 0.x minor releases can change the repository format: review them by hand",
