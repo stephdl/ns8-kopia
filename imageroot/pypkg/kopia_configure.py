@@ -18,21 +18,3 @@ def request_from_env(env):
     data.update(km.read_settings(env))
     return data
 
-
-def ensure_free_port(data):
-    """Move to the next free port when the saved one is taken on this node.
-
-    It goes to the environment before configure-module runs: the lock refuses a port change
-    while machines exist, and an unchanged port skips the free port check.
-    """
-    import os
-    import sys
-    import agent
-    port = km.free_port(agent.redis_connect(), data["client_port"])
-    if port != data["client_port"]:
-        print(agent.SD_WARNING + f"client port {data['client_port']} is taken on this node, using {port}", file=sys.stderr)
-        agent.set_env("CLIENT_PORT", str(port))
-        agent.dump_env()
-        os.environ["CLIENT_PORT"] = str(port)
-        data["client_port"] = port
-    return data

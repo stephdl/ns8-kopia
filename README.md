@@ -238,8 +238,8 @@ The module backup holds the configuration and the secrets: `state/secrets`, `sta
   the clone stays stopped. Remove the old instance, then save the settings of the clone to
   start it. This is the way to move the repository to a bigger additional disk. The machines
   keep working without any change. A move keeps everything.
-- On a node where the saved client port is taken, a restored instance moves to the next free
-  port. Its machines need a new script then.
+- A restore keeps the client port too. On a node where another instance holds it, the restored
+  instance stays stopped: remove the other instance, then save the settings to start it.
 
 ## Uninstall
 
