@@ -223,8 +223,9 @@ version as the server when you can (0.23.1 today).
 | System | Install | What the module script needs |
 | --- | --- | --- |
 | Windows | KopiaUI ([guide](https://kopia.io/docs/installation/#windows-gui-installation)) or `winget install -e --id Kopia.KopiaUI` | nothing: the script installs KopiaUI with winget when it is missing |
-| Linux | `kopia` from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | the `kopia` command in the PATH |
-| macOS | `brew install kopia/kopia/kopia` for the CLI, and KopiaUI for the tray ([guide](https://kopia.io/docs/installation/#macos-cli-using-homebrew)) | the `kopia` command in the PATH |
+| Linux desktop | KopiaUI from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | KopiaUI, or the `kopia` command in the PATH |
+| Linux server | `kopia` from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | the `kopia` command in the PATH, a systemd user session, and lingering (`loginctl enable-linger <user>` as root if the script cannot enable it) |
+| macOS | KopiaUI ([guide](https://kopia.io/docs/installation/#macos-gui-installer)) | KopiaUI in `/Applications`, or the `kopia` command in the PATH |
 
 KopiaUI and the CLI share the same config file, so KopiaUI shows a machine enrolled by the
 script.
@@ -264,7 +265,9 @@ The script:
 4. sets up the scheduled snapshots: on a desktop, KopiaUI takes them while it runs. It starts
    on Windows, and on Linux and macOS you start it. Checking "Launch at Startup" in KopiaUI is
    up to the admin of the machine, the script does not do it. The Linux server script adds a
-   `kopia-snapshot.timer` systemd user timer at the policy interval (none in manual mode).
+   `kopia-snapshot.timer` systemd user timer at the policy interval (none in manual mode), and
+   enables lingering so it keeps running after logout. The interval is written in the timer:
+   after you change it, reset the password of the server and run the new script.
 
 The machine then shows up as **OK** on the Clients page after its first snapshot.
 

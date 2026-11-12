@@ -300,9 +300,11 @@
             :aria-label="$t('clients.script_tabs')"
           >
             <cv-tab
-              id="tab-windows"
-              :label="$t('clients.tab_windows')"
-              selected
+              v-for="(tab, index) in scriptTabs"
+              :key="tab.id"
+              :id="tab.id"
+              :label="$t(tab.label)"
+              :selected="index === 0"
             >
               <NsCodeSnippet
                 :copyTooltip="$t('clients.copy')"
@@ -311,32 +313,7 @@
                 :expanded="true"
                 :hideExpandButton="true"
                 :wrapText="true"
-                >{{ enrollment.powershell }}</NsCodeSnippet
-              >
-            </cv-tab>
-            <cv-tab id="tab-linux" :label="$t('clients.tab_linux')">
-              <NsCodeSnippet
-                :copyTooltip="$t('clients.copy')"
-                :copyFeedback="$t('clients.copied')"
-                :feedbackAriaLabel="$t('clients.copied')"
-                :expanded="true"
-                :hideExpandButton="true"
-                :wrapText="true"
-                >{{ enrollment.shell }}</NsCodeSnippet
-              >
-            </cv-tab>
-            <cv-tab
-              id="tab-linux-server"
-              :label="$t('clients.tab_linux_server')"
-            >
-              <NsCodeSnippet
-                :copyTooltip="$t('clients.copy')"
-                :copyFeedback="$t('clients.copied')"
-                :feedbackAriaLabel="$t('clients.copied')"
-                :expanded="true"
-                :hideExpandButton="true"
-                :wrapText="true"
-                >{{ enrollment.server }}</NsCodeSnippet
+                >{{ enrollment[tab.script] }}</NsCodeSnippet
               >
             </cv-tab>
           </NsTabs>
@@ -434,6 +411,19 @@ export default {
   },
   data() {
     return {
+      scriptTabs: [
+        {
+          id: "tab-windows",
+          label: "clients.tab_windows",
+          script: "powershell",
+        },
+        { id: "tab-linux", label: "clients.tab_linux", script: "shell" },
+        {
+          id: "tab-linux-server",
+          label: "clients.tab_linux_server",
+          script: "server",
+        },
+      ],
       q: {
         page: "clients",
       },
