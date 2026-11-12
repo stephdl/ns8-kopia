@@ -595,7 +595,6 @@ export default {
       },
       urlCheckInterval: null,
       host: "",
-      // Same threshold as the disk alert mail, read from the settings
       status: {
         instance: "",
         services: [],

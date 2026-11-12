@@ -293,9 +293,6 @@ export default {
     isHours(value, max = 8760) {
       return Number.isInteger(value) && value >= 1 && value <= max;
     },
-    isCount(value, max) {
-      return Number.isInteger(value) && value >= 0 && value <= max;
-    },
     goToSettings() {
       this.goToAppPage(this.instanceName, "settings");
     },
