@@ -34,7 +34,7 @@ foreach ($folder in @("Documents", "Desktop", "Pictures")) {{
 Start-Process "$env:LOCALAPPDATA\\Programs\\KopiaUI\\KopiaUI.exe"
 """
 
-UNIX_SCRIPT = """#!/bin/sh
+UNIX_CONNECT = """#!/bin/sh
 # Kopia enrollment of {name}
 # Run it as the user who owns the files. Install kopia first: https://kopia.io/docs/installation/
 set -e
@@ -45,12 +45,15 @@ KOPIA_PASSWORD='{password}' kopia repository connect server \\
     --override-username='{user}' \\
     --override-hostname='{machine}'
 kopia snapshot create "$HOME"
-if [ "$(uname)" = "Darwin" ]; then
-    echo "Start KopiaUI and keep it running: it takes the scheduled snapshots."
-elif [ "{interval}" = "0" ]; then
+"""
+
+UNIX_SCRIPT = UNIX_CONNECT + """echo "Start KopiaUI and keep it running: it takes the scheduled snapshots."
+"""
+
+# No KopiaUI on a server: a systemd user timer takes the snapshots
+SERVER_SCRIPT = UNIX_CONNECT + """if [ "{interval}" = "0" ]; then
     echo "Manual snapshots only: no timer installed. Run: kopia snapshot create ~"
 elif command -v systemctl >/dev/null && systemctl --user show-environment >/dev/null 2>&1; then
-    # Without KopiaUI, a user timer takes the snapshots
     mkdir -p "$HOME/.config/systemd/user"
     cat > "$HOME/.config/systemd/user/kopia-snapshot.service" <<UNIT
 [Unit]
@@ -76,6 +79,8 @@ UNIT
     systemctl --user daemon-reload
     systemctl --user enable --now kopia-snapshot.timer
     echo "Snapshots scheduled every {interval} hours by kopia-snapshot.timer"
+else
+    echo "No systemd user session: schedule 'kopia snapshot create ~' yourself, with cron for example." >&2
 fi
 """
 
@@ -93,4 +98,5 @@ def enrollment(client, password):
     }
     return {"name": values["name"], "url": values["url"], "fingerprint": values["fingerprint"],
             "username": values["user"], "hostname": values["machine"], "password": password or "",
-            "powershell": WINDOWS_SCRIPT.format(**values), "shell": UNIX_SCRIPT.format(**values)}
+            "powershell": WINDOWS_SCRIPT.format(**values), "shell": UNIX_SCRIPT.format(**values),
+            "server": SERVER_SCRIPT.format(**values)}

@@ -238,10 +238,11 @@ In the module UI, open **Clients**, click **Add a machine**, and fill in:
   `accounting@pc-accounting-01`.
 - **Owner email** (optional): this person gets the first mail when the machine stops backing up.
 
-The page then shows the enrollment script, with a Windows tab (PowerShell) and a Linux and
-macOS tab (shell). **Copy it now**: it holds the password of the machine and is shown only
-once. Later, **Connection details** shows the URL, the certificate fingerprint and the
-identity, without the password.
+The page then shows the enrollment script, with three tabs: Windows (PowerShell), Linux and
+macOS desktop (shell), and Linux server (shell, for a machine without KopiaUI). **Copy it
+now**: it holds the password of the machine and is shown only once. Later, **Connection
+details** shows the URL, the certificate fingerprint and the identity, without the password.
+To get a script again, reset the password.
 
 ### 3. Run the script on the machine
 
@@ -250,7 +251,8 @@ root or SYSTEM: the config and the password would land in another profile, and K
 user session would see nothing.
 
 - Windows: open PowerShell as the user, paste the script and press Enter.
-- Linux and macOS: save it as `enroll.sh` and run `sh enroll.sh`, then delete the file.
+- Linux and macOS desktop, Linux server: save it as `enroll.sh` and run `sh enroll.sh`, then
+  delete the file.
 
 The script:
 
@@ -259,9 +261,10 @@ The script:
    keyring);
 3. takes a first snapshot: Documents, Desktop and Pictures on Windows, the home directory on
    Linux and macOS;
-4. sets up the scheduled snapshots: KopiaUI starts on Windows, a `kopia-snapshot.timer` systemd
-   user timer is added on Linux at the policy interval (none in manual mode), and on macOS you
-   start KopiaUI.
+4. sets up the scheduled snapshots: on a desktop, KopiaUI takes them while it runs. It starts
+   on Windows, and on Linux and macOS you start it. Checking "Launch at Startup" in KopiaUI is
+   up to the admin of the machine, the script does not do it. The Linux server script adds a
+   `kopia-snapshot.timer` systemd user timer at the policy interval (none in manual mode).
 
 The machine then shows up as **OK** on the Clients page after its first snapshot.
 
