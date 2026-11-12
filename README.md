@@ -265,6 +265,23 @@ The script:
 
 The machine then shows up as **OK** on the Clients page after its first snapshot.
 
+### macOS permissions and schedule
+
+macOS blocks apps from reading protected folders in the home directory (Mail, Messages,
+Safari, parts of `~/Library`, and Desktop or Documents when iCloud syncs them) until they get
+**Full Disk Access**. Without it, snapshots skip these folders or end with errors. Every backup
+tool except Time Machine needs this permission.
+
+Before you run the script, open System Settings, Privacy & Security, Full Disk Access, and
+enable:
+
+- **Terminal** (or the terminal app you use), because the first snapshot runs from it;
+- **KopiaUI**, because it takes the scheduled snapshots.
+
+Restart KopiaUI after you change the permission. Then add KopiaUI to System Settings, General,
+Login Items, so it starts at each login. If KopiaUI does not run, no snapshot runs, and the
+stale backup alert tells the owner and the admin.
+
 ### 4. Check and restore
 
 On the machine, `kopia snapshot list` shows its snapshots, and KopiaUI lists them under
