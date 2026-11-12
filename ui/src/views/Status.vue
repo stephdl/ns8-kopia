@@ -571,6 +571,7 @@ import {
 
 const LONG_RUNNING_SERVICES = ["kopia", "kopia-server"];
 const CERTIFICATE_WARNING_DAYS = 30;
+const DISK_WARNING_PERCENT = 85;
 const CLIENT_STATES = ["ok", "late", "late_admin", "never_seen", "unknown"];
 
 export default {
@@ -595,7 +596,6 @@ export default {
       urlCheckInterval: null,
       host: "",
       // Same threshold as the disk alert mail, read from the settings
-      diskAlertPercent: 85,
       status: {
         instance: "",
         services: [],
@@ -688,7 +688,7 @@ export default {
     },
     isDiskAlmostFull() {
       return (
-        !!this.health.disk && this.health.disk.percent >= this.diskAlertPercent
+        !!this.health.disk && this.health.disk.percent >= DISK_WARNING_PERCENT
       );
     },
     isCertificateNear() {
@@ -792,7 +792,6 @@ export default {
         action: "get-configuration",
         completed: (output) => {
           this.host = output.host;
-          this.diskAlertPercent = output.disk_alert_percent;
           this.loading.getConfiguration = false;
           // Before the first configuration there is no server to ask
           if (this.isConfigured) {

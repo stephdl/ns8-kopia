@@ -4,7 +4,7 @@
 #
 
 [Unit]
-Description=Check stale backups and repository disk space on schedule
+Description=Check stale backups on schedule
 
 [Timer]
 OnCalendar=hourly
