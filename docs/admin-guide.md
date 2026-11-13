@@ -28,8 +28,8 @@ finish.
 **Clients** lists the machines with their last backup and their state. From there you add a
 machine, reset its password, see its connection details, manage its folders, or remove it.
 
-**Settings** holds the host, Let's Encrypt for the admin web UI, the client port, the admin
-password and the repository password.
+**Settings** holds the host, Let's Encrypt for the admin web UI, the client port and the admin
+password.
 
 **Policies** holds the global policy of every machine (schedule, retention, compression,
 excludes) and the share of data read by the weekly integrity check.
@@ -42,8 +42,7 @@ the image, a password or the certificate changed, since a restart cuts the runni
 
 ## First configuration
 
-Fill in **Settings**, or from the command line send at least `host`, `admin_password` and
-`repository_password`:
+Fill in **Settings**, or from the command line send at least `host` and `admin_password`:
 
 ```sh
 api-cli run module/kopia1/configure-module --data - <<'EOF'
@@ -52,7 +51,6 @@ api-cli run module/kopia1/configure-module --data - <<'EOF'
   "lets_encrypt": true,
   "client_port": 51515,
   "admin_password": "Admin-pass-2026",
-  "repository_password": "Write-it-down-2026",
   "admin_recipients": ["it@example.org"]
 }
 EOF
@@ -60,11 +58,19 @@ EOF
 
 Later calls send only the fields to change.
 
-The repository is created at the first configuration. Its password is chosen by the admin and
-cannot be recovered: without it every backup is lost. Write it down outside the server. It
-can be shown again from Settings, but it never changes: every module backup holds it, so a
-backup taken before a change could not open the repository. If it leaks, install a new
-instance and enroll the machines again.
+The repository is created at the first configuration. Its password is generated at install and
+kept in the module backup, so a restore brings it back with the repository. Nobody needs to
+type it. The secret to keep outside the server is the password of the cluster backup: without
+it no module backup can be restored.
+
+You need the repository password only to open the repository without NS8, for example from a
+copy of the volume. Read it on the node:
+
+```sh
+runagent -m kopia1 grep KOPIA_PASSWORD secrets/kopia.env
+```
+
+It never changes. If it leaks, install a new instance and enroll the machines again.
 
 Choose the host and the client port before the first machine. Both are in the URL of every
 enrolled machine, so the module refuses to change them while machines exist.
@@ -85,7 +91,7 @@ only connect outbound, so open nothing on them. A laptop on a network that allow
 | `host` | Settings | | a fully qualified name |
 | `lets_encrypt` | Settings | `false` | for the admin web UI only |
 | `client_port` | Settings | 51515, or the next free one | 1024 to 65535, free on the node, outside 20000 to 45000 |
-| `admin_password`, `repository_password` | Settings | | 12 to 64 characters, with an uppercase letter, a lowercase letter, a digit and a symbol among `.,_+:@%^=~-` |
+| `admin_password` | Settings | | 12 to 64 characters, with an uppercase letter, a lowercase letter, a digit and a symbol among `.,_+:@%^=~-` |
 | `snapshot_interval` | Policies | 4 | hours between snapshots: 0, 1, 2, 4, 6, 8, 12 or 24. 0 means manual only |
 | `keep_latest`, `keep_hourly`, `keep_daily`, `keep_weekly`, `keep_monthly`, `keep_annual` | Policies | 10, 48, 14, 8, 12, 2 | 0 to 1000 |
 | `compression` | Policies | `zstd` | Kopia compression names |

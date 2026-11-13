@@ -322,11 +322,6 @@ def volume_path(name="kopia-repository"):
     return out.stdout.strip() if out.returncode == 0 else None
 
 
-def repository_exists():
-    path = volume_path()
-    return bool(path) and os.path.exists(os.path.join(path, "data", "kopia.repository.f"))
-
-
 def disk_usage(name="kopia-repository"):
     path = volume_path(name)
     if not path:
