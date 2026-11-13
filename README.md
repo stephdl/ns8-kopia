@@ -129,7 +129,8 @@ script leaks, reset the password.
 
 The ACLs protect the policies in the repository, not the machine itself. Its user can still
 leave out any folder: Kopia reads a `.kopiaignore` file in each folder it backs up, with
-gitignore rules, and that file never goes through the server. The same user can also stop
+gitignore rules, and that file never goes through the server (see
+[Exclude files and folders](#exclude-files-and-folders)). The same user can also stop
 KopiaUI or disconnect from the repository. The module cannot force a machine to back up, it
 can only notice it: the late backup alerts cover a machine that stops. Back up the folders
 that matter, such as a shared accounting folder, from a server, not from a user machine.
@@ -315,6 +316,43 @@ folder, delete its policy in the Kopia web UI.
 
 The module opens the policy editor by its URL because the Policies form of the Kopia web UI
 rejects `user@host:/path` targets in Kopia 0.23.1 (kopia/kopia#5815).
+
+### Exclude files and folders
+
+An exclude is a rule that tells Kopia to skip some files or folders. During a snapshot Kopia
+walks the folder, and when a name matches a rule it skips it, with everything inside when it is
+a folder. Rules use the gitignore syntax, one rule per line:
+
+- `*.iso` skips every `.iso` file, anywhere;
+- `Downloads/` skips every folder named `Downloads`, at any level;
+- `/Downloads/` skips only the `Downloads` folder at the top of the backed up folder;
+- `**/.local/share/containers` skips this path at any depth.
+
+There are two ways to exclude something.
+
+1. **Every machine**: the **Policies** page in cluster-admin, field **Excluded patterns**. The
+   field already holds the default rules listed in [Configure](#configure): add your lines
+   below them and keep them, since a line you remove is no longer excluded. In particular keep
+   `repository.config.kopia-password`, the file where a Linux client stores its password. For
+   example `**/.local/share/containers` skips the rootless Podman storage, which the user
+   often cannot read and which would end each snapshot with a permission error.
+2. **On the machine**: a `.kopiaignore` file in the backed up folder, or in any folder below
+   it. It applies to its folder and everything inside, on top of the rules of the Policies
+   page. For a machine that backs up `C:\Users\anna\Documents`, the file goes in that folder,
+   not in the home folder above it. This is the only way the user of a machine can exclude
+   something, since the machine cannot change its policies.
+
+The Kopia policy editor of a folder, opened with **Edit in Kopia**, also has an
+**Ignore Files** list under **Files**. Avoid it. As soon as a folder has its own list, Kopia
+uses that list alone and drops every rule of the Policies page for this folder, defaults
+included. If you still use it, copy into it every rule of the Policies page first, then add
+yours. This is how Kopia merges policies, the more specific one wins.
+
+**Ignore Well-Known Cache Directories** is on by default: Kopia skips any folder holding a
+`CACHEDIR.TAG` file.
+
+An exclude only applies to the next snapshots. Files already saved stay in the older snapshots
+until the retention drops them.
 
 ### macOS permissions and schedule
 
