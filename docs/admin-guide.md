@@ -61,7 +61,8 @@ Later calls send only the fields to change.
 The repository is created at the first configuration. Its password is generated at install and
 kept in the module backup, so a restore brings it back with the repository. Nobody needs to
 type it. The secret to keep outside the server is the password of the cluster backup: without
-it no module backup can be restored.
+it no module backup can be restored. The module backup holds the repository and its password
+together, so anyone with the cluster backup password can read the backups of every machine.
 
 You need the repository password only to open the repository without NS8, for example from a
 copy of the volume. Read it on the node:

@@ -51,8 +51,9 @@ api-cli run module/kopia1/configure-module --data - <<'JSON'
 JSON
 ```
 
-The repository password is generated at install and kept in the module backup. Keep the
-password of the cluster backup outside the server.
+The repository password is generated at install and kept in the module backup, next to the
+repository it opens. Anyone with the cluster backup password can read the backups of every
+machine. Keep that password outside the server, and give it only to who may read them.
 
 Choose the host and the client port before the first machine: they cannot change while
 machines exist. Then add machines on the Clients page, see
