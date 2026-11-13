@@ -120,7 +120,7 @@
         "reset_password": "Restablecer la contraseña",
         "remove": "Quitar",
         "enrollment_title": "Registro de {name}",
-        "enrollment_intro": "Ejecute este script en el equipo para conectarlo al servidor. Para reinstalar un equipo, restablezca su contraseña y ejecute el nuevo script. Recupera sus instantáneas anteriores.",
+        "enrollment_intro": "Pegue este script en un terminal del equipo para conectarlo al servidor: PowerShell en Windows, un terminal en Linux y macOS. Para reinstalar un equipo, restablezca su contraseña y ejecute el nuevo script. Recupera sus instantáneas anteriores.",
         "enrollment_details_intro": "Datos de conexión de este equipo. Úselos para comprobar su configuración en KopiaUI.",
         "enrollment_user_title": "Ejecútelo en la sesión del usuario",
         "enrollment_user_description": "Ejecute el script con el usuario que posee los archivos. No lo ejecute como administrador ni como SYSTEM.",
