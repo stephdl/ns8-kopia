@@ -222,6 +222,19 @@ def kopia(args, stdin=None, script=None, check=True, timeout=600):
     return proc
 
 
+# Present while the cluster backup copies the repository, holds the time the pause started
+MAINTENANCE_PAUSED = "maintenance-paused"
+
+
+def set_maintenance(enabled):
+    """Turn the quick and full maintenance of the repository on or off.
+
+    The setting lives in the repository, so a repository restored from a backup comes back paused.
+    """
+    flag = "true" if enabled else "false"
+    kopia(["maintenance", "set", f"--enable-quick={flag}", f"--enable-full={flag}"])
+
+
 def kopia_json(args):
     return json.loads(kopia(args + ["--json"]).stdout or "null")
 

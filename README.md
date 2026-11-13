@@ -68,11 +68,12 @@ flowchart TB
     CHECK -- "stale backup mails" --> SMTP["cluster smarthost"]
     T2["kopia-verify.timer<br/>Sunday 03:00"] --> VERIFY["bin/kopia-verify<br/>content verify,<br/>share set in Policies"]
     VERIFY --> K
-    K --- REPO[("kopia-repository<br/>NOT in the module backup")]
+    K --- REPO[("kopia-repository<br/>in the module backup")]
 ```
 
 The module state is the source of truth. Kopia keeps its users in the repository, but the
-repository is not in the module backup. So `kopia-apply-config` pushes the state into Kopia:
+repository can miss some: an account created while the backup copied the repository, or a
+backup taken before the repository was in it. So `kopia-apply-config` pushes the state into Kopia:
 it creates missing accounts with their stored hash, resets the ACLs if they drifted, and sets
 the global policy. It never deletes an account. Only `remove-client` does that. It runs after
 `configure-module`, `update-module` and a restore.
@@ -355,12 +356,29 @@ old snapshots.
 
 ## Backup, restore, clone and move
 
-The module backup holds the configuration and the secrets: `state/secrets`, `state/certs`,
-`state/clients.json` and `state/alerts.json`. It never holds the repository.
+The module backup holds the configuration, the secrets (`state/secrets`, `state/certs`,
+`state/clients.json`, `state/alerts.json`) and the `kopia-repository` volume, so the
+history of every machine. Pick an off-site destination in the cluster backup, such as S3,
+and run it at least once a day: a restore loses every snapshot taken since the last backup.
+The Kopia packs never change once written, so each backup only sends the new ones. The
+destination needs about the size of the repository.
 
-- Restore on another node: same certificate, same passwords, a new empty repository. The
-  machine accounts come back from their stored hashes. Point the host name to the new node,
-  and the machines reconnect with their old config. They start a new snapshot history.
+The machines keep backing up while the cluster backup runs. Kopia maintenance is paused during
+that time, because it rewrites indexes and deletes packs under restic. It resumes after the
+backup, or within a day when a backup fails, and catches up then.
+
+- Restore on another node: same certificate, same passwords, same repository. The machine
+  accounts come back from their stored hashes. Point the host name to the new node, and the
+  machines reconnect with their old config and keep their history. A machine that was lost
+  too gets enrolled again with the same `user@host`: reset its password in Clients, run the
+  new script, and restore its files from KopiaUI.
+- A backup taken before the repository was in the module backup restores an empty repository.
+  The machines then start a new history.
+- After a restore, the module walks every snapshot (`kopia snapshot verify`). A snapshot that
+  ended while the backup copied the repository can miss data in the restored copy. The check
+  reports it on the Status page and mails the admins.
+- The backup does not protect against an attacker who is root on the node: restic needs to
+  delete in the destination to prune, so the same access can wipe it.
 - Clone and move copy the `kopia-repository` volume too, so the history is kept. A clone is a
   full copy: same host, same client port, same certificate, same machine accounts. On another
   node it starts at once. On the same node the source still holds the port and the route, so

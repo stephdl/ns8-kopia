@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Run by the core before the cluster backup. Maintenance rewrites indexes and deletes packs: while
+# restic copies the repository, that leaves a copy that cannot open and files that vanish mid-read.
+# With maintenance off, machines only add files.
+
+import subprocess
+import sys
+from datetime import datetime, timezone
+import kopia_module as km
+
+if subprocess.run(["systemctl", "--user", "-q", "is-active", "kopia-server.service"]).returncode != 0:
+    # No server, no maintenance and no writes: the volume is already still
+    sys.exit(0)
+with open(km.MAINTENANCE_PAUSED, "w") as f:
+    f.write(datetime.now(timezone.utc).isoformat(timespec="seconds"))
+km.set_maintenance(False)
+print("Kopia maintenance paused for the backup", file=sys.stderr)

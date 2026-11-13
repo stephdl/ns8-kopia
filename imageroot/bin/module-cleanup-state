@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Run by the core after a successful cluster backup. After a failed one the core skips it, and
+# kopia-check turns maintenance back on once the pause is too old.
+
+import os
+import sys
+import kopia_module as km
+
+if os.path.exists(km.MAINTENANCE_PAUSED):
+    km.set_maintenance(True)
+    os.remove(km.MAINTENANCE_PAUSED)
+    print("Kopia maintenance resumed", file=sys.stderr)
