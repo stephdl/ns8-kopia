@@ -150,7 +150,7 @@
         "verify": "Verificar",
         "save": "Guardar",
         "existing_snapshots_title": "Este nome já tem instantâneos",
-        "existing_snapshots_description": "{count} instantâneos de {first} a {last} pertencem a este nome. A nova máquina vai vê-los e restaurá-los. Guarde para os manter, ou escolha outro nome.",
+        "existing_snapshots_description": "1 instantâneo de {first} pertence a este nome. A nova máquina vai vê-lo e poderá restaurá-lo. Guarde para o manter, ou escolha outro nome. | {count} instantâneos de {first} a {last} pertencem a este nome. A nova máquina vai vê-los e poderá restaurá-los. Guarde para os manter, ou escolha outro nome.",
         "delete_snapshots": "Apagar também todos os seus instantâneos",
         "delete_snapshots_warning": "Todos os instantâneos e pastas desta máquina são apagados. Não é possível anular, exceto a partir de uma cópia do módulo. A manutenção liberta o espaço em um ou dois dias.",
         "folders": "Pastas",

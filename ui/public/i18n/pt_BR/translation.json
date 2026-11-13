@@ -150,7 +150,7 @@
         "verify": "Verificar",
         "save": "Salvar",
         "existing_snapshots_title": "Este nome já tem snapshots",
-        "existing_snapshots_description": "{count} snapshots de {first} a {last} pertencem a este nome. A nova máquina vai vê-los e restaurá-los. Salve para mantê-los, ou escolha outro nome.",
+        "existing_snapshots_description": "1 snapshot de {first} pertence a este nome. A nova máquina vai vê-lo e poderá restaurá-lo. Salve para mantê-lo, ou escolha outro nome. | {count} snapshots de {first} a {last} pertencem a este nome. A nova máquina vai vê-los e poderá restaurá-los. Salve para mantê-los, ou escolha outro nome.",
         "delete_snapshots": "Excluir também todos os snapshots dela",
         "delete_snapshots_warning": "Todos os snapshots e pastas desta máquina são excluídos. Não é possível desfazer, exceto a partir de um backup do módulo. A manutenção libera o espaço em um ou dois dias.",
         "folders": "Pastas",

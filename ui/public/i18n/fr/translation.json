@@ -150,7 +150,7 @@
         "verify": "Vérifier",
         "save": "Enregistrer",
         "existing_snapshots_title": "Ce nom a déjà des instantanés",
-        "existing_snapshots_description": "{count} instantanés du {first} au {last} appartiennent à ce nom. La nouvelle machine pourra les voir et les restaurer. Enregistrez pour les garder, ou choisissez un autre nom.",
+        "existing_snapshots_description": "1 instantané du {first} appartient à ce nom. La nouvelle machine pourra le voir et le restaurer. Enregistrez pour le garder, ou choisissez un autre nom. | {count} instantanés du {first} au {last} appartiennent à ce nom. La nouvelle machine pourra les voir et les restaurer. Enregistrez pour les garder, ou choisissez un autre nom.",
         "delete_snapshots": "Supprimer aussi tous ses instantanés",
         "delete_snapshots_warning": "Tous les instantanés et dossiers de cette machine sont supprimés. C'est irréversible, sauf depuis une sauvegarde du module. La maintenance libère l'espace sous un ou deux jours.",
         "folders": "Dossiers",

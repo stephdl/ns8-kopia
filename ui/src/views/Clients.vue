@@ -219,11 +219,15 @@
             kind="warning"
             :title="$t('clients.existing_snapshots_title')"
             :description="
-              $t('clients.existing_snapshots_description', {
-                count: existingSnapshots.count,
-                first: formatDateTime(existingSnapshots.first),
-                last: formatDateTime(existingSnapshots.last),
-              })
+              $tc(
+                'clients.existing_snapshots_description',
+                existingSnapshots.count,
+                {
+                  count: existingSnapshots.count,
+                  first: formatDateTime(existingSnapshots.first),
+                  last: formatDateTime(existingSnapshots.last),
+                }
+              )
             "
             :showCloseButton="false"
           />

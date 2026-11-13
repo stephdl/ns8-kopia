@@ -150,7 +150,7 @@
         "verify": "Comprobar",
         "save": "Guardar",
         "existing_snapshots_title": "Este nombre ya tiene instantáneas",
-        "existing_snapshots_description": "{count} instantáneas del {first} al {last} pertenecen a este nombre. El nuevo equipo las verá y podrá restaurarlas. Guarde para conservarlas o elija otro nombre.",
+        "existing_snapshots_description": "1 instantánea del {first} pertenece a este nombre. El nuevo equipo la verá y podrá restaurarla. Guarde para conservarla o elija otro nombre. | {count} instantáneas del {first} al {last} pertenecen a este nombre. El nuevo equipo las verá y podrá restaurarlas. Guarde para conservarlas o elija otro nombre.",
         "delete_snapshots": "Borrar también todas sus instantáneas",
         "delete_snapshots_warning": "Se borran todas las instantáneas y carpetas de este equipo. No se puede deshacer, salvo desde una copia del módulo. El mantenimiento libera el espacio en uno o dos días.",
         "folders": "Carpetas",

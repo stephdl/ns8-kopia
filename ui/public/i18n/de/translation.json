@@ -150,7 +150,7 @@
         "verify": "Prüfen",
         "save": "Speichern",
         "existing_snapshots_title": "Dieser Name hat bereits Snapshots",
-        "existing_snapshots_description": "{count} Snapshots vom {first} bis {last} gehören zu diesem Namen. Der neue Rechner sieht sie und kann sie wiederherstellen. Speichern Sie, um sie zu behalten, oder wählen Sie einen anderen Namen.",
+        "existing_snapshots_description": "1 Snapshot vom {first} gehört zu diesem Namen. Der neue Rechner sieht ihn und kann ihn wiederherstellen. Speichern Sie, um ihn zu behalten, oder wählen Sie einen anderen Namen. | {count} Snapshots vom {first} bis zum {last} gehören zu diesem Namen. Der neue Rechner sieht sie und kann sie wiederherstellen. Speichern Sie, um sie zu behalten, oder wählen Sie einen anderen Namen.",
         "delete_snapshots": "Auch alle seine Snapshots löschen",
         "delete_snapshots_warning": "Alle Snapshots und Ordner dieses Rechners werden gelöscht. Das lässt sich nicht rückgängig machen, außer aus einer Modulsicherung. Die Wartung gibt den Speicherplatz innerhalb von ein bis zwei Tagen frei.",
         "folders": "Ordner",

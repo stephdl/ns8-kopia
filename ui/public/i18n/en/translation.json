@@ -150,7 +150,7 @@
         "verify": "Verify",
         "save": "Save",
         "existing_snapshots_title": "This name already has snapshots",
-        "existing_snapshots_description": "{count} snapshots from {first} to {last} belong to this name. The new machine will see and restore them. Save to keep them, or pick another name.",
+        "existing_snapshots_description": "1 snapshot from {first} belongs to this name. The new machine will see it and can restore it. Save to keep it, or pick another name. | {count} snapshots from {first} to {last} belong to this name. The new machine will see them and can restore them. Save to keep them, or pick another name.",
         "delete_snapshots": "Also delete all its snapshots",
         "delete_snapshots_warning": "Every snapshot and folder of this machine is deleted. This cannot be undone, except from a module backup. Maintenance frees the space within a day or two.",
         "folders": "Folders",

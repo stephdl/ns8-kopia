@@ -150,7 +150,7 @@
         "verify": "Verifica",
         "save": "Salva",
         "existing_snapshots_title": "Questo nome ha già degli snapshot",
-        "existing_snapshots_description": "{count} snapshot dal {first} al {last} appartengono a questo nome. La nuova macchina li vedrà e potrà ripristinarli. Salva per tenerli, oppure scegli un altro nome.",
+        "existing_snapshots_description": "1 snapshot del {first} appartiene a questo nome. La nuova macchina lo vedrà e potrà ripristinarlo. Salva per tenerlo, oppure scegli un altro nome. | {count} snapshot dal {first} al {last} appartengono a questo nome. La nuova macchina li vedrà e potrà ripristinarli. Salva per tenerli, oppure scegli un altro nome.",
         "delete_snapshots": "Elimina anche tutti i suoi snapshot",
         "delete_snapshots_warning": "Tutti gli snapshot e le cartelle di questa macchina vengono eliminati. Non si può annullare, se non da un backup del modulo. La manutenzione libera lo spazio entro un giorno o due.",
         "folders": "Cartelle",
@@ -160,7 +160,7 @@
         "folder_open": "Modifica in Kopia",
         "add_folder": "Aggiungi una cartella",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
-        "folder_helper": "Percorso assoluto sulla macchina, come /home/anna/Documents o C:\\Users\\anna\\Documents. Salva il criterio in Kopia, poi clicca Aggiorna. La macchina vede la cartella entro 4 ore, o subito con il pulsante di aggiornamento di KopiaUI.",
+        "folder_helper": "Percorso assoluto sulla macchina, come /home/anna/Documents o C:\\Users\\anna\\Documents. Salva il criterio in Kopia, poi clicca su Aggiorna. La macchina vede la cartella entro 4 ore, o subito con il pulsante di aggiornamento di KopiaUI.",
         "folder_add_open": "Apri in Kopia",
         "folder_invalid": "Usa un percorso assoluto: /home/anna/Documents, C:\\Users\\anna\\Documents o \\\\server\\share. I percorsi Windows mantengono le barre rovesciate."
     },
