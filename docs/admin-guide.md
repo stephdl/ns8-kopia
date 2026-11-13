@@ -163,10 +163,15 @@ see nothing.
 
 - Windows: open PowerShell as the user, paste the script and press Enter.
 - Linux and macOS desktop, Linux server: open a terminal as the user, paste the script and
-  press Enter. It also runs from a file with `sh enroll.sh`. Delete the file after use.
+  press Enter. The script runs in `sh` whatever the login shell is. Under fish, type `sh`
+  first, then paste. It also runs from a file with `sh enroll.sh`. Delete the file after use.
 
 A failed step stops the rest of the script but leaves the terminal open, so the error stays
 on screen.
+
+A pasted script stays in the shell history of the user, password included: PowerShell,
+`~/.bash_history` or `~/.zsh_history`. Treat that history like the script. If it may have
+leaked, reset the password of the machine.
 
 The script connects to `https://<host>:<client port>`, pins the module certificate
 fingerprint, and stores the password in the OS keyring (or in the Kopia config folder on

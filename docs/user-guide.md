@@ -15,10 +15,12 @@ see nothing.
 
 - **Windows**: open PowerShell (not as administrator), paste the script and press Enter. The
   script installs KopiaUI when it is missing.
-- **Linux and macOS**: open a terminal, paste the script and press Enter.
+- **Linux and macOS**: open a terminal, paste the script and press Enter. If your shell is
+  fish, type `sh` first, then paste.
 
 The script holds a password. Delete it after use and never send it to anyone. Anyone who has
-it can read your backups.
+it can read your backups. The password also stays in the history of your terminal. If someone
+else may have read it, ask your administrator to reset it.
 
 ## Keep KopiaUI running
 
