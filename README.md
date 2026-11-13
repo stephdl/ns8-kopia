@@ -228,6 +228,20 @@ version as the server when you can (0.23.1 today).
 KopiaUI and the CLI share the same config file, so KopiaUI shows a machine enrolled by the
 script.
 
+KopiaUI lives in the tray, and it only opens its window by itself while no repository is
+connected. After the enrollment it starts hidden: click its tray icon to open it, and pick
+**Launch At Startup** in the icon menu so the scheduled snapshots run after each login.
+On Windows the icon may hide behind the `^` arrow of the notification area. GNOME has no
+tray, so KopiaUI keeps running with no way to open it. Ubuntu ships the AppIndicator extension
+that brings it back. On Fedora, Debian and other GNOME systems, install and enable it:
+
+```sh
+sudo dnf install gnome-shell-extension-appindicator   # Fedora, Rocky
+sudo apt install gnome-shell-extension-appindicator   # Debian
+# log out and back in, GNOME Shell only sees new extensions in a new session
+gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
+```
+
 ### 2. Create the machine account
 
 In the module UI, open **Clients**, click **Add a machine**, and fill in:
