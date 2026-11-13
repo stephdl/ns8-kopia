@@ -233,10 +233,11 @@ connected. After the enrollment it starts hidden: click its tray icon to open it
 **Launch At Startup** in the icon menu so the scheduled snapshots run after each login.
 On Windows the icon may hide behind the `^` arrow of the notification area. GNOME has no
 tray, so KopiaUI keeps running with no way to open it. Ubuntu ships the AppIndicator extension
-that brings it back. On Fedora and other GNOME systems, install and enable it:
+that brings it back. On Fedora, Debian and other GNOME systems, install and enable it:
 
 ```sh
-sudo dnf install gnome-shell-extension-appindicator
+sudo dnf install gnome-shell-extension-appindicator   # Fedora, Rocky
+sudo apt install gnome-shell-extension-appindicator   # Debian
 # log out and back in, GNOME Shell only sees new extensions in a new session
 gnome-extensions enable appindicatorsupport@rgcjonas.gmail.com
 ```
