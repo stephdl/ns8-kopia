@@ -5,13 +5,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# The repository is not in the module backup: configure-module creates a new empty one with the
+# The core restored the repository volume before this step: configure-module connects it with the
 # restored password, and the apply step creates the machine accounts again from their hashes.
 # The client port stays the same so the machines reconnect unchanged. When another instance of
 # this node holds it, nothing starts: remove that instance, then save the settings of this one.
 
 import json
 import os
+import subprocess
 import sys
 import agent
 import kopia_configure
@@ -28,3 +29,5 @@ if owner:
     sys.exit(0)
 response = agent.tasks.run(agent_id=os.environ["AGENT_ID"], action="configure-module", data=data)
 agent.assert_exp(response["exit_code"] == 0, "configure-module failed")
+# Find at once the snapshots that ended while the backup was copying the repository
+subprocess.run(["systemctl", "--user", "start", "--no-block", "kopia-verify.service"], check=False)
