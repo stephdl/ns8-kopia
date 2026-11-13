@@ -316,6 +316,38 @@ folder, delete its policy in the Kopia web UI.
 The module opens the policy editor by its URL because the Policies form of the Kopia web UI
 rejects `user@host:/path` targets in Kopia 0.23.1 (kopia/kopia#5815).
 
+### Exclude files and folders
+
+An exclude is a rule that tells Kopia to skip some files or folders. During a snapshot Kopia
+walks the folder, and when a name matches a rule it skips it, with everything inside when it is
+a folder.
+
+Rules use the gitignore syntax:
+
+- `*.iso` skips every `.iso` file, anywhere;
+- `Downloads/` skips every folder named `Downloads`, at any level;
+- `/Downloads/` skips only the `Downloads` folder at the top of the backed up folder;
+- `**/.local/share/containers` skips this path at any depth.
+
+Rules can be set in three places, and they add up:
+
+1. **Every machine**: the **Policies** page, field **Excluded patterns**, one rule per line.
+   They go into the global policy, on top of the default ones listed in
+   [Configure](#configure). For example `**/.local/share/containers` skips the rootless Podman
+   storage, which the user cannot read anyway and which would end each snapshot with a
+   permission error.
+2. **One folder of one machine**: on the Clients page, **Folders**, then **Edit in Kopia** on
+   the folder. In the Kopia policy editor, open **Files**, add the rules to **Ignore Files**
+   and click **Save Policy**. The same section has **Ignore Files larger than** and
+   **Ignore Well-Known Cache Directories**, which skips folders holding a `CACHEDIR.TAG` file.
+3. **On the machine itself**: a `.kopiaignore` file in the backed up folder or in any folder
+   below it. It applies to its folder and everything inside. For example
+   `echo ".local/share/containers/" >> ~/.kopiaignore`. This is the only way the user of a
+   machine can exclude something, since the machine cannot change its policies.
+
+An exclude only applies to the next snapshots. Files already saved stay in the older snapshots
+until the retention drops them.
+
 ### macOS permissions and schedule
 
 macOS blocks apps from reading protected folders in the home directory (Mail, Messages,
