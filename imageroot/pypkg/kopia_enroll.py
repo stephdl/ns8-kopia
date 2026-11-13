@@ -39,7 +39,6 @@ UNIX_CONNECT = """KOPIA_PASSWORD='{password}' "$kopia" repository connect server
     --server-cert-fingerprint='{fingerprint}' \\
     --override-username='{user}' \\
     --override-hostname='{machine}'
-"$kopia" snapshot create "$HOME"
 """
 
 UNIX_SCRIPT = """#!/bin/sh
@@ -52,7 +51,10 @@ for kopia in "$(command -v kopia)" /opt/KopiaUI/resources/server/kopia \\
     [ -x "$kopia" ] && break
 done
 [ -x "$kopia" ] || {{ echo "kopia is not installed: install KopiaUI" >&2; exit 1; }}
-""" + UNIX_CONNECT + """echo "Start KopiaUI and keep it running: it takes the scheduled snapshots."
+""" + UNIX_CONNECT + """# KopiaUI only schedules folders that already have a snapshot, and a machine cannot set its own policy
+echo "First snapshot of $HOME: it can take long, let it finish once."
+"$kopia" snapshot create "$HOME" || echo "The first snapshot reported errors, see above." >&2
+echo "Start KopiaUI and keep it running: it takes the scheduled snapshots."
 """
 
 SERVER_SCRIPT = """#!/bin/sh
@@ -93,7 +95,9 @@ UNIT
         echo "Run as root: loginctl enable-linger $(id -un). Otherwise snapshots stop at logout." >&2
         exit 1
     fi
+    systemctl --user start --no-block kopia-snapshot.service
     echo "Snapshots scheduled every {interval} hours by kopia-snapshot.timer"
+    echo "First snapshot running in the background: journalctl --user -u kopia-snapshot"
 else
     echo "No systemd user session: log in as this user over SSH and run the script again." >&2
     exit 1
