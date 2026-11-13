@@ -82,7 +82,9 @@
                 :title="$t('status.not_configured')"
               >
                 <template #description>
-                  <div>{{ $t("clients.not_configured_description") }}</div>
+                  <div class="mg-bottom">
+                    {{ $t("clients.not_configured_description") }}
+                  </div>
                   <NsButton
                     kind="ghost"
                     :icon="ArrowRight20"
@@ -93,7 +95,9 @@
               </NsEmptyState>
               <NsEmptyState v-else :title="$t('clients.no_machines')">
                 <template #description>
-                  <div>{{ $t("clients.no_machines_description") }}</div>
+                  <div class="mg-bottom">
+                    {{ $t("clients.no_machines_description") }}
+                  </div>
                   <NsButton
                     kind="primary"
                     :icon="Add20"
