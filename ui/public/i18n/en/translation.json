@@ -160,10 +160,9 @@
         "folder_open": "Edit in Kopia",
         "add_folder": "Add a folder",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
-        "folder_helper": "Absolute path on the machine, such as /home/anna/Documents or C:\\Users\\anna\\Documents. It opens the Kopia web UI: click Save Policy there.",
+        "folder_helper": "Absolute path on the machine, such as /home/anna/Documents or C:\\Users\\anna\\Documents. Save the policy in Kopia, then click Refresh. The machine sees the folder within 4 hours, or at once with the refresh button of KopiaUI.",
         "folder_add_open": "Open in Kopia",
-        "folder_invalid": "Use an absolute path: /home/anna/Documents, C:\\Users\\anna\\Documents or \\\\server\\share. Windows paths keep their backslashes.",
-        "folder_refresh_note": "The machine sees a new folder within 4 hours, or at once with the refresh button of KopiaUI."
+        "folder_invalid": "Use an absolute path: /home/anna/Documents, C:\\Users\\anna\\Documents or \\\\server\\share. Windows paths keep their backslashes."
     },
     "settings": {
         "title": "Settings",

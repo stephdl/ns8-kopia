@@ -160,10 +160,9 @@
         "folder_open": "Modifier dans Kopia",
         "add_folder": "Ajouter un dossier",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
-        "folder_helper": "Chemin absolu sur la machine, comme /home/anna/Documents ou C:\\Users\\anna\\Documents. L'interface web Kopia s'ouvre : cliquez sur Save Policy.",
+        "folder_helper": "Chemin absolu sur la machine, comme /home/anna/Documents ou C:\\Users\\anna\\Documents. Enregistrez la policy dans Kopia, puis cliquez sur Actualiser. La machine voit le dossier sous 4 heures, ou tout de suite avec le bouton de rafraîchissement de KopiaUI.",
         "folder_add_open": "Ouvrir dans Kopia",
-        "folder_invalid": "Saisissez un chemin absolu : /home/anna/Documents, C:\\Users\\anna\\Documents ou \\\\serveur\\partage. Les chemins Windows gardent leurs antislashs.",
-        "folder_refresh_note": "La machine voit un nouveau dossier sous 4 heures, ou tout de suite avec le bouton de rafraîchissement de KopiaUI."
+        "folder_invalid": "Saisissez un chemin absolu : /home/anna/Documents, C:\\Users\\anna\\Documents ou \\\\serveur\\partage. Les chemins Windows gardent leurs antislashs."
     },
     "settings": {
         "title": "Paramètres",

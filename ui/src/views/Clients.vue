@@ -395,6 +395,17 @@
         $t("clients.folders_title", { name: foldersClient })
       }}</template>
       <template slot="content">
+        <div class="toolbar">
+          <NsButton
+            kind="secondary"
+            size="field"
+            :icon="Restart20"
+            :loading="loading.listFolders"
+            :disabled="loading.listFolders"
+            @click="listFolders"
+            >{{ $t("clients.refresh") }}</NsButton
+          >
+        </div>
         <NsInlineNotification
           v-if="error.listFolders"
           kind="error"
@@ -435,7 +446,7 @@
             </div>
           </div>
         </template>
-        <cv-form @submit.prevent="addFolder">
+        <cv-form @submit.prevent="addFolder" class="add-folder">
           <cv-text-input
             v-model.trim="newFolder"
             :label="$t('clients.add_folder')"
@@ -443,16 +454,17 @@
             :helper-text="$t('clients.folder_helper')"
             :invalid-message="error.newFolder ? $t(error.newFolder) : ''"
             ref="newFolder"
+            class="add-folder-input"
           />
           <NsButton
-            kind="secondary"
+            kind="primary"
+            size="field"
             :icon="Launch20"
             type="submit"
-            class="mg-top"
+            class="add-folder-button"
             >{{ $t("clients.folder_add_open") }}</NsButton
           >
         </cv-form>
-        <p class="mg-top">{{ $t("clients.folder_refresh_note") }}</p>
       </template>
       <template slot="secondary-button">{{ core.$t("common.close") }}</template>
     </NsModal>
@@ -991,6 +1003,22 @@ export default {
   flex: 1 1 14rem;
   font-family: monospace;
   overflow-wrap: anywhere;
+}
+
+.add-folder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: $spacing-03 $spacing-05;
+}
+
+.add-folder-input {
+  flex: 1 1 18rem;
+}
+
+// Line the button up with the input, below the label
+.add-folder-button {
+  margin-top: 1.5rem;
 }
 
 .folder-date {
