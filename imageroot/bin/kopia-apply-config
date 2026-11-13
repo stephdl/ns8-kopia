@@ -66,9 +66,9 @@ if not km.wait_server():
     print(agent.SD_ERR + "Kopia server did not answer", file=sys.stderr)
     sys.exit(1)
 
-changed = apply_acls()
+apply_acls()
 current = km.kopia_json(["policy", "show", "--global"]) or {}
 km.kopia(km.global_policy_args(current_ignore=current.get("files", {}).get("ignore", [])))
-changed = apply_users() or changed
-if changed:
-    km.server_refresh()
+apply_users()
+# Always refresh: the server applies the retention it has cached, not the policy just written.
+km.server_refresh()

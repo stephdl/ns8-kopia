@@ -240,7 +240,7 @@ def kopia_json(args):
 
 
 def server_refresh():
-    """Make the server read new users and ACLs now instead of at the next index refresh."""
+    """Make the server read new users, ACLs and policies now instead of at the next index refresh."""
     port = os.environ.get("CLIENT_PORT", str(DEFAULT_PORT))
     script = (f'KOPIA_SERVER_USERNAME={CONTROL_USER} KOPIA_SERVER_PASSWORD="$KOPIA_SERVER_CONTROL_PASSWORD" '
               f'kopia server refresh --address=https://127.0.0.1:{port} '
