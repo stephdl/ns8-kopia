@@ -19,6 +19,7 @@ if any(c["name"] == name for c in km.load_clients()):
     json.dump([{"field": "hostname", "parameter": "hostname", "value": name.split("@", 1)[1],
                 "error": "client_exists"}], fp=sys.stdout)
     sys.exit(2)
-times = sorted(snap["startTime"] for snap in km.machine_snapshots(name))
-json.dump({"count": len(times), "first": times[0] if times else None, "last": times[-1] if times else None},
-          fp=sys.stdout)
+# Kopia writes a varying number of decimals, so the text order is not the time order
+times = sorted(km.parse_time(snap["startTime"]) for snap in km.machine_snapshots(name))
+json.dump({"count": len(times), "first": times[0].isoformat() if times else None,
+           "last": times[-1].isoformat() if times else None}, fp=sys.stdout)

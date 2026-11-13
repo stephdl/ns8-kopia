@@ -431,6 +431,12 @@ def machine_snapshots(name):
             if client_name(snap["source"]["userName"], snap["source"]["host"]) == name]
 
 
+def machine_policies(name):
+    """Return the policies defined for a machine identity, its own user@host one included."""
+    return [pol for pol in kopia_json(["policy", "list"]) or []
+            if client_name(pol["target"]["userName"], pol["target"]["host"]) == name]
+
+
 def last_snapshots():
     """Return {user@host: newest end time} of the complete snapshots."""
     last = {}

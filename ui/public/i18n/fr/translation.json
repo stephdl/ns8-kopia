@@ -152,7 +152,7 @@
         "existing_snapshots_title": "Ce nom a déjà des instantanés",
         "existing_snapshots_description": "{count} instantanés du {first} au {last} appartiennent à ce nom. La nouvelle machine pourra les voir et les restaurer. Enregistrez pour les garder, ou choisissez un autre nom.",
         "delete_snapshots": "Supprimer aussi tous ses instantanés",
-        "delete_snapshots_warning": "Tous les instantanés de cette machine sont supprimés. C'est irréversible, sauf depuis une sauvegarde du module. La maintenance libère l'espace sous un ou deux jours.",
+        "delete_snapshots_warning": "Tous les instantanés et dossiers de cette machine sont supprimés. C'est irréversible, sauf depuis une sauvegarde du module. La maintenance libère l'espace sous un ou deux jours.",
         "folders": "Dossiers",
         "folders_title": "Dossiers de {name}",
         "no_folders": "Aucun dossier pour l'instant. Ajoutez-en un ci-dessous, ou la machine ajoute le premier avec un instantané.",

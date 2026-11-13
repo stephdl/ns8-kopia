@@ -353,8 +353,9 @@ old snapshots.
 
 **Remove** deletes the account. By default its snapshots stay in the repository: a machine
 added later with the same `user@host` sees and restores them, which is how a dead machine is
-replaced. Check **Also delete all its snapshots** to wipe them instead. The machine cannot do
-it itself, and maintenance frees the space within a day or two.
+replaced, and so do its folders. Check **Also delete all its snapshots** to wipe the snapshots
+and the folders instead. The machine cannot do it itself, and maintenance frees the space
+within a day or two.
 
 **Add a machine** first checks the name: the button reads **Verify**. When the name still has
 snapshots, a warning gives their count and dates, and the button becomes **Save**. Save to

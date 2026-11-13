@@ -983,10 +983,6 @@ export default {
   margin-bottom: $spacing-05;
 }
 
-.mg-top {
-  margin-top: $spacing-05;
-}
-
 .folder-list {
   display: flex;
   flex-direction: column;

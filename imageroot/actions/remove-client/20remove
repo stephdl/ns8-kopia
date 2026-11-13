@@ -32,3 +32,8 @@ if request.get("delete_snapshots"):
     if ids:
         km.kopia(["snapshot", "delete", "--delete"] + ids, timeout=3600)
         print(f"Deleted {len(ids)} snapshots of {name}", file=sys.stderr)
+    # A new machine with this name would otherwise get these folders back
+    targets = [f'{name}:{pol["target"]["path"]}' for pol in km.machine_policies(name) if pol["target"]["path"]]
+    if targets:
+        km.kopia(["policy", "delete"] + targets)
+        print(f"Deleted {len(targets)} folder policies of {name}", file=sys.stderr)

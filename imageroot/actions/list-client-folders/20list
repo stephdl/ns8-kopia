@@ -29,10 +29,9 @@ for snap in km.machine_snapshots(name):
         end = km.parse_time(snap["endTime"])
         if entry["last_backup"] is None or end > entry["last_backup"]:
             entry["last_backup"] = end
-for pol in km.kopia_json(["policy", "list"]) or []:
-    target = pol["target"]
-    if target["path"] and km.client_name(target["userName"], target["host"]) == name:
-        folder(target["path"])["policy"] = True
+for pol in km.machine_policies(name):
+    if pol["target"]["path"]:
+        folder(pol["target"]["path"])["policy"] = True
 
 for entry in folders.values():
     if entry["last_backup"]:

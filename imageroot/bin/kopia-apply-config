@@ -33,19 +33,17 @@ def apply_acls():
     current = sorted((e["user"], sorted(e["target"].items()), e["access"]) for e in km.kopia_json(["server", "acl", "list"]) or [])
     wanted = sorted(("*@*", sorted(target_dict(t).items()), a) for t, a in ACLS)
     if current == wanted:
-        return False
+        return
     print("Setting the module ACLs", file=sys.stderr)
     if current:
         km.kopia(["server", "acl", "delete", "--all", "--delete"])
     for target, access in ACLS:
         km.kopia(["server", "acl", "add", "--user=*@*", f"--target={target}", f"--access={access}"])
-    return True
 
 
 def apply_users():
     users = {u["username"]: u for u in km.kopia_json(["server", "user", "list"]) or []}
     hashes = km.load_client_hashes()
-    changed = False
     for client in km.load_clients():
         name = client["name"]
         encoded = hashes.get(name)
@@ -58,8 +56,6 @@ def apply_users():
         print(f"Machine account {name}: {verb}", file=sys.stderr)
         # Same hash as before: the machine keeps working with the password in its keyring
         km.set_user_hash(name, encoded, exists=name in users)
-        changed = True
-    return changed
 
 
 if not km.wait_server():

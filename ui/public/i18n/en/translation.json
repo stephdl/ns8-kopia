@@ -152,7 +152,7 @@
         "existing_snapshots_title": "This name already has snapshots",
         "existing_snapshots_description": "{count} snapshots from {first} to {last} belong to this name. The new machine will see and restore them. Save to keep them, or pick another name.",
         "delete_snapshots": "Also delete all its snapshots",
-        "delete_snapshots_warning": "Every snapshot of this machine is deleted. This cannot be undone, except from a module backup. Maintenance frees the space within a day or two.",
+        "delete_snapshots_warning": "Every snapshot and folder of this machine is deleted. This cannot be undone, except from a module backup. Maintenance frees the space within a day or two.",
         "folders": "Folders",
         "folders_title": "Folders of {name}",
         "no_folders": "No folder yet. Add one below, or the machine adds its first one with a snapshot.",
