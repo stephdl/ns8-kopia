@@ -97,6 +97,7 @@ sequenceDiagram
     Admin->>User: give the script
     User->>K: repository connect server<br/>--server-cert-fingerprint, --override-username/hostname
     Note over User: password goes to the OS keyring
+    Note over User: desktop: the user adds folders in KopiaUI<br/>server: the script backs up the home
     loop every N hours (KopiaUI or systemd timer)
         User->>K: snapshot create
     end
@@ -124,7 +125,9 @@ The clients are covered in the next section.
 ### Alerts
 
 `kopia-check` runs every hour and computes the age of the newest complete snapshot of each
-machine. A machine that never backed up counts from the day its account was created.
+machine. A machine that never backed up counts from the day its account was created. A
+desktop backs up nothing until its user adds folders in KopiaUI, so a machine left without
+folders gets the late mails too, as expected.
 
 One mail goes out when a threshold is crossed, never one per run. A machine that comes back
 from the admin level to the owner level gets no mail: it backed up once, but it is still late.
@@ -221,9 +224,9 @@ version as the server when you can (0.23.1 today).
 | System | Install | What the module script needs |
 | --- | --- | --- |
 | Windows | KopiaUI ([guide](https://kopia.io/docs/installation/#windows-gui-installation)) or `winget install -e --id Kopia.KopiaUI` | nothing: the script installs KopiaUI with winget when it is missing |
-| Linux desktop | KopiaUI from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | KopiaUI, or the `kopia` command in the PATH |
+| Linux desktop | KopiaUI from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | KopiaUI, which schedules the snapshots. With the `kopia` command only, use the Linux server script |
 | Linux server | `kopia` from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | the `kopia` command in the PATH, a systemd user session, and lingering (`loginctl enable-linger <user>` as root if the script cannot enable it) |
-| macOS | KopiaUI ([guide](https://kopia.io/docs/installation/#macos-gui-installer)) | KopiaUI in `/Applications`, or the `kopia` command in the PATH |
+| macOS | KopiaUI ([guide](https://kopia.io/docs/installation/#macos-gui-installer)) | KopiaUI in `/Applications`, which schedules the snapshots |
 
 KopiaUI and the CLI share the same config file, so KopiaUI shows a machine enrolled by the
 script.
