@@ -99,6 +99,31 @@ def check_machines():
     return True
 
 
+# Longer than any backup should take: past it, the backup failed and the core skipped the resume
+PAUSE_LIMIT_HOURS = 24
+
+
+def resume_stale_maintenance():
+    try:
+        with open(km.MAINTENANCE_PAUSED) as f:
+            paused = datetime.fromisoformat(f.read().strip())
+    except FileNotFoundError:
+        return
+    except ValueError:
+        paused = datetime.min.replace(tzinfo=timezone.utc)
+    if (now - paused).total_seconds() < PAUSE_LIMIT_HOURS * 3600:
+        return
+    try:
+        km.set_maintenance(True)
+    except (RuntimeError, OSError) as ex:
+        print(agent.SD_ERR + f"cannot resume the Kopia maintenance: {ex}", file=sys.stderr)
+        return
+    os.remove(km.MAINTENANCE_PAUSED)
+    print(agent.SD_WARNING + f"Kopia maintenance was paused for more than {PAUSE_LIMIT_HOURS} hours "
+          "by an unfinished cluster backup: resumed", file=sys.stderr)
+
+
+resume_stale_maintenance()
 ok = check_machines()
 tmp = ALERTS + ".tmp"
 with open(tmp, "w") as f:

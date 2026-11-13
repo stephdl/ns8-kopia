@@ -71,8 +71,9 @@ flowchart TB
     K --- REPO[("kopia-repository<br/>in the module backup")]
 ```
 
-The module state is the source of truth. Kopia keeps its users in the repository, but a
-restored repository can be older than the state. So `kopia-apply-config` pushes the state into Kopia:
+The module state is the source of truth. Kopia keeps its users in the repository, but the
+repository can miss some: an account created while the backup copied the repository, or a
+backup taken before the repository was in it. So `kopia-apply-config` pushes the state into Kopia:
 it creates missing accounts with their stored hash, resets the ACLs if they drifted, and sets
 the global policy. It never deletes an account. Only `remove-client` does that. It runs after
 `configure-module`, `update-module` and a restore.
@@ -362,15 +363,20 @@ and run it at least once a day: a restore loses every snapshot taken since the l
 The Kopia packs never change once written, so each backup only sends the new ones. The
 destination needs about the size of the repository.
 
+The machines keep backing up while the cluster backup runs. Kopia maintenance is paused during
+that time, because it rewrites indexes and deletes packs under restic. It resumes after the
+backup, or within a day when a backup fails, and catches up then.
+
 - Restore on another node: same certificate, same passwords, same repository. The machine
   accounts come back from their stored hashes. Point the host name to the new node, and the
   machines reconnect with their old config and keep their history. A machine that was lost
   too gets enrolled again with the same `user@host`: reset its password in Clients, run the
   new script, and restore its files from KopiaUI.
-- After a restore, the module starts the integrity check at once. The backup copies the
-  repository while machines write to it, so a snapshot that ended during the backup can miss
-  data in the restored copy. Older snapshots are complete. The check reports the missing data
-  on the Status page and mails the admins.
+- A backup taken before the repository was in the module backup restores an empty repository.
+  The machines then start a new history.
+- After a restore, the module walks every snapshot (`kopia snapshot verify`). A snapshot that
+  ended while the backup copied the repository can miss data in the restored copy. The check
+  reports it on the Status page and mails the admins.
 - The backup does not protect against an attacker who is root on the node: restic needs to
   delete in the destination to prune, so the same access can wipe it.
 - Clone and move copy the `kopia-repository` volume too, so the history is kept. A clone is a

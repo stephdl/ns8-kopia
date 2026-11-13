@@ -25,9 +25,20 @@ if not data["host"]:
 owner = km.port_used_by_other_module(agent.redis_connect(), data["client_port"], os.environ["MODULE_ID"], os.environ["NODE_ID"])
 if owner:
     print(agent.SD_WARNING + f"client port {data['client_port']} belongs to {owner} on this node: "
-          f"remove {owner}, then save the settings of {os.environ['MODULE_ID']} to start it", file=sys.stderr)
+          f"remove {owner}, then save the settings of {os.environ['MODULE_ID']} to start it, and check the "
+          f"snapshots: runagent -m {os.environ['MODULE_ID']} systemctl --user start kopia-verify-snapshots.service",
+          file=sys.stderr)
+    # The restored repository has its maintenance paused: an old pause makes kopia-check resume it once the server runs
+    with open(km.MAINTENANCE_PAUSED, "w") as f:
+        f.write("1970-01-01T00:00:00+00:00")
     sys.exit(0)
 response = agent.tasks.run(agent_id=os.environ["AGENT_ID"], action="configure-module", data=data)
 agent.assert_exp(response["exit_code"] == 0, "configure-module failed")
-# Find at once the snapshots that ended while the backup was copying the repository
-subprocess.run(["systemctl", "--user", "start", "--no-block", "kopia-verify.service"], check=False)
+# The backup copied the repository with its maintenance paused
+km.set_maintenance(True)
+# Walk every snapshot now: a backup that failed to copy part of the data shows up before a user needs it
+proc = subprocess.run(["systemctl", "--user", "start", "--no-block", "kopia-verify-snapshots.service"],
+                      capture_output=True, text=True)
+if proc.returncode != 0:
+    print(agent.SD_WARNING + f"snapshot check not started: {proc.stderr.strip()}. "
+          "Run it later: systemctl --user start kopia-verify-snapshots.service", file=sys.stderr)

@@ -7,6 +7,8 @@
 
 # Weekly integrity check. Each run downloads the share of the blobs set in Policies (10% by default):
 # at 10% the whole repository is read again within a few months.
+# With --snapshots, after a restore, it walks every snapshot tree instead: content verify only sees
+# indexed data and misses a snapshot whose index the backup did not copy.
 
 import json
 import os
@@ -23,9 +25,13 @@ LIMIT_HOURS = 6 * 24 + 23
 TIMED_OUT = 124
 
 started = datetime.now(timezone.utc)
-percent = km.read_settings()["verify_percent"]
+if "--snapshots" in sys.argv[1:]:
+    percent, command = None, "kopia snapshot verify"
+else:
+    percent = km.read_settings()["verify_percent"]
+    command = f"kopia content verify --download-percent={percent}"
 try:
-    proc = km.kopia([], script=f"timeout {LIMIT_HOURS}h kopia content verify --download-percent={percent}",
+    proc = km.kopia([], script=f"timeout {LIMIT_HOURS}h {command}",
                     check=False, timeout=(LIMIT_HOURS + 1) * 3600)
     output, code = (proc.stdout + proc.stderr).strip(), proc.returncode
 except subprocess.TimeoutExpired:
