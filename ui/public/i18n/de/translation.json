@@ -120,7 +120,7 @@
         "reset_password": "Passwort zurücksetzen",
         "remove": "Entfernen",
         "enrollment_title": "Registrierung von {name}",
-        "enrollment_intro": "Führen Sie dieses Skript auf dem Rechner aus, um ihn mit dem Server zu verbinden. Um einen Rechner neu zu installieren, setzen Sie sein Passwort zurück und führen Sie das neue Skript aus. Er erhält seine alten Snapshots zurück.",
+        "enrollment_intro": "Fügen Sie dieses Skript in ein Terminal auf dem Rechner ein, um ihn mit dem Server zu verbinden: PowerShell unter Windows, ein Terminal unter Linux und macOS. Um einen Rechner neu zu installieren, setzen Sie sein Passwort zurück und führen Sie das neue Skript aus. Er erhält seine alten Snapshots zurück.",
         "enrollment_details_intro": "Verbindungsdaten dieses Rechners. Prüfen Sie damit seine Konfiguration in KopiaUI.",
         "enrollment_user_title": "In der Sitzung des Benutzers ausführen",
         "enrollment_user_description": "Führen Sie das Skript als der Benutzer aus, dem die Dateien gehören. Führen Sie es nicht als Administrator oder als SYSTEM aus.",

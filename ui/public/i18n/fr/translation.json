@@ -120,7 +120,7 @@
         "reset_password": "Réinitialiser le mot de passe",
         "remove": "Supprimer",
         "enrollment_title": "Enrôlement de {name}",
-        "enrollment_intro": "Lancez ce script sur la machine pour la connecter au serveur. Pour réinstaller une machine, réinitialisez son mot de passe et lancez le nouveau script. Elle retrouve ses anciens instantanés. Sur un poste de travail, l'utilisateur ajoute ensuite les dossiers à sauvegarder dans KopiaUI.",
+        "enrollment_intro": "Collez ce script dans un terminal de la machine pour la connecter au serveur : PowerShell sous Windows, un terminal sous Linux et macOS. Pour réinstaller une machine, réinitialisez son mot de passe et lancez le nouveau script. Elle retrouve ses anciens instantanés. Sur un poste de travail, l'utilisateur ajoute ensuite les dossiers à sauvegarder dans KopiaUI.",
         "enrollment_details_intro": "Détails de connexion de cette machine. Servez-vous-en pour vérifier sa configuration dans KopiaUI.",
         "enrollment_user_title": "Lancez-le dans la session de l'utilisateur",
         "enrollment_user_description": "Lancez le script avec l'utilisateur qui possède les fichiers. Ne le lancez pas en administrateur ni en SYSTEM.",

@@ -120,7 +120,7 @@
         "reset_password": "Berrezarri pasahitza",
         "remove": "Kendu",
         "enrollment_title": "{name} makinaren izen-ematea",
-        "enrollment_intro": "Exekutatu script hau makinan zerbitzarira konektatzeko. Makina bat berrinstalatzeko, berrezarri pasahitza eta exekutatu script berria. Bere snapshot zaharrak berreskuratzen ditu.",
+        "enrollment_intro": "Itsatsi script hau makinako terminal batean zerbitzarira konektatzeko: PowerShell Windowsen, terminal bat Linuxen eta macOSen. Makina bat berrinstalatzeko, berrezarri pasahitza eta exekutatu script berria. Bere snapshot zaharrak berreskuratzen ditu.",
         "enrollment_details_intro": "Makina honen konexio datuak. Erabili KopiaUI-n konfigurazioa egiaztatzeko.",
         "enrollment_user_title": "Exekutatu erabiltzailearen saioan",
         "enrollment_user_description": "Exekutatu scripta fitxategien jabea den erabiltzailearekin. Ez exekutatu administratzaile gisa edo SYSTEM gisa.",

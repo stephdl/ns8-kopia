@@ -52,12 +52,13 @@ Check if kopia works as expected
 Check if a machine can enroll, back up and restore
     # The node is its own client: the script returned by add-client runs in a kopia container.
     # The desktop script only enrolls, so the test takes the snapshot a user would start in KopiaUI
+    # sh -i reads the script like a paste in a terminal
     ${rc} =    Execute Command    api-cli run module/${module_id}/add-client --data '{"username": "ci", "hostname": "runner"}' | python3 -c 'import json,sys; open("/root/kopia-ci.sh","w").write(json.load(sys.stdin)["shell"])'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
     ${rc} =    Execute Command    mkdir -p /root/kopia-ci-home && echo ci-data > /root/kopia-ci-home/file.txt
     ...    return_rc=True  return_stdout=False
-    ${output}  ${rc} =    Execute Command    podman run --rm --network=host --add-host kopia.test.example.org:127.0.0.1 -e HOME=/home/u -e KOPIA_CONFIG_PATH=/home/u/.config/kopia/repository.config -e KOPIA_PERSIST_CREDENTIALS_ON_CONNECT=true -v /root/kopia-ci-home:/home/u:Z -v /root/kopia-ci.sh:/enroll.sh:ro,Z --entrypoint sh docker.io/kopia/kopia:0.23.1 -c 'sh /enroll.sh && kopia snapshot create /home/u && kopia snapshot restore /home/u /tmp/restored && cat /tmp/restored/file.txt'
+    ${output}  ${rc} =    Execute Command    podman run --rm --network=host --add-host kopia.test.example.org:127.0.0.1 -e HOME=/home/u -e KOPIA_CONFIG_PATH=/home/u/.config/kopia/repository.config -e KOPIA_PERSIST_CREDENTIALS_ON_CONNECT=true -v /root/kopia-ci-home:/home/u:Z -v /root/kopia-ci.sh:/enroll.sh:ro,Z --entrypoint sh docker.io/kopia/kopia:0.23.1 -c 'sh -i < /enroll.sh && kopia snapshot create /home/u && kopia snapshot restore /home/u /tmp/restored && cat /tmp/restored/file.txt'
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${output}    ci-data

@@ -120,7 +120,7 @@
         "reset_password": "Redefinir a senha",
         "remove": "Remover",
         "enrollment_title": "Registro de {name}",
-        "enrollment_intro": "Execute este script na máquina para conectá-la ao servidor. Para reinstalar uma máquina, redefina a senha e execute o novo script. Ela recupera os backups anteriores.",
+        "enrollment_intro": "Cole este script em um terminal da máquina para conectá-la ao servidor: PowerShell no Windows, um terminal no Linux e no macOS. Para reinstalar uma máquina, redefina a senha e execute o novo script. Ela recupera os backups anteriores.",
         "enrollment_details_intro": "Dados de conexão desta máquina. Use-os para verificar a configuração no KopiaUI.",
         "enrollment_user_title": "Execute na sessão do usuário",
         "enrollment_user_description": "Execute o script com o usuário dono dos arquivos. Não execute como administrador nem como SYSTEM.",

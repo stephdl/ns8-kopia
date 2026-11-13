@@ -120,7 +120,7 @@
         "reset_password": "Repor a palavra-passe",
         "remove": "Remover",
         "enrollment_title": "Registo de {name}",
-        "enrollment_intro": "Execute este script na máquina para a ligar ao servidor. Para reinstalar uma máquina, reponha a palavra-passe e execute o novo script. Ela recupera as cópias anteriores.",
+        "enrollment_intro": "Cole este script num terminal da máquina para a ligar ao servidor: PowerShell no Windows, um terminal no Linux e no macOS. Para reinstalar uma máquina, reponha a palavra-passe e execute o novo script. Ela recupera as cópias anteriores.",
         "enrollment_details_intro": "Dados de ligação desta máquina. Use-os para verificar a configuração no KopiaUI.",
         "enrollment_user_title": "Execute-o na sessão do utilizador",
         "enrollment_user_description": "Execute o script com o utilizador dono dos ficheiros. Não o execute como administrador nem como SYSTEM.",
