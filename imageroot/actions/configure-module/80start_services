@@ -8,7 +8,6 @@
 set -e
 exec 1>&2
 
-systemctl --user daemon-reload
 systemctl --user enable kopia.service kopia-check.timer kopia-verify.timer
 systemctl --user start kopia-check.timer kopia-verify.timer
 
