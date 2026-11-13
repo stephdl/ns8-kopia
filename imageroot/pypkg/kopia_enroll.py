@@ -26,12 +26,9 @@ try {{
 }} finally {{
     Remove-Item Env:KOPIA_PASSWORD -ErrorAction SilentlyContinue
 }}
-foreach ($folder in @("Documents", "Desktop", "Pictures")) {{
-    $path = Join-Path $env:USERPROFILE $folder
-    if (Test-Path $path) {{ & $kopia snapshot create $path }}
-}}
-# KopiaUI runs the scheduled snapshots while it stays in the tray
+# The user picks the folders in KopiaUI, which then runs the scheduled snapshots from the tray
 Start-Process "$env:LOCALAPPDATA\\Programs\\KopiaUI\\KopiaUI.exe"
+Write-Host "Enrolled. In KopiaUI, open Snapshots, click New Snapshot and add the folders to back up."
 """
 
 UNIX_CONNECT = """KOPIA_PASSWORD='{password}' "$kopia" repository connect server \\
@@ -39,7 +36,6 @@ UNIX_CONNECT = """KOPIA_PASSWORD='{password}' "$kopia" repository connect server
     --server-cert-fingerprint='{fingerprint}' \\
     --override-username='{user}' \\
     --override-hostname='{machine}'
-"$kopia" snapshot create "$HOME"
 """
 
 UNIX_SCRIPT = """#!/bin/sh
@@ -52,7 +48,8 @@ for kopia in "$(command -v kopia)" /opt/KopiaUI/resources/server/kopia \\
     [ -x "$kopia" ] && break
 done
 [ -x "$kopia" ] || {{ echo "kopia is not installed: install KopiaUI" >&2; exit 1; }}
-""" + UNIX_CONNECT + """echo "Start KopiaUI and keep it running: it takes the scheduled snapshots."
+""" + UNIX_CONNECT + """echo "Enrolled. Start KopiaUI, open Snapshots, click New Snapshot and add the folders to back up."
+echo "Keep KopiaUI running: it takes the scheduled snapshots."
 """
 
 SERVER_SCRIPT = """#!/bin/sh
@@ -93,7 +90,7 @@ UNIT
         echo "Run as root: loginctl enable-linger $(id -un). Otherwise snapshots stop at logout." >&2
         exit 1
     fi
-    echo "Snapshots scheduled every {interval} hours by kopia-snapshot.timer"
+    echo "Snapshots of $HOME scheduled every {interval} hours by kopia-snapshot.timer"
 else
     echo "No systemd user session: log in as this user over SSH and run the script again." >&2
     exit 1

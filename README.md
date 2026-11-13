@@ -97,6 +97,7 @@ sequenceDiagram
     Admin->>User: give the script
     User->>K: repository connect server<br/>--server-cert-fingerprint, --override-username/hostname
     Note over User: password goes to the OS keyring
+    Note over User: desktop: the user adds folders in KopiaUI<br/>server: the script backs up the home
     loop every N hours (KopiaUI or systemd timer)
         User->>K: snapshot create
     end
@@ -124,7 +125,9 @@ The clients are covered in the next section.
 ### Alerts
 
 `kopia-check` runs every hour and computes the age of the newest complete snapshot of each
-machine. A machine that never backed up counts from the day its account was created.
+machine. A machine that never backed up counts from the day its account was created. A
+desktop backs up nothing until its user adds folders in KopiaUI, so a machine left without
+folders gets the late mails too, as expected.
 
 One mail goes out when a threshold is crossed, never one per run. A machine that comes back
 from the admin level to the owner level gets no mail: it backed up once, but it is still late.
@@ -221,9 +224,9 @@ version as the server when you can (0.23.1 today).
 | System | Install | What the module script needs |
 | --- | --- | --- |
 | Windows | KopiaUI ([guide](https://kopia.io/docs/installation/#windows-gui-installation)) or `winget install -e --id Kopia.KopiaUI` | nothing: the script installs KopiaUI with winget when it is missing |
-| Linux desktop | KopiaUI from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | KopiaUI, or the `kopia` command in the PATH |
+| Linux desktop | KopiaUI from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | KopiaUI, which schedules the snapshots. With the `kopia` command only, use the Linux server script |
 | Linux server | `kopia` from the [APT or RPM repositories](https://kopia.io/docs/installation/#linux-installation-using-apt-debian-ubuntu) | the `kopia` command in the PATH, a systemd user session, and lingering (`loginctl enable-linger <user>` as root if the script cannot enable it) |
-| macOS | KopiaUI ([guide](https://kopia.io/docs/installation/#macos-gui-installer)) | KopiaUI in `/Applications`, or the `kopia` command in the PATH |
+| macOS | KopiaUI ([guide](https://kopia.io/docs/installation/#macos-gui-installer)) | KopiaUI in `/Applications`, which schedules the snapshots |
 
 KopiaUI and the CLI share the same config file, so KopiaUI shows a machine enrolled by the
 script.
@@ -272,16 +275,17 @@ The script:
 1. connects to `https://<host>:<client port>` and pins the module certificate fingerprint;
 2. stores the password in the OS keyring (or in the Kopia config folder on Linux without a
    keyring);
-3. takes a first snapshot: Documents, Desktop and Pictures on Windows, the home directory on
-   Linux and macOS;
-4. sets up the scheduled snapshots: on a desktop, KopiaUI takes them while it runs. It starts
-   on Windows, and on Linux and macOS you start it. Checking "Launch at Startup" in KopiaUI is
-   up to the admin of the machine, the script does not do it. The Linux server script adds a
+3. on a desktop, takes no snapshot: the user picks the folders in KopiaUI, under Snapshots,
+   **New Snapshot**. The module cannot choose them for every machine, and a machine cannot set
+   its own policy. KopiaUI then snapshots each picked folder at the policy interval while it
+   runs. It starts on Windows, and on Linux and macOS you start it. Checking "Launch at
+   Startup" in KopiaUI is up to the admin of the machine, the script does not do it;
+4. on a Linux server, backs up the whole home directory: the script adds a
    `kopia-snapshot.timer` systemd user timer at the policy interval (none in manual mode), and
    enables lingering so it keeps running after logout. The interval is written in the timer:
    after you change it, reset the password of the server and run the new script.
 
-The machine then shows up as **OK** on the Clients page after its first snapshot.
+The machine shows **Never seen** on the Clients page until its first snapshot, then **OK**.
 
 ### macOS permissions and schedule
 
@@ -290,11 +294,8 @@ Safari, parts of `~/Library`, and Desktop or Documents when iCloud syncs them) u
 **Full Disk Access**. Without it, snapshots skip these folders or end with errors. Every backup
 tool except Time Machine needs this permission.
 
-Before you run the script, open System Settings, Privacy & Security, Full Disk Access, and
-enable:
-
-- **Terminal** (or the terminal app you use), because the first snapshot runs from it;
-- **KopiaUI**, because it takes the scheduled snapshots.
+Before you pick the folders, open System Settings, Privacy & Security, Full Disk Access, and
+enable **KopiaUI**, because it takes the snapshots.
 
 Restart KopiaUI after you change the permission. Then add KopiaUI to System Settings, General,
 Login Items, so it starts at each login. If KopiaUI does not run, no snapshot runs, and the
