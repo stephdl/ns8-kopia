@@ -22,7 +22,9 @@
         "reset-client-password": "Berrezarri makina baten pasahitza",
         "get-client-enrollment": "Irakurri izen-emateko scripta",
         "get-repository-password": "Erakutsi biltegiaren pasahitza",
-        "send-test-mail": "Bidali proba-posta"
+        "send-test-mail": "Bidali proba-posta",
+        "count-snapshots": "Egiaztatu snapshot zaharrak",
+        "list-client-folders": "Zerrendatu karpetak"
     },
     "error": {
         "error": "Errorea",
@@ -144,7 +146,23 @@
         "enrollment_once_title": "Kopiatu scripta orain",
         "enrollment_once_description": "Makinaren pasahitza dauka. Ez da berriro erakutsiko. Script berri bat lortzeko, berrezarri pasahitza.",
         "enrollment_hidden_title": "Erregistro scripta ez dago erabilgarri",
-        "enrollment_hidden_description": "Scriptak makinaren pasahitza du, eta zerbitzariak ez du gordetzen. Makina hau instalatzeko edo berrinstalatzeko, berrezarri pasahitza script berri bat lortzeko. Script berria exekutatu arte, makinak ezin du babeskopiarik egin."
+        "enrollment_hidden_description": "Scriptak makinaren pasahitza du, eta zerbitzariak ez du gordetzen. Makina hau instalatzeko edo berrinstalatzeko, berrezarri pasahitza script berri bat lortzeko. Script berria exekutatu arte, makinak ezin du babeskopiarik egin.",
+        "verify": "Egiaztatu",
+        "save": "Gorde",
+        "existing_snapshots_title": "Izen honek snapshotak ditu jada",
+        "existing_snapshots_description": "{first} datako snapshot 1 izen honena da. Makina berriak ikusi egingo du eta leheneratu ahal izango du. Gorde mantentzeko, edo aukeratu beste izen bat. | {first} eta {last} arteko {count} snapshot izen honenak dira. Makina berriak ikusi egingo ditu eta leheneratu ahal izango ditu. Gorde haiek mantentzeko, edo aukeratu beste izen bat.",
+        "delete_snapshots": "Ezabatu bere snapshot guztiak ere",
+        "delete_snapshots_warning": "Makina honen snapshot eta karpeta guztiak ezabatzen dira. Ezin da desegin, moduluaren babeskopia batetik izan ezik. Mantentze-lanek egun bat edo bitan askatzen dute lekua.",
+        "folders": "Karpetak",
+        "folders_title": "{name} makinaren karpetak",
+        "no_folders": "Oraindik ez dago karpetarik. Gehitu bat behean, edo makinak lehena gehitzen du snapshot batekin.",
+        "folder_never": "Inoiz babestu gabea",
+        "folder_open": "Editatu Kopian",
+        "add_folder": "Gehitu karpeta bat",
+        "folder_placeholder": "C:\\Users\\anna\\Documents",
+        "folder_helper": "Makinako bide absolutua, adibidez /home/anna/Documents edo C:\\Users\\anna\\Documents. Gorde politika Kopian, eta sakatu Eguneratu. Makinak 4 orduko epean ikusten du karpeta, edo berehala KopiaUI-ren eguneratze-botoiarekin.",
+        "folder_add_open": "Ireki Kopian",
+        "folder_invalid": "Erabili bide absolutu bat: /home/anna/Documents, C:\\Users\\anna\\Documents edo \\\\server\\share. Windows bideek alderantzizko barrak mantentzen dituzte."
     },
     "settings": {
         "title": "Ezarpenak",

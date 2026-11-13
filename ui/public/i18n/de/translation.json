@@ -22,7 +22,9 @@
         "reset-client-password": "Passwort eines Rechners zurücksetzen",
         "get-client-enrollment": "Registrierungsskript lesen",
         "get-repository-password": "Repository-Passwort anzeigen",
-        "send-test-mail": "Testmail senden"
+        "send-test-mail": "Testmail senden",
+        "count-snapshots": "Alte Snapshots prüfen",
+        "list-client-folders": "Ordner auflisten"
     },
     "error": {
         "error": "Fehler",
@@ -144,7 +146,23 @@
         "enrollment_once_title": "Kopieren Sie das Skript jetzt",
         "enrollment_once_description": "Es enthält das Passwort des Rechners. Es wird nicht noch einmal angezeigt. Für ein neues Skript setzen Sie das Passwort zurück.",
         "enrollment_hidden_title": "Anmeldeskript nicht mehr verfügbar",
-        "enrollment_hidden_description": "Das Skript enthält das Passwort des Rechners, und der Server speichert es nicht. Um diesen Rechner zu installieren oder neu zu installieren, setzen Sie sein Passwort zurück, um ein neues Skript zu erhalten. Bis Sie das neue Skript ausführen, kann der Rechner keine Sicherung mehr machen."
+        "enrollment_hidden_description": "Das Skript enthält das Passwort des Rechners, und der Server speichert es nicht. Um diesen Rechner zu installieren oder neu zu installieren, setzen Sie sein Passwort zurück, um ein neues Skript zu erhalten. Bis Sie das neue Skript ausführen, kann der Rechner keine Sicherung mehr machen.",
+        "verify": "Prüfen",
+        "save": "Speichern",
+        "existing_snapshots_title": "Dieser Name hat bereits Snapshots",
+        "existing_snapshots_description": "1 Snapshot vom {first} gehört zu diesem Namen. Der neue Rechner sieht ihn und kann ihn wiederherstellen. Speichern Sie, um ihn zu behalten, oder wählen Sie einen anderen Namen. | {count} Snapshots vom {first} bis zum {last} gehören zu diesem Namen. Der neue Rechner sieht sie und kann sie wiederherstellen. Speichern Sie, um sie zu behalten, oder wählen Sie einen anderen Namen.",
+        "delete_snapshots": "Auch alle seine Snapshots löschen",
+        "delete_snapshots_warning": "Alle Snapshots und Ordner dieses Rechners werden gelöscht. Das lässt sich nicht rückgängig machen, außer aus einer Modulsicherung. Die Wartung gibt den Speicherplatz innerhalb von ein bis zwei Tagen frei.",
+        "folders": "Ordner",
+        "folders_title": "Ordner von {name}",
+        "no_folders": "Noch kein Ordner. Fügen Sie unten einen hinzu, oder der Rechner fügt seinen ersten mit einem Snapshot hinzu.",
+        "folder_never": "Nie gesichert",
+        "folder_open": "In Kopia bearbeiten",
+        "add_folder": "Ordner hinzufügen",
+        "folder_placeholder": "C:\\Users\\anna\\Documents",
+        "folder_helper": "Absoluter Pfad auf dem Rechner, etwa /home/anna/Documents oder C:\\Users\\anna\\Documents. Speichern Sie die Richtlinie in Kopia und klicken Sie dann auf Aktualisieren. Der Rechner sieht den Ordner innerhalb von 4 Stunden, oder sofort mit der Aktualisieren-Schaltfläche von KopiaUI.",
+        "folder_add_open": "In Kopia öffnen",
+        "folder_invalid": "Verwenden Sie einen absoluten Pfad: /home/anna/Documents, C:\\Users\\anna\\Documents oder \\\\server\\share. Windows-Pfade behalten ihre Backslashes."
     },
     "settings": {
         "title": "Einstellungen",
