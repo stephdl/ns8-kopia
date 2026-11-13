@@ -272,16 +272,17 @@ The script:
 1. connects to `https://<host>:<client port>` and pins the module certificate fingerprint;
 2. stores the password in the OS keyring (or in the Kopia config folder on Linux without a
    keyring);
-3. takes a first snapshot: Documents, Desktop and Pictures on Windows, the home directory on
-   Linux and macOS;
-4. sets up the scheduled snapshots: on a desktop, KopiaUI takes them while it runs. It starts
-   on Windows, and on Linux and macOS you start it. Checking "Launch at Startup" in KopiaUI is
-   up to the admin of the machine, the script does not do it. The Linux server script adds a
+3. on a desktop, takes no snapshot: the user picks the folders in KopiaUI, under Snapshots,
+   **New Snapshot**. The module cannot choose them for every machine, and a machine cannot set
+   its own policy. KopiaUI then snapshots each picked folder at the policy interval while it
+   runs. It starts on Windows, and on Linux and macOS you start it. Checking "Launch at
+   Startup" in KopiaUI is up to the admin of the machine, the script does not do it;
+4. on a Linux server, backs up the whole home directory: the script adds a
    `kopia-snapshot.timer` systemd user timer at the policy interval (none in manual mode), and
    enables lingering so it keeps running after logout. The interval is written in the timer:
    after you change it, reset the password of the server and run the new script.
 
-The machine then shows up as **OK** on the Clients page after its first snapshot.
+The machine shows **Never seen** on the Clients page until its first snapshot, then **OK**.
 
 ### macOS permissions and schedule
 
@@ -290,11 +291,8 @@ Safari, parts of `~/Library`, and Desktop or Documents when iCloud syncs them) u
 **Full Disk Access**. Without it, snapshots skip these folders or end with errors. Every backup
 tool except Time Machine needs this permission.
 
-Before you run the script, open System Settings, Privacy & Security, Full Disk Access, and
-enable:
-
-- **Terminal** (or the terminal app you use), because the first snapshot runs from it;
-- **KopiaUI**, because it takes the scheduled snapshots.
+Before you pick the folders, open System Settings, Privacy & Security, Full Disk Access, and
+enable **KopiaUI**, because it takes the snapshots.
 
 Restart KopiaUI after you change the permission. Then add KopiaUI to System Settings, General,
 Login Items, so it starts at each login. If KopiaUI does not run, no snapshot runs, and the
