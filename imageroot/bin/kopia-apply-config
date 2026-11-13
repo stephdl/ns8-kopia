@@ -12,14 +12,15 @@ import sys
 import agent
 import kopia_module as km
 
-# Each machine sees and manages only its own snapshots, reads its policies and cannot change
-# its own account: the module state stays the only source of passwords.
+# Each machine sees and adds only its own snapshots, reads its policies and cannot change its own
+# account: the module state stays the only source of passwords. APPEND keeps a stolen machine from
+# deleting its history, and the server still applies the retention when the machine asks for it.
 ACLS = [
     ("type=content", "APPEND"),
     ("type=policy,policyType=global", "READ"),
     ("type=policy,policyType=host,hostname=OWN_HOST", "READ"),
     ("type=policy,username=OWN_USER,hostname=OWN_HOST", "READ"),
-    ("type=snapshot,username=OWN_USER,hostname=OWN_HOST", "FULL"),
+    ("type=snapshot,username=OWN_USER,hostname=OWN_HOST", "APPEND"),
 ]
 
 

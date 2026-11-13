@@ -116,10 +116,13 @@ To reinstall a machine, reset its password and run the new script. The machine g
 identity, so it finds its old snapshots. Until the new script runs, the old password in its
 keyring stops working.
 
-Default ACLs: a machine sees, creates and deletes only its own snapshots. It reads its
-policies, the host policy and the global policy. It can append content to the repository,
-which every backup needs. It cannot change any policy or its own account. Anyone holding the script can read, restore and delete the backups of that machine,
-from anywhere. If a script leaks, reset the password.
+Default ACLs: a machine sees and creates only its own snapshots, and cannot delete any. It
+reads its policies, the host policy and the global policy. It can append content to the
+repository, which every backup needs. It cannot change any policy or its own account. Old
+snapshots still expire: after each snapshot the machine asks the server to apply the
+retention of the policy, and the server deletes them. A machine that stops backing up keeps
+its last snapshots. Anyone holding the script can read and restore the backups of that
+machine, from anywhere, but not delete them. If a script leaks, reset the password.
 
 The ACLs protect the policies in the repository, not the machine itself. Its user can still
 leave out any folder: Kopia reads a `.kopiaignore` file in each folder it backs up, with
