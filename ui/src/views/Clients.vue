@@ -395,10 +395,11 @@
         $t("clients.folders_title", { name: foldersClient })
       }}</template>
       <template slot="content">
-        <div class="toolbar">
+        <div class="folders-header">
+          <span class="folders-label">{{ $t("clients.folders") }}</span>
           <NsButton
-            kind="secondary"
-            size="field"
+            kind="ghost"
+            size="small"
             :icon="Restart20"
             :loading="loading.listFolders"
             :disabled="loading.listFolders"
@@ -1003,6 +1004,17 @@ export default {
   flex: 1 1 14rem;
   font-family: monospace;
   overflow-wrap: anywhere;
+}
+
+.folders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-03;
+}
+
+.folders-label {
+  font-weight: 600;
 }
 
 .add-folder {
