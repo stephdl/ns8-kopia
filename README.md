@@ -331,13 +331,24 @@ Click **Reset password** on the machine, run the new script on it, then delete t
 old password stops working at once. The identity does not change, so the machine finds its
 old snapshots.
 
+### Remove a machine
+
+**Remove** deletes the account. By default its snapshots stay in the repository: a machine
+added later with the same `user@host` sees and restores them, which is how a dead machine is
+replaced. Check **Also delete all its snapshots** to wipe them instead. The machine cannot do
+it itself, and maintenance frees the space within a day or two.
+
+**Add a machine** first checks the name: the button reads **Verify**. When the name still has
+snapshots, a warning gives their count and dates, and the button becomes **Save**. Save to
+give them to the new machine on purpose, or pick another name.
+
 ### Notes
 
 - A machine that sleeps or stays off takes no snapshot. KopiaUI must stay in the tray on
   Windows and macOS. A laptop outside the office backs up from anywhere the client port is
   reachable.
-- Never put the script in a GPO or in Intune in clear text. Anyone who reads it can read,
-  restore and delete the backups of that machine.
+- Never put the script in a GPO or in Intune in clear text. Anyone who reads it can read
+  and restore the backups of that machine.
 - Volume Shadow Copy on Windows needs administrator rights. The default script runs as the
   user and backs up the user files. For a whole machine backup, enroll it in an elevated
   session as a dedicated account instead.
@@ -351,7 +362,8 @@ old snapshots.
 | `add-client` | create `user@host`, return the scripts with the password |
 | `reset-client-password` | new password, return the new scripts |
 | `get-client-enrollment` | URL, fingerprint and identity, without the password |
-| `remove-client` | remove the account, its snapshots stay in the repository |
+| `remove-client` | remove the account, and its snapshots with `delete_snapshots` |
+| `count-snapshots` | count the snapshots left for a `user@host`, before it is added again |
 | `list-clients` | machines with last backup and state: `ok`, `late`, `late_admin`, `never_seen`, or `unknown` when the server does not answer |
 | `get-health` | server, disk use, certificate expiry, last integrity check |
 | `get-repository-password` | show the repository password |

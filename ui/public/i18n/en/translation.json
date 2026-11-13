@@ -22,7 +22,8 @@
         "reset-client-password": "Reset the password of a machine",
         "get-client-enrollment": "Get the enrollment script",
         "get-repository-password": "Show the repository password",
-        "send-test-mail": "Send a test mail"
+        "send-test-mail": "Send a test mail",
+        "count-snapshots": "Check old snapshots"
     },
     "error": {
         "error": "Error",
@@ -144,7 +145,13 @@
         "enrollment_once_title": "Copy the script now",
         "enrollment_once_description": "It holds the password of the machine. It will not be shown again. To get a new script, reset the password.",
         "enrollment_hidden_title": "Enrollment script no longer available",
-        "enrollment_hidden_description": "The script holds the machine password, and the server does not keep it. To install or reinstall this machine, reset its password to get a new script. Until you run the new script, the machine cannot back up."
+        "enrollment_hidden_description": "The script holds the machine password, and the server does not keep it. To install or reinstall this machine, reset its password to get a new script. Until you run the new script, the machine cannot back up.",
+        "verify": "Verify",
+        "save": "Save",
+        "existing_snapshots_title": "This name already has snapshots",
+        "existing_snapshots_description": "{count} snapshots from {first} to {last} belong to this name. The new machine will see and restore them. Save to keep them, or pick another name.",
+        "delete_snapshots": "Also delete all its snapshots",
+        "delete_snapshots_warning": "Every snapshot of this machine is deleted. This cannot be undone, except from a module backup. Maintenance frees the space within a day or two."
     },
     "settings": {
         "title": "Settings",

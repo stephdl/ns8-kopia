@@ -22,7 +22,8 @@
         "reset-client-password": "Réinitialiser le mot de passe d'une machine",
         "get-client-enrollment": "Lire le script d'enrôlement",
         "get-repository-password": "Afficher le mot de passe du dépôt",
-        "send-test-mail": "Envoyer un mail de test"
+        "send-test-mail": "Envoyer un mail de test",
+        "count-snapshots": "Vérifier les anciens instantanés"
     },
     "error": {
         "error": "Erreur",
@@ -144,7 +145,13 @@
         "enrollment_once_title": "Copiez le script maintenant",
         "enrollment_once_description": "Il contient le mot de passe de la machine. Il ne sera plus affiché. Pour obtenir un nouveau script, réinitialisez le mot de passe.",
         "enrollment_hidden_title": "Script d'enrôlement plus disponible",
-        "enrollment_hidden_description": "Le script contient le mot de passe de la machine, et le serveur ne le garde pas. Pour installer ou réinstaller cette machine, réinitialisez son mot de passe pour obtenir un nouveau script. Tant que le nouveau script n'est pas lancé, la machine ne peut plus sauvegarder."
+        "enrollment_hidden_description": "Le script contient le mot de passe de la machine, et le serveur ne le garde pas. Pour installer ou réinstaller cette machine, réinitialisez son mot de passe pour obtenir un nouveau script. Tant que le nouveau script n'est pas lancé, la machine ne peut plus sauvegarder.",
+        "verify": "Vérifier",
+        "save": "Enregistrer",
+        "existing_snapshots_title": "Ce nom a déjà des instantanés",
+        "existing_snapshots_description": "{count} instantanés du {first} au {last} appartiennent à ce nom. La nouvelle machine pourra les voir et les restaurer. Enregistrez pour les garder, ou choisissez un autre nom.",
+        "delete_snapshots": "Supprimer aussi tous ses instantanés",
+        "delete_snapshots_warning": "Tous les instantanés de cette machine sont supprimés. C'est irréversible, sauf depuis une sauvegarde du module. La maintenance libère l'espace sous un ou deux jours."
     },
     "settings": {
         "title": "Paramètres",

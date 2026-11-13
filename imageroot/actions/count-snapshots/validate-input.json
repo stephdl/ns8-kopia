@@ -1,0 +1,10 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "count-snapshots input",
+    "$id": "http://schema.nethserver.org/kopia/count-snapshots-input.json",
+    "description": "Count the snapshots left in the repository for a machine identity, before it is created again.",
+    "examples": [{"name": "accounting@pc-accounting-01"}],
+    "type": "object",
+    "required": ["name"],
+    "properties": {"name": {"type": "string", "pattern": "^[^@]+@[^@]+$", "description": "Machine identity, username@hostname."}}
+}

@@ -10,7 +10,8 @@ import sys
 import agent
 import kopia_module as km
 
-name = json.load(sys.stdin)["name"]
+request = json.load(sys.stdin)
+name = request["name"]
 with km.clients_lock():
     clients = km.load_clients()
     agent.assert_exp(any(c["name"] == name for c in clients), "client not found")
@@ -18,6 +19,12 @@ with km.clients_lock():
     users = {u["username"] for u in km.kopia_json(["server", "user", "list"]) or []}
     if name in users:
         km.kopia(["server", "user", "delete", name])
+    if request.get("delete_snapshots"):
+        # The machine itself cannot delete them, its snapshot access is APPEND
+        ids = [snap["id"] for snap in km.machine_snapshots(name)]
+        if ids:
+            km.kopia(["snapshot", "delete", "--delete"] + ids, timeout=3600)
+            print(f"Deleted {len(ids)} snapshots of {name}", file=sys.stderr)
     km.save_clients([c for c in clients if c["name"] != name])
     hashes = km.load_client_hashes()
     hashes.pop(name, None)

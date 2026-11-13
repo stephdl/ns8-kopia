@@ -2,9 +2,12 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "remove-client input",
     "$id": "http://schema.nethserver.org/kopia/remove-client-input.json",
-    "description": "Remove the Kopia account of a machine. Its snapshots stay in the repository.",
-    "examples": [{"name": "accounting@pc-accounting-01"}],
+    "description": "Remove the Kopia account of a machine. Its snapshots stay in the repository unless delete_snapshots is set.",
+    "examples": [{"name": "accounting@pc-accounting-01", "delete_snapshots": false}],
     "type": "object",
     "required": ["name"],
-    "properties": {"name": {"type": "string", "pattern": "^[^@]+@[^@]+$", "description": "Machine identity, username@hostname."}}
+    "properties": {
+        "name": {"type": "string", "pattern": "^[^@]+@[^@]+$", "description": "Machine identity, username@hostname."},
+        "delete_snapshots": {"type": "boolean", "default": false, "description": "Also delete every snapshot of the machine. Maintenance frees the space later."}
+    }
 }

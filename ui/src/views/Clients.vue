@@ -168,15 +168,15 @@
     <NsModal
       size="default"
       :visible="isShownAddModal"
-      :primary-button-disabled="loading.addClient"
-      :isLoading="loading.addClient"
+      :primary-button-disabled="loading.addClient || loading.countSnapshots"
+      :isLoading="loading.addClient || loading.countSnapshots"
       @modal-hidden="isShownAddModal = false"
-      @primary-click="addClient"
+      @primary-click="verifyOrAddClient"
     >
       <template slot="title">{{ $t("clients.add_machine") }}</template>
       <template slot="content">
         <p class="mg-bottom">{{ $t("clients.add_description") }}</p>
-        <cv-form @submit.prevent="addClient">
+        <cv-form @submit.prevent="verifyOrAddClient">
           <NsTextInput
             v-model.trim="newUsername"
             :label="$t('clients.username')"
@@ -209,6 +209,26 @@
             ref="owner_email"
           />
           <NsInlineNotification
+            v-if="existingSnapshots"
+            kind="warning"
+            :title="$t('clients.existing_snapshots_title')"
+            :description="
+              $t('clients.existing_snapshots_description', {
+                count: existingSnapshots.count,
+                first: formatDateTime(existingSnapshots.first),
+                last: formatDateTime(existingSnapshots.last),
+              })
+            "
+            :showCloseButton="false"
+          />
+          <NsInlineNotification
+            v-if="error.countSnapshots"
+            kind="error"
+            :title="$t('action.count-snapshots')"
+            :description="error.countSnapshots"
+            :showCloseButton="false"
+          />
+          <NsInlineNotification
             v-if="error.addClient"
             kind="error"
             :title="$t('action.add-client')"
@@ -220,7 +240,9 @@
       <template slot="secondary-button">{{
         core.$t("common.cancel")
       }}</template>
-      <template slot="primary-button">{{ $t("clients.add_machine") }}</template>
+      <template slot="primary-button">{{
+        verifiedName ? $t("clients.save") : $t("clients.verify")
+      }}</template>
     </NsModal>
     <!-- enrollment -->
     <NsModal
@@ -374,7 +396,17 @@
       }}</template>
       <template slot="content">
         <p class="mg-bottom">{{ $t("clients.remove_warning") }}</p>
-        <p>{{ $t("clients.remove_snapshots") }}</p>
+        <cv-checkbox
+          v-model="deleteSnapshots"
+          value="deleteSnapshots"
+          :label="$t('clients.delete_snapshots')"
+          :disabled="loading.removeClient"
+          class="mg-bottom"
+        />
+        <p v-if="deleteSnapshots">
+          {{ $t("clients.delete_snapshots_warning") }}
+        </p>
+        <p v-else>{{ $t("clients.remove_snapshots") }}</p>
       </template>
       <template slot="secondary-button">{{
         core.$t("common.cancel")
@@ -441,6 +473,10 @@ export default {
       newUsername: "",
       newHostname: "",
       newOwnerEmail: "",
+      // Name already checked for old snapshots: the next click saves
+      verifiedName: "",
+      existingSnapshots: null,
+      deleteSnapshots: false,
       isShownEnrollmentModal: false,
       enrollmentName: "",
       enrollment: null,
@@ -452,6 +488,7 @@ export default {
         getConfiguration: false,
         listClients: false,
         addClient: false,
+        countSnapshots: false,
         getEnrollment: false,
         resetClient: false,
         removeClient: false,
@@ -459,6 +496,7 @@ export default {
       error: {
         listClients: "",
         addClient: "",
+        countSnapshots: "",
         getEnrollment: "",
         resetClient: "",
         removeClient: "",
@@ -467,6 +505,14 @@ export default {
         owner_email: "",
       },
     };
+  },
+  watch: {
+    newUsername() {
+      this.resetVerification();
+    },
+    newHostname() {
+      this.resetVerification();
+    },
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
@@ -549,6 +595,7 @@ export default {
       this.newUsername = "";
       this.newHostname = "";
       this.newOwnerEmail = "";
+      this.resetVerification();
       this.error.addClient = "";
       this.error.username = "";
       this.error.hostname = "";
@@ -579,10 +626,44 @@ export default {
       }
       return !focus;
     },
-    addClient() {
+    resetVerification() {
+      this.verifiedName = "";
+      this.existingSnapshots = null;
+      this.error.countSnapshots = "";
+    },
+    verifyOrAddClient() {
       if (!this.validateAddClient()) {
         return;
       }
+      const name = `${this.newUsername}@${this.newHostname}`;
+      if (this.verifiedName === name) {
+        this.addClient();
+        return;
+      }
+      this.loading.countSnapshots = true;
+      this.error.countSnapshots = "";
+      const fail = (message) => {
+        this.error.countSnapshots = message;
+        this.loading.countSnapshots = false;
+      };
+      this.runModuleTask({
+        action: "count-snapshots",
+        data: { name },
+        completed: (output) => {
+          this.loading.countSnapshots = false;
+          this.verifiedName = name;
+          if (output.count > 0) {
+            // The admin reads the warning, then saves on purpose
+            this.existingSnapshots = output;
+          } else {
+            this.addClient();
+          }
+        },
+        aborted: fail,
+        failed: fail,
+      });
+    },
+    addClient() {
       this.loading.addClient = true;
       this.error.addClient = "";
       const fail = (message) => {
@@ -690,6 +771,7 @@ export default {
     },
     showRemoveModal(client) {
       this.clientToRemove = client;
+      this.deleteSnapshots = false;
       this.error.removeClient = "";
       this.isShownRemoveModal = true;
     },
@@ -708,7 +790,7 @@ export default {
       };
       this.runModuleTask({
         action: "remove-client",
-        data: { name: client.name },
+        data: { name: client.name, delete_snapshots: this.deleteSnapshots },
         title: this.$t("clients.removing_machine", { name: client.name }),
         isNotificationHidden: false,
         completed: () => {

@@ -425,6 +425,12 @@ def parse_time(value):
     return datetime.fromisoformat(value)
 
 
+def machine_snapshots(name):
+    """Return the snapshot manifests of every source of a machine identity."""
+    return [snap for snap in kopia_json(["snapshot", "list", "--all"]) or []
+            if client_name(snap["source"]["userName"], snap["source"]["host"]) == name]
+
+
 def last_snapshots():
     """Return {user@host: newest end time} of the complete snapshots."""
     last = {}
