@@ -19,14 +19,16 @@ with km.clients_lock():
     users = {u["username"] for u in km.kopia_json(["server", "user", "list"]) or []}
     if name in users:
         km.kopia(["server", "user", "delete", name])
-    if request.get("delete_snapshots"):
-        # The machine itself cannot delete them, its snapshot access is APPEND
-        ids = [snap["id"] for snap in km.machine_snapshots(name)]
-        if ids:
-            km.kopia(["snapshot", "delete", "--delete"] + ids, timeout=3600)
-            print(f"Deleted {len(ids)} snapshots of {name}", file=sys.stderr)
     km.save_clients([c for c in clients if c["name"] != name])
     hashes = km.load_client_hashes()
     hashes.pop(name, None)
     km.save_client_hashes(hashes)
 km.server_refresh()
+
+# Outside the lock: a long delete must not block other machines, and a failure here leaves the
+# machine removed with only its snapshots left. The machine cannot delete them, its access is APPEND.
+if request.get("delete_snapshots"):
+    ids = [snap["id"] for snap in km.machine_snapshots(name)]
+    if ids:
+        km.kopia(["snapshot", "delete", "--delete"] + ids, timeout=3600)
+        print(f"Deleted {len(ids)} snapshots of {name}", file=sys.stderr)

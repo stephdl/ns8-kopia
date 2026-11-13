@@ -642,15 +642,24 @@ export default {
       }
       this.loading.countSnapshots = true;
       this.error.countSnapshots = "";
+      // The admin may cancel or change the name while the check runs: ignore a stale answer
+      const isCurrent = () =>
+        this.isShownAddModal &&
+        `${this.newUsername}@${this.newHostname}` === name;
       const fail = (message) => {
-        this.error.countSnapshots = message;
         this.loading.countSnapshots = false;
+        if (isCurrent()) {
+          this.error.countSnapshots = message;
+        }
       };
       this.runModuleTask({
         action: "count-snapshots",
         data: { name },
         completed: (output) => {
           this.loading.countSnapshots = false;
+          if (!isCurrent()) {
+            return;
+          }
           this.verifiedName = name;
           if (output.count > 0) {
             // The admin reads the warning, then saves on purpose
@@ -658,6 +667,16 @@ export default {
           } else {
             this.addClient();
           }
+        },
+        validationFailed: (validationErrors) => {
+          this.loading.countSnapshots = false;
+          if (!isCurrent()) {
+            return;
+          }
+          for (const e of validationErrors) {
+            this.error[e.parameter] = "clients." + e.error;
+          }
+          this.focusElement(validationErrors[0].parameter);
         },
         aborted: fail,
         failed: fail,

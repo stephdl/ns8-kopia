@@ -13,8 +13,9 @@ import agent
 import kopia_module as km
 
 # Each machine sees and adds only its own snapshots, reads its policies and cannot change its own
-# account: the module state stays the only source of passwords. APPEND keeps a stolen machine from
-# deleting its history, and the server still applies the retention when the machine asks for it.
+# account: the module state stays the only source of passwords. APPEND blocks a direct delete, and
+# the server still applies the retention when the machine asks. It is no full guard: the machine sets
+# the time of its snapshots, so fake ones can push the real ones out of the retention.
 ACLS = [
     ("type=content", "APPEND"),
     ("type=policy,policyType=global", "READ"),

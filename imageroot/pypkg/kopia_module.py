@@ -426,8 +426,8 @@ def parse_time(value):
 
 
 def machine_snapshots(name):
-    """Return the snapshot manifests of every source of a machine identity."""
-    return [snap for snap in kopia_json(["snapshot", "list", "--all"]) or []
+    """Return the snapshot manifests of every source of a machine identity, incomplete ones too."""
+    return [snap for snap in kopia_json(["snapshot", "list", "--all", "--incomplete"]) or []
             if client_name(snap["source"]["userName"], snap["source"]["host"]) == name]
 
 

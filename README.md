@@ -122,7 +122,10 @@ repository, which every backup needs. It cannot change any policy or its own acc
 snapshots still expire: after each snapshot the machine asks the server to apply the
 retention of the policy, and the server deletes them. A machine that stops backing up keeps
 its last snapshots. Anyone holding the script can read and restore the backups of that
-machine, from anywhere, but not delete them. If a script leaks, reset the password.
+machine, from anywhere, but not delete them directly. This is no full guard: a machine sets
+the time of its own snapshots, so a stolen script can create fake ones that push the real
+ones out of the retention. The cluster backup, with its own retention, is the fallback. If a
+script leaks, reset the password.
 
 The ACLs protect the policies in the repository, not the machine itself. Its user can still
 leave out any folder: Kopia reads a `.kopiaignore` file in each folder it backs up, with
