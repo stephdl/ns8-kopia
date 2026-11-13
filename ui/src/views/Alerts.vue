@@ -72,20 +72,6 @@
                 ref="admin_alert_hours"
               />
             </div>
-            <div class="field-grid">
-              <NsTextInput
-                type="number"
-                min="50"
-                max="99"
-                v-model.number="diskAlertPercent"
-                :label="$t('alerts.disk_alert_percent')"
-                :helper-text="$t('alerts.disk_alert_percent_helper')"
-                :invalid-message="$t(error.disk_alert_percent)"
-                :disabled="stillLoading || !isConfigured"
-                class="mg-bottom"
-                ref="disk_alert_percent"
-              />
-            </div>
             <cv-text-area
               v-model="adminRecipientsText"
               :label="$t('alerts.admin_recipients')"
@@ -238,7 +224,6 @@ export default {
       adminRecipientsText: "",
       alertSender: "",
       alertLanguage: "",
-      diskAlertPercent: 85,
       testRecipient: "",
       testMailSent: "",
       loading: {
@@ -255,7 +240,6 @@ export default {
         admin_recipients: "",
         alert_sender: "",
         alert_language: "",
-        disk_alert_percent: "",
         recipient: "",
       },
     };
@@ -309,9 +293,6 @@ export default {
     isHours(value, max = 8760) {
       return Number.isInteger(value) && value >= 1 && value <= max;
     },
-    isCount(value, max) {
-      return Number.isInteger(value) && value >= 0 && value <= max;
-    },
     goToSettings() {
       this.goToAppPage(this.instanceName, "settings");
     },
@@ -343,7 +324,6 @@ export default {
       this.adminRecipientsText = (config.admin_recipients || []).join("\n");
       this.alertSender = config.alert_sender || "";
       this.alertLanguage = config.alert_language;
-      this.diskAlertPercent = config.disk_alert_percent;
       this.loading.getConfiguration = false;
     },
     fail(field, message) {
@@ -371,12 +351,6 @@ export default {
       }
       if (this.alertSender && !this.isEmail(this.alertSender)) {
         this.fail("alert_sender", "settings.alert_sender_invalid");
-      }
-      if (
-        !this.isCount(this.diskAlertPercent, 99) ||
-        this.diskAlertPercent < 50
-      ) {
-        this.fail("disk_alert_percent", "settings.disk_percent_range");
       }
       if (this.firstError) {
         this.focusElement(this.firstError);
@@ -408,7 +382,6 @@ export default {
         admin_recipients: this.adminRecipients,
         alert_sender: this.alertSender,
         alert_language: this.alertLanguage,
-        disk_alert_percent: this.diskAlertPercent,
       };
       this.runModuleTask({
         action: "configure-module",

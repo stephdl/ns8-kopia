@@ -65,7 +65,7 @@ flowchart TB
     APPLY -- "users, ACLs, global policy" --> K[Kopia server]
     T1["kopia-check.timer<br/>hourly"] --> CHECK["bin/kopia-check"]
     CHECK -- "snapshot list --all" --> K
-    CHECK -- "stale and disk mails" --> SMTP["cluster smarthost"]
+    CHECK -- "stale backup mails" --> SMTP["cluster smarthost"]
     T2["kopia-verify.timer<br/>Sunday 03:00"] --> VERIFY["bin/kopia-verify<br/>content verify,<br/>share set in Policies"]
     VERIFY --> K
     K --- REPO[("kopia-repository<br/>NOT in the module backup")]
@@ -134,8 +134,6 @@ from the admin level to the owner level gets no mail: it backed up once, but it 
 | Owner late | `Backup late: <machine>` | owner email of the machine | last backup reaches the owner threshold (default 48 h) |
 | Admin late | `Backup late: <machine> (<hours> h)` | admin recipients | last backup reaches the admin threshold (default 96 h) |
 | Back to normal | `Backup back to normal: <machine>` | owner, plus admins if they were warned | a new backup brings the age under the owner threshold |
-| Disk almost full | `Backup disk almost full on <host>` | admin recipients | repository disk use reaches the threshold (default 85 %) |
-| Disk back to normal | `Backup disk back to normal on <host>` | admin recipients | disk use falls 2 points under the threshold |
 | Verification failed | `Backup verification failed on <host>` | admin recipients | the weekly `kopia content verify` finds errors |
 | Test | `Kopia test mail from <host>` | the address typed on the Alerts page | the admin clicks "Send test mail" |
 
@@ -163,7 +161,7 @@ The module UI has three pages for this:
   repository password.
 - **Policies**: the global policy of every machine (schedule, retention, compression,
   excludes) and the share of data read by the weekly integrity check.
-- **Alerts**: owner and admin thresholds, disk threshold, recipients, sender, language, and a
+- **Alerts**: owner and admin thresholds, recipients, sender, language, and a
   test mail.
 
 Each page saves only its own fields. From the command line, send only the fields to change.

@@ -29,7 +29,6 @@
             ],
             "alert_sender": "",
             "alert_language": "en",
-            "disk_alert_percent": 85,
             "verify_percent": 10
         }
     ],
@@ -174,12 +173,6 @@
                 "pt_BR",
                 "eu"
             ]
-        },
-        "disk_alert_percent": {
-            "type": "integer",
-            "minimum": 50,
-            "maximum": 99,
-            "description": "Repository disk use that sends a mail to the admins."
         },
         "verify_percent": {
             "type": "integer",

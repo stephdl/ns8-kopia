@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# Hourly check of stale backups and repository disk space. alerts.json keeps what was already
+# Hourly check of stale backups. alerts.json keeps what was already
 # sent, so one mail goes out when a threshold is crossed and one when things are back to normal.
 
 import json
@@ -99,25 +99,7 @@ def check_machines():
     return True
 
 
-def check_disk():
-    disk = km.disk_usage()
-    # Without recipients nothing is recorded, so the mail goes out once someone is set
-    if not disk or not admins:
-        return
-    previous = alerts.get("disk", "ok")
-    threshold = settings["disk_alert_percent"]
-    values = {"percent": disk["percent"], "free": round(disk["free"] / 1e9, 1)}
-    # Two points of margin so a disk around the threshold does not send a mail every hour
-    if previous == "ok" and disk["percent"] >= threshold:
-        if send(admins, "disk_high", **values):
-            alerts["disk"] = "high"
-    elif previous == "high" and disk["percent"] < threshold - 2:
-        if send(admins, "disk_ok", **values):
-            alerts["disk"] = "ok"
-
-
 ok = check_machines()
-check_disk()
 tmp = ALERTS + ".tmp"
 with open(tmp, "w") as f:
     json.dump(alerts, f, indent=2)
