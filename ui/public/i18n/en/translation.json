@@ -23,7 +23,8 @@
         "get-client-enrollment": "Get the enrollment script",
         "get-repository-password": "Show the repository password",
         "send-test-mail": "Send a test mail",
-        "count-snapshots": "Check old snapshots"
+        "count-snapshots": "Check old snapshots",
+        "list-client-folders": "List the folders"
     },
     "error": {
         "error": "Error",
@@ -151,7 +152,18 @@
         "existing_snapshots_title": "This name already has snapshots",
         "existing_snapshots_description": "{count} snapshots from {first} to {last} belong to this name. The new machine will see and restore them. Save to keep them, or pick another name.",
         "delete_snapshots": "Also delete all its snapshots",
-        "delete_snapshots_warning": "Every snapshot of this machine is deleted. This cannot be undone, except from a module backup. Maintenance frees the space within a day or two."
+        "delete_snapshots_warning": "Every snapshot of this machine is deleted. This cannot be undone, except from a module backup. Maintenance frees the space within a day or two.",
+        "folders": "Folders",
+        "folders_title": "Folders of {name}",
+        "no_folders": "No folder yet. Add one below, or the machine adds its first one with a snapshot.",
+        "folder_never": "Never backed up",
+        "folder_open": "Edit in Kopia",
+        "add_folder": "Add a folder",
+        "folder_placeholder": "C:\\Users\\anna\\Documents",
+        "folder_helper": "Absolute path on the machine, such as /home/anna/Documents or C:\\Users\\anna\\Documents. It opens the Kopia web UI: click Save Policy there.",
+        "folder_add_open": "Open in Kopia",
+        "folder_invalid": "Use an absolute path: /home/anna/Documents, C:\\Users\\anna\\Documents or \\\\server\\share. Windows paths keep their backslashes.",
+        "folder_refresh_note": "The machine sees a new folder within 4 hours, or at once with the refresh button of KopiaUI."
     },
     "settings": {
         "title": "Settings",

@@ -23,7 +23,8 @@
         "get-client-enrollment": "Lire le script d'enrôlement",
         "get-repository-password": "Afficher le mot de passe du dépôt",
         "send-test-mail": "Envoyer un mail de test",
-        "count-snapshots": "Vérifier les anciens instantanés"
+        "count-snapshots": "Vérifier les anciens instantanés",
+        "list-client-folders": "Lister les dossiers"
     },
     "error": {
         "error": "Erreur",
@@ -151,7 +152,18 @@
         "existing_snapshots_title": "Ce nom a déjà des instantanés",
         "existing_snapshots_description": "{count} instantanés du {first} au {last} appartiennent à ce nom. La nouvelle machine pourra les voir et les restaurer. Enregistrez pour les garder, ou choisissez un autre nom.",
         "delete_snapshots": "Supprimer aussi tous ses instantanés",
-        "delete_snapshots_warning": "Tous les instantanés de cette machine sont supprimés. C'est irréversible, sauf depuis une sauvegarde du module. La maintenance libère l'espace sous un ou deux jours."
+        "delete_snapshots_warning": "Tous les instantanés de cette machine sont supprimés. C'est irréversible, sauf depuis une sauvegarde du module. La maintenance libère l'espace sous un ou deux jours.",
+        "folders": "Dossiers",
+        "folders_title": "Dossiers de {name}",
+        "no_folders": "Aucun dossier pour l'instant. Ajoutez-en un ci-dessous, ou la machine ajoute le premier avec un instantané.",
+        "folder_never": "Jamais sauvegardé",
+        "folder_open": "Modifier dans Kopia",
+        "add_folder": "Ajouter un dossier",
+        "folder_placeholder": "C:\\Users\\anna\\Documents",
+        "folder_helper": "Chemin absolu sur la machine, comme /home/anna/Documents ou C:\\Users\\anna\\Documents. L'interface web Kopia s'ouvre : cliquez sur Save Policy.",
+        "folder_add_open": "Ouvrir dans Kopia",
+        "folder_invalid": "Saisissez un chemin absolu : /home/anna/Documents, C:\\Users\\anna\\Documents ou \\\\serveur\\partage. Les chemins Windows gardent leurs antislashs.",
+        "folder_refresh_note": "La machine voit un nouveau dossier sous 4 heures, ou tout de suite avec le bouton de rafraîchissement de KopiaUI."
     },
     "settings": {
         "title": "Paramètres",

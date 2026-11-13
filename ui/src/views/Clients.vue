@@ -143,6 +143,12 @@
                         :label="$t('clients.show_enrollment')"
                       />
                     </cv-overflow-menu-item>
+                    <cv-overflow-menu-item @click="showFoldersModal(row)">
+                      <NsMenuItem
+                        :icon="Folder20"
+                        :label="$t('clients.folders')"
+                      />
+                    </cv-overflow-menu-item>
                     <cv-overflow-menu-item @click="showResetModal(row)">
                       <NsMenuItem
                         :icon="Reset20"
@@ -382,6 +388,76 @@
     <!-- remove -->
     <NsModal
       size="default"
+      :visible="isShownFoldersModal"
+      @modal-hidden="isShownFoldersModal = false"
+    >
+      <template slot="title">{{
+        $t("clients.folders_title", { name: foldersClient })
+      }}</template>
+      <template slot="content">
+        <NsInlineNotification
+          v-if="error.listFolders"
+          kind="error"
+          :title="$t('action.list-client-folders')"
+          :description="error.listFolders"
+          :showCloseButton="false"
+        />
+        <cv-skeleton-text
+          v-else-if="loading.listFolders"
+          :paragraph="true"
+          :line-count="3"
+        />
+        <template v-else>
+          <p v-if="!folders.length" class="mg-bottom">
+            {{ $t("clients.no_folders") }}
+          </p>
+          <div v-else class="folder-list mg-bottom">
+            <div
+              v-for="folder in folders"
+              :key="folder.path"
+              class="folder-row"
+            >
+              <div class="folder-path">{{ folder.path }}</div>
+              <div class="folder-date">
+                {{
+                  folder.last_backup
+                    ? formatDateTime(folder.last_backup)
+                    : $t("clients.folder_never")
+                }}
+              </div>
+              <NsButton
+                kind="ghost"
+                size="small"
+                :icon="Launch20"
+                @click="openFolderPolicy(folder.path)"
+                >{{ $t("clients.folder_open") }}</NsButton
+              >
+            </div>
+          </div>
+        </template>
+        <cv-form @submit.prevent="addFolder">
+          <cv-text-input
+            v-model.trim="newFolder"
+            :label="$t('clients.add_folder')"
+            :placeholder="$t('clients.folder_placeholder')"
+            :helper-text="$t('clients.folder_helper')"
+            :invalid-message="error.newFolder ? $t(error.newFolder) : ''"
+            ref="newFolder"
+          />
+          <NsButton
+            kind="secondary"
+            :icon="Launch20"
+            type="submit"
+            class="mg-top"
+            >{{ $t("clients.folder_add_open") }}</NsButton
+          >
+        </cv-form>
+        <p class="mg-top">{{ $t("clients.folder_refresh_note") }}</p>
+      </template>
+      <template slot="secondary-button">{{ core.$t("common.close") }}</template>
+    </NsModal>
+    <NsModal
+      size="default"
       kind="danger"
       :visible="isShownRemoveModal"
       :primary-button-disabled="loading.removeClient"
@@ -427,6 +503,9 @@ import {
   DateTimeService,
 } from "@nethserver/ns8-ui-lib";
 import ModuleTask from "@/mixins/moduleTask";
+
+// Kopia compares paths as text: a Windows path keeps its backslashes and drive letter
+const FOLDER_PATTERNS = [/^\/./, /^[A-Za-z]:\\/, /^\\\\[^\\]+\\[^\\]+/];
 
 // Same rule as the backend
 const NAME_PATTERN = /^[a-z0-9]([a-z0-9._-]{0,62}[a-z0-9])?$/;
@@ -484,6 +563,11 @@ export default {
       clientToReset: null,
       isShownRemoveModal: false,
       clientToRemove: null,
+      isShownFoldersModal: false,
+      foldersClient: "",
+      folders: [],
+      newFolder: "",
+      host: "",
       loading: {
         getConfiguration: false,
         listClients: false,
@@ -492,6 +576,7 @@ export default {
         getEnrollment: false,
         resetClient: false,
         removeClient: false,
+        listFolders: false,
       },
       error: {
         listClients: "",
@@ -500,6 +585,8 @@ export default {
         getEnrollment: "",
         resetClient: "",
         removeClient: "",
+        listFolders: "",
+        newFolder: "",
         username: "",
         hostname: "",
         owner_email: "",
@@ -565,6 +652,7 @@ export default {
         action: "get-configuration",
         completed: (config) => {
           this.configured = config.host !== "";
+          this.host = config.host;
           done();
           if (this.configured) {
             this.listClients();
@@ -788,6 +876,56 @@ export default {
         failed: fail,
       });
     },
+    showFoldersModal(client) {
+      this.foldersClient = client.name;
+      this.folders = [];
+      this.newFolder = "";
+      this.error.newFolder = "";
+      this.isShownFoldersModal = true;
+      this.listFolders();
+    },
+    listFolders() {
+      const name = this.foldersClient;
+      this.loading.listFolders = true;
+      this.error.listFolders = "";
+      const fail = (message) => {
+        this.error.listFolders = message;
+        this.loading.listFolders = false;
+      };
+      this.runModuleTask({
+        action: "list-client-folders",
+        data: { name },
+        completed: (output) => {
+          // The modal may show another machine by now
+          if (name === this.foldersClient) {
+            this.folders = output.folders;
+          }
+          this.loading.listFolders = false;
+        },
+        aborted: fail,
+        failed: fail,
+      });
+    },
+    // The Policies form of the Kopia web UI rejects user@host:/path (kopia/kopia#5815),
+    // its editor accepts the target in the URL
+    openFolderPolicy(path) {
+      const [userName, host] = this.foldersClient.split("@");
+      const query = new URLSearchParams({ userName, host, path });
+      window.open(
+        `https://${this.host}/policies/edit?${query}`,
+        "_blank",
+        "noopener"
+      );
+    },
+    addFolder() {
+      this.error.newFolder = "";
+      if (!FOLDER_PATTERNS.some((p) => p.test(this.newFolder))) {
+        this.error.newFolder = "clients.folder_invalid";
+        this.focusElement("newFolder");
+        return;
+      }
+      this.openFolderPolicy(this.newFolder);
+    },
     showRemoveModal(client) {
       this.clientToRemove = client;
       this.deleteSnapshots = false;
@@ -830,6 +968,34 @@ export default {
 
 .mg-bottom {
   margin-bottom: $spacing-05;
+}
+
+.mg-top {
+  margin-top: $spacing-05;
+}
+
+.folder-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+}
+
+.folder-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-03 $spacing-05;
+}
+
+.folder-path {
+  flex: 1 1 14rem;
+  font-family: monospace;
+  overflow-wrap: anywhere;
+}
+
+.folder-date {
+  font-size: 0.75rem;
+  color: $text-02;
 }
 
 .toolbar {
