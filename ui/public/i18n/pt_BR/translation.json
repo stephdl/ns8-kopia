@@ -22,7 +22,9 @@
         "reset-client-password": "Redefinir a senha de uma máquina",
         "get-client-enrollment": "Ler o script de registro",
         "get-repository-password": "Mostrar a senha do repositório",
-        "send-test-mail": "Enviar um e-mail de teste"
+        "send-test-mail": "Enviar um e-mail de teste",
+        "count-snapshots": "Verificar snapshots antigos",
+        "list-client-folders": "Listar as pastas"
     },
     "error": {
         "error": "Erro",
@@ -144,7 +146,23 @@
         "enrollment_once_title": "Copie o script agora",
         "enrollment_once_description": "Ele contém a senha da máquina. Não será mostrado de novo. Para obter um novo script, redefina a senha.",
         "enrollment_hidden_title": "Script de inscrição não está mais disponível",
-        "enrollment_hidden_description": "O script contém a senha da máquina e o servidor não a guarda. Para instalar ou reinstalar esta máquina, redefina a senha para obter um novo script. Até executar o novo script, a máquina não pode fazer backup."
+        "enrollment_hidden_description": "O script contém a senha da máquina e o servidor não a guarda. Para instalar ou reinstalar esta máquina, redefina a senha para obter um novo script. Até executar o novo script, a máquina não pode fazer backup.",
+        "verify": "Verificar",
+        "save": "Salvar",
+        "existing_snapshots_title": "Este nome já tem snapshots",
+        "existing_snapshots_description": "{count} snapshots de {first} a {last} pertencem a este nome. A nova máquina vai vê-los e restaurá-los. Salve para mantê-los, ou escolha outro nome.",
+        "delete_snapshots": "Excluir também todos os snapshots dela",
+        "delete_snapshots_warning": "Todos os snapshots e pastas desta máquina são excluídos. Não é possível desfazer, exceto a partir de um backup do módulo. A manutenção libera o espaço em um ou dois dias.",
+        "folders": "Pastas",
+        "folders_title": "Pastas de {name}",
+        "no_folders": "Nenhuma pasta ainda. Adicione uma abaixo, ou a máquina adiciona a primeira com um snapshot.",
+        "folder_never": "Nunca teve backup",
+        "folder_open": "Editar no Kopia",
+        "add_folder": "Adicionar uma pasta",
+        "folder_placeholder": "C:\\Users\\anna\\Documents",
+        "folder_helper": "Caminho absoluto na máquina, como /home/anna/Documents ou C:\\Users\\anna\\Documents. Salve a política no Kopia e clique em Atualizar. A máquina vê a pasta em até 4 horas, ou na hora com o botão de atualizar do KopiaUI.",
+        "folder_add_open": "Abrir no Kopia",
+        "folder_invalid": "Use um caminho absoluto: /home/anna/Documents, C:\\Users\\anna\\Documents ou \\\\server\\share. Os caminhos do Windows mantêm as barras invertidas."
     },
     "settings": {
         "title": "Configurações",

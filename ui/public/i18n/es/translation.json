@@ -22,7 +22,9 @@
         "reset-client-password": "Restablecer la contraseña de un equipo",
         "get-client-enrollment": "Leer el script de registro",
         "get-repository-password": "Mostrar la contraseña del repositorio",
-        "send-test-mail": "Enviar un correo de prueba"
+        "send-test-mail": "Enviar un correo de prueba",
+        "count-snapshots": "Comprobar instantáneas antiguas",
+        "list-client-folders": "Listar las carpetas"
     },
     "error": {
         "error": "Error",
@@ -144,7 +146,23 @@
         "enrollment_once_title": "Copie el script ahora",
         "enrollment_once_description": "Contiene la contraseña del equipo. No se volverá a mostrar. Para obtener un nuevo script, restablezca la contraseña.",
         "enrollment_hidden_title": "El script de alta ya no está disponible",
-        "enrollment_hidden_description": "El script contiene la contraseña del equipo y el servidor no la guarda. Para instalar o reinstalar este equipo, restablezca su contraseña para obtener un nuevo script. Hasta que ejecute el nuevo script, el equipo no puede hacer copias."
+        "enrollment_hidden_description": "El script contiene la contraseña del equipo y el servidor no la guarda. Para instalar o reinstalar este equipo, restablezca su contraseña para obtener un nuevo script. Hasta que ejecute el nuevo script, el equipo no puede hacer copias.",
+        "verify": "Comprobar",
+        "save": "Guardar",
+        "existing_snapshots_title": "Este nombre ya tiene instantáneas",
+        "existing_snapshots_description": "{count} instantáneas del {first} al {last} pertenecen a este nombre. El nuevo equipo las verá y podrá restaurarlas. Guarde para conservarlas o elija otro nombre.",
+        "delete_snapshots": "Borrar también todas sus instantáneas",
+        "delete_snapshots_warning": "Se borran todas las instantáneas y carpetas de este equipo. No se puede deshacer, salvo desde una copia del módulo. El mantenimiento libera el espacio en uno o dos días.",
+        "folders": "Carpetas",
+        "folders_title": "Carpetas de {name}",
+        "no_folders": "Aún no hay carpetas. Añada una abajo, o el equipo añade la primera con una instantánea.",
+        "folder_never": "Nunca copiada",
+        "folder_open": "Editar en Kopia",
+        "add_folder": "Añadir una carpeta",
+        "folder_placeholder": "C:\\Users\\anna\\Documents",
+        "folder_helper": "Ruta absoluta en el equipo, como /home/anna/Documents o C:\\Users\\anna\\Documents. Guarde la política en Kopia y luego haga clic en Actualizar. El equipo ve la carpeta en 4 horas como máximo, o al instante con el botón de actualizar de KopiaUI.",
+        "folder_add_open": "Abrir en Kopia",
+        "folder_invalid": "Use una ruta absoluta: /home/anna/Documents, C:\\Users\\anna\\Documents o \\\\server\\share. Las rutas de Windows conservan sus barras invertidas."
     },
     "settings": {
         "title": "Ajustes",

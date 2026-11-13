@@ -22,7 +22,9 @@
         "reset-client-password": "Repor a palavra-passe de uma máquina",
         "get-client-enrollment": "Ler o script de registo",
         "get-repository-password": "Mostrar a palavra-passe do repositório",
-        "send-test-mail": "Enviar um email de teste"
+        "send-test-mail": "Enviar um email de teste",
+        "count-snapshots": "Verificar instantâneos antigos",
+        "list-client-folders": "Listar as pastas"
     },
     "error": {
         "error": "Erro",
@@ -144,7 +146,23 @@
         "enrollment_once_title": "Copie o script agora",
         "enrollment_once_description": "Contém a palavra-passe da máquina. Não voltará a ser mostrado. Para obter um novo script, reponha a palavra-passe.",
         "enrollment_hidden_title": "Script de inscrição já não disponível",
-        "enrollment_hidden_description": "O script contém a palavra-passe da máquina e o servidor não a guarda. Para instalar ou reinstalar esta máquina, reponha a palavra-passe para obter um novo script. Até executar o novo script, a máquina não pode fazer cópias."
+        "enrollment_hidden_description": "O script contém a palavra-passe da máquina e o servidor não a guarda. Para instalar ou reinstalar esta máquina, reponha a palavra-passe para obter um novo script. Até executar o novo script, a máquina não pode fazer cópias.",
+        "verify": "Verificar",
+        "save": "Guardar",
+        "existing_snapshots_title": "Este nome já tem instantâneos",
+        "existing_snapshots_description": "{count} instantâneos de {first} a {last} pertencem a este nome. A nova máquina vai vê-los e restaurá-los. Guarde para os manter, ou escolha outro nome.",
+        "delete_snapshots": "Apagar também todos os seus instantâneos",
+        "delete_snapshots_warning": "Todos os instantâneos e pastas desta máquina são apagados. Não é possível anular, exceto a partir de uma cópia do módulo. A manutenção liberta o espaço em um ou dois dias.",
+        "folders": "Pastas",
+        "folders_title": "Pastas de {name}",
+        "no_folders": "Ainda não há pastas. Adicione uma abaixo, ou a máquina adiciona a primeira com um instantâneo.",
+        "folder_never": "Nunca copiada",
+        "folder_open": "Editar no Kopia",
+        "add_folder": "Adicionar uma pasta",
+        "folder_placeholder": "C:\\Users\\anna\\Documents",
+        "folder_helper": "Caminho absoluto na máquina, como /home/anna/Documents ou C:\\Users\\anna\\Documents. Guarde a política no Kopia e clique em Atualizar. A máquina vê a pasta no prazo de 4 horas, ou de imediato com o botão de atualizar do KopiaUI.",
+        "folder_add_open": "Abrir no Kopia",
+        "folder_invalid": "Use um caminho absoluto: /home/anna/Documents, C:\\Users\\anna\\Documents ou \\\\server\\share. Os caminhos do Windows mantêm as barras invertidas."
     },
     "settings": {
         "title": "Definições",

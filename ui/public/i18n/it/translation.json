@@ -22,7 +22,9 @@
         "reset-client-password": "Reimposta la password di una macchina",
         "get-client-enrollment": "Leggi lo script di registrazione",
         "get-repository-password": "Mostra la password del repository",
-        "send-test-mail": "Invia una mail di prova"
+        "send-test-mail": "Invia una mail di prova",
+        "count-snapshots": "Controlla i vecchi snapshot",
+        "list-client-folders": "Elenca le cartelle"
     },
     "error": {
         "error": "Errore",
@@ -144,7 +146,23 @@
         "enrollment_once_title": "Copia lo script ora",
         "enrollment_once_description": "Contiene la password della macchina. Non verrà più mostrato. Per avere un nuovo script, reimposta la password.",
         "enrollment_hidden_title": "Script di registrazione non più disponibile",
-        "enrollment_hidden_description": "Lo script contiene la password della macchina e il server non la conserva. Per installare o reinstallare questa macchina, reimposta la sua password per ottenere un nuovo script. Finché non esegui il nuovo script, la macchina non può fare backup."
+        "enrollment_hidden_description": "Lo script contiene la password della macchina e il server non la conserva. Per installare o reinstallare questa macchina, reimposta la sua password per ottenere un nuovo script. Finché non esegui il nuovo script, la macchina non può fare backup.",
+        "verify": "Verifica",
+        "save": "Salva",
+        "existing_snapshots_title": "Questo nome ha già degli snapshot",
+        "existing_snapshots_description": "{count} snapshot dal {first} al {last} appartengono a questo nome. La nuova macchina li vedrà e potrà ripristinarli. Salva per tenerli, oppure scegli un altro nome.",
+        "delete_snapshots": "Elimina anche tutti i suoi snapshot",
+        "delete_snapshots_warning": "Tutti gli snapshot e le cartelle di questa macchina vengono eliminati. Non si può annullare, se non da un backup del modulo. La manutenzione libera lo spazio entro un giorno o due.",
+        "folders": "Cartelle",
+        "folders_title": "Cartelle di {name}",
+        "no_folders": "Ancora nessuna cartella. Aggiungine una qui sotto, oppure la macchina aggiunge la prima con uno snapshot.",
+        "folder_never": "Mai salvata",
+        "folder_open": "Modifica in Kopia",
+        "add_folder": "Aggiungi una cartella",
+        "folder_placeholder": "C:\\Users\\anna\\Documents",
+        "folder_helper": "Percorso assoluto sulla macchina, come /home/anna/Documents o C:\\Users\\anna\\Documents. Salva il criterio in Kopia, poi clicca Aggiorna. La macchina vede la cartella entro 4 ore, o subito con il pulsante di aggiornamento di KopiaUI.",
+        "folder_add_open": "Apri in Kopia",
+        "folder_invalid": "Usa un percorso assoluto: /home/anna/Documents, C:\\Users\\anna\\Documents o \\\\server\\share. I percorsi Windows mantengono le barre rovesciate."
     },
     "settings": {
         "title": "Impostazioni",
