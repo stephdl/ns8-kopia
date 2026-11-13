@@ -240,7 +240,7 @@ def kopia_json(args):
 
 
 def server_refresh():
-    """Make the server read new users and ACLs now instead of at the next index refresh."""
+    """Make the server read new users, ACLs and policies now instead of at the next index refresh."""
     port = os.environ.get("CLIENT_PORT", str(DEFAULT_PORT))
     script = (f'KOPIA_SERVER_USERNAME={CONTROL_USER} KOPIA_SERVER_PASSWORD="$KOPIA_SERVER_CONTROL_PASSWORD" '
               f'kopia server refresh --address=https://127.0.0.1:{port} '
@@ -423,6 +423,18 @@ def parse_time(value):
     # Kopia writes nanoseconds, Python reads microseconds
     value = re.sub(r"(\.\d{6})\d+", r"\1", value).replace("Z", "+00:00")
     return datetime.fromisoformat(value)
+
+
+def machine_snapshots(name):
+    """Return the snapshot manifests of every source of a machine identity, incomplete ones too."""
+    return [snap for snap in kopia_json(["snapshot", "list", "--all", "--incomplete"]) or []
+            if client_name(snap["source"]["userName"], snap["source"]["host"]) == name]
+
+
+def machine_policies(name):
+    """Return the policies defined for a machine identity, its own user@host one included."""
+    return [pol for pol in kopia_json(["policy", "list"]) or []
+            if client_name(pol["target"]["userName"], pol["target"]["host"]) == name]
 
 
 def last_snapshots():

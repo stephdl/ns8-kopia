@@ -12,14 +12,16 @@ import sys
 import agent
 import kopia_module as km
 
-# Each machine sees and manages only its own snapshots, reads its policies and cannot change
-# its own account: the module state stays the only source of passwords.
+# Each machine sees and adds only its own snapshots, reads its policies and cannot change its own
+# account: the module state stays the only source of passwords. APPEND blocks a direct delete, and
+# the server still applies the retention when the machine asks. It is no full guard: the machine sets
+# the time of its snapshots, so fake ones can push the real ones out of the retention.
 ACLS = [
     ("type=content", "APPEND"),
     ("type=policy,policyType=global", "READ"),
     ("type=policy,policyType=host,hostname=OWN_HOST", "READ"),
     ("type=policy,username=OWN_USER,hostname=OWN_HOST", "READ"),
-    ("type=snapshot,username=OWN_USER,hostname=OWN_HOST", "FULL"),
+    ("type=snapshot,username=OWN_USER,hostname=OWN_HOST", "APPEND"),
 ]
 
 
@@ -31,19 +33,17 @@ def apply_acls():
     current = sorted((e["user"], sorted(e["target"].items()), e["access"]) for e in km.kopia_json(["server", "acl", "list"]) or [])
     wanted = sorted(("*@*", sorted(target_dict(t).items()), a) for t, a in ACLS)
     if current == wanted:
-        return False
+        return
     print("Setting the module ACLs", file=sys.stderr)
     if current:
         km.kopia(["server", "acl", "delete", "--all", "--delete"])
     for target, access in ACLS:
         km.kopia(["server", "acl", "add", "--user=*@*", f"--target={target}", f"--access={access}"])
-    return True
 
 
 def apply_users():
     users = {u["username"]: u for u in km.kopia_json(["server", "user", "list"]) or []}
     hashes = km.load_client_hashes()
-    changed = False
     for client in km.load_clients():
         name = client["name"]
         encoded = hashes.get(name)
@@ -56,17 +56,15 @@ def apply_users():
         print(f"Machine account {name}: {verb}", file=sys.stderr)
         # Same hash as before: the machine keeps working with the password in its keyring
         km.set_user_hash(name, encoded, exists=name in users)
-        changed = True
-    return changed
 
 
 if not km.wait_server():
     print(agent.SD_ERR + "Kopia server did not answer", file=sys.stderr)
     sys.exit(1)
 
-changed = apply_acls()
+apply_acls()
 current = km.kopia_json(["policy", "show", "--global"]) or {}
 km.kopia(km.global_policy_args(current_ignore=current.get("files", {}).get("ignore", [])))
-changed = apply_users() or changed
-if changed:
-    km.server_refresh()
+apply_users()
+# Always refresh: the server applies the retention it has cached, not the policy just written.
+km.server_refresh()

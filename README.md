@@ -116,10 +116,16 @@ To reinstall a machine, reset its password and run the new script. The machine g
 identity, so it finds its old snapshots. Until the new script runs, the old password in its
 keyring stops working.
 
-Default ACLs: a machine sees, creates and deletes only its own snapshots. It reads its
-policies, the host policy and the global policy. It can append content to the repository,
-which every backup needs. It cannot change any policy or its own account. Anyone holding the script can read, restore and delete the backups of that machine,
-from anywhere. If a script leaks, reset the password.
+Default ACLs: a machine sees and creates only its own snapshots, and cannot delete any. It
+reads its policies, the host policy and the global policy. It can append content to the
+repository, which every backup needs. It cannot change any policy or its own account. Old
+snapshots still expire: after each snapshot the machine asks the server to apply the
+retention of the policy, and the server deletes them. A machine that stops backing up keeps
+its last snapshots. Anyone holding the script can read and restore the backups of that
+machine, from anywhere, but not delete them directly. This is no full guard: a machine sets
+the time of its own snapshots, so a stolen script can create fake ones that push the real
+ones out of the retention. The cluster backup, with its own retention, is the fallback. If a
+script leaks, reset the password.
 
 The ACLs protect the policies in the repository, not the machine itself. Its user can still
 leave out any folder: Kopia reads a `.kopiaignore` file in each folder it backs up, with
@@ -283,17 +289,32 @@ The script:
 1. connects to `https://<host>:<client port>` and pins the module certificate fingerprint;
 2. stores the password in the OS keyring (or in the Kopia config folder on Linux without a
    keyring);
-3. on a desktop, takes no snapshot: the user picks the folders in KopiaUI, under Snapshots,
-   **New Snapshot**. The module cannot choose them for every machine, and a machine cannot set
-   its own policy. KopiaUI then snapshots each picked folder at the policy interval while it
-   runs. It starts on Windows, and on Linux and macOS you start it. Checking "Launch at
-   Startup" in KopiaUI is up to the admin of the machine, the script does not do it;
+3. on a desktop, takes no snapshot. The machine cannot pick its own folders: **New Snapshot**
+   in KopiaUI fails with access denied, because it writes a policy and a machine only reads
+   its policies. The admin adds the folders instead, on the Clients page, under **Folders**
+   in the menu of the machine (see below). KopiaUI then snapshots each folder at the policy
+   interval while it runs. It starts on Windows, and on Linux and macOS you start it.
+   Checking "Launch at Startup" in KopiaUI is up to the admin of the machine, the script does
+   not do it;
 4. on a Linux server, backs up the whole home directory: the script adds a
    `kopia-snapshot.timer` systemd user timer at the policy interval (none in manual mode), and
    enables lingering so it keeps running after logout. The interval is written in the timer:
    after you change it, reset the password of the server and run the new script.
 
 The machine shows **Never seen** on the Clients page until its first snapshot, then **OK**.
+
+### Folders of a desktop
+
+On the Clients page, **Folders** in the menu of a machine lists the folders it backs up and
+the date of their last snapshot. To add one, type its absolute path as the machine sees it,
+such as `/home/anna/Documents` or `C:\Users\anna\Documents`, and click **Open in Kopia**.
+The Kopia web UI opens on the policy of that folder: log in as `admin` and click
+**Save Policy**. Windows paths keep their backslashes. KopiaUI on the machine sees the new
+folder at its next refresh, within 4 hours, or at once with its refresh button. To remove a
+folder, delete its policy in the Kopia web UI.
+
+The module opens the policy editor by its URL because the Policies form of the Kopia web UI
+rejects `user@host:/path` targets in Kopia 0.23.1 (kopia/kopia#5815).
 
 ### macOS permissions and schedule
 
@@ -328,13 +349,25 @@ Click **Reset password** on the machine, run the new script on it, then delete t
 old password stops working at once. The identity does not change, so the machine finds its
 old snapshots.
 
+### Remove a machine
+
+**Remove** deletes the account. By default its snapshots stay in the repository: a machine
+added later with the same `user@host` sees and restores them, which is how a dead machine is
+replaced, and so do its folders. Check **Also delete all its snapshots** to wipe the snapshots
+and the folders instead. The machine cannot do it itself, and maintenance frees the space
+within a day or two.
+
+**Add a machine** first checks the name: the button reads **Verify**. When the name still has
+snapshots, a warning gives their count and dates, and the button becomes **Save**. Save to
+give them to the new machine on purpose, or pick another name.
+
 ### Notes
 
 - A machine that sleeps or stays off takes no snapshot. KopiaUI must stay in the tray on
   Windows and macOS. A laptop outside the office backs up from anywhere the client port is
   reachable.
-- Never put the script in a GPO or in Intune in clear text. Anyone who reads it can read,
-  restore and delete the backups of that machine.
+- Never put the script in a GPO or in Intune in clear text. Anyone who reads it can read
+  and restore the backups of that machine.
 - Volume Shadow Copy on Windows needs administrator rights. The default script runs as the
   user and backs up the user files. For a whole machine backup, enroll it in an elevated
   session as a dedicated account instead.
@@ -348,7 +381,8 @@ old snapshots.
 | `add-client` | create `user@host`, return the scripts with the password |
 | `reset-client-password` | new password, return the new scripts |
 | `get-client-enrollment` | URL, fingerprint and identity, without the password |
-| `remove-client` | remove the account, its snapshots stay in the repository |
+| `remove-client` | remove the account, and its snapshots with `delete_snapshots` |
+| `count-snapshots` | count the snapshots left for a `user@host`, before it is added again |
 | `list-clients` | machines with last backup and state: `ok`, `late`, `late_admin`, `never_seen`, or `unknown` when the server does not answer |
 | `get-health` | server, disk use, certificate expiry, last integrity check |
 | `get-repository-password` | show the repository password |

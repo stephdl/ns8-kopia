@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# A folder of a machine exists once it has a snapshot or a policy: the admin creates the policy
+# in the Kopia web UI, the machine itself cannot.
+
+import json
+import sys
+import agent
+import kopia_module as km
+
+name = json.load(sys.stdin)["name"]
+agent.assert_exp(any(c["name"] == name for c in km.load_clients()), "client not found")
+
+folders = {}
+
+
+def folder(path):
+    return folders.setdefault(path, {"path": path, "policy": False, "last_backup": None})
+
+
+for snap in km.machine_snapshots(name):
+    entry = folder(snap["source"]["path"])
+    if not snap.get("incomplete"):
+        end = km.parse_time(snap["endTime"])
+        if entry["last_backup"] is None or end > entry["last_backup"]:
+            entry["last_backup"] = end
+for pol in km.machine_policies(name):
+    if pol["target"]["path"]:
+        folder(pol["target"]["path"])["policy"] = True
+
+for entry in folders.values():
+    if entry["last_backup"]:
+        entry["last_backup"] = entry["last_backup"].isoformat()
+json.dump({"folders": sorted(folders.values(), key=lambda f: f["path"].lower())}, fp=sys.stdout)

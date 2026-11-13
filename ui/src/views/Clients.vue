@@ -143,6 +143,12 @@
                         :label="$t('clients.show_enrollment')"
                       />
                     </cv-overflow-menu-item>
+                    <cv-overflow-menu-item @click="showFoldersModal(row)">
+                      <NsMenuItem
+                        :icon="Folder20"
+                        :label="$t('clients.folders')"
+                      />
+                    </cv-overflow-menu-item>
                     <cv-overflow-menu-item @click="showResetModal(row)">
                       <NsMenuItem
                         :icon="Reset20"
@@ -168,15 +174,15 @@
     <NsModal
       size="default"
       :visible="isShownAddModal"
-      :primary-button-disabled="loading.addClient"
-      :isLoading="loading.addClient"
+      :primary-button-disabled="loading.addClient || loading.countSnapshots"
+      :isLoading="loading.addClient || loading.countSnapshots"
       @modal-hidden="isShownAddModal = false"
-      @primary-click="addClient"
+      @primary-click="verifyOrAddClient"
     >
       <template slot="title">{{ $t("clients.add_machine") }}</template>
       <template slot="content">
         <p class="mg-bottom">{{ $t("clients.add_description") }}</p>
-        <cv-form @submit.prevent="addClient">
+        <cv-form @submit.prevent="verifyOrAddClient">
           <NsTextInput
             v-model.trim="newUsername"
             :label="$t('clients.username')"
@@ -209,6 +215,26 @@
             ref="owner_email"
           />
           <NsInlineNotification
+            v-if="existingSnapshots"
+            kind="warning"
+            :title="$t('clients.existing_snapshots_title')"
+            :description="
+              $t('clients.existing_snapshots_description', {
+                count: existingSnapshots.count,
+                first: formatDateTime(existingSnapshots.first),
+                last: formatDateTime(existingSnapshots.last),
+              })
+            "
+            :showCloseButton="false"
+          />
+          <NsInlineNotification
+            v-if="error.countSnapshots"
+            kind="error"
+            :title="$t('action.count-snapshots')"
+            :description="error.countSnapshots"
+            :showCloseButton="false"
+          />
+          <NsInlineNotification
             v-if="error.addClient"
             kind="error"
             :title="$t('action.add-client')"
@@ -220,7 +246,9 @@
       <template slot="secondary-button">{{
         core.$t("common.cancel")
       }}</template>
-      <template slot="primary-button">{{ $t("clients.add_machine") }}</template>
+      <template slot="primary-button">{{
+        verifiedName ? $t("clients.save") : $t("clients.verify")
+      }}</template>
     </NsModal>
     <!-- enrollment -->
     <NsModal
@@ -360,6 +388,89 @@
     <!-- remove -->
     <NsModal
       size="default"
+      :visible="isShownFoldersModal"
+      @modal-hidden="isShownFoldersModal = false"
+    >
+      <template slot="title">{{
+        $t("clients.folders_title", { name: foldersClient })
+      }}</template>
+      <template slot="content">
+        <div class="folders-header">
+          <span class="folders-label">{{ $t("clients.folders") }}</span>
+          <NsButton
+            kind="ghost"
+            size="small"
+            :icon="Restart20"
+            :loading="loading.listFolders"
+            :disabled="loading.listFolders"
+            @click="listFolders"
+            >{{ $t("clients.refresh") }}</NsButton
+          >
+        </div>
+        <NsInlineNotification
+          v-if="error.listFolders"
+          kind="error"
+          :title="$t('action.list-client-folders')"
+          :description="error.listFolders"
+          :showCloseButton="false"
+        />
+        <cv-skeleton-text
+          v-else-if="loading.listFolders"
+          :paragraph="true"
+          :line-count="3"
+        />
+        <template v-else>
+          <p v-if="!folders.length" class="mg-bottom">
+            {{ $t("clients.no_folders") }}
+          </p>
+          <div v-else class="folder-list mg-bottom">
+            <div
+              v-for="folder in folders"
+              :key="folder.path"
+              class="folder-row"
+            >
+              <div class="folder-path">{{ folder.path }}</div>
+              <div class="folder-date">
+                {{
+                  folder.last_backup
+                    ? formatDateTime(folder.last_backup)
+                    : $t("clients.folder_never")
+                }}
+              </div>
+              <NsButton
+                kind="ghost"
+                size="small"
+                :icon="Launch20"
+                @click="openFolderPolicy(folder.path)"
+                >{{ $t("clients.folder_open") }}</NsButton
+              >
+            </div>
+          </div>
+        </template>
+        <cv-form @submit.prevent="addFolder" class="add-folder">
+          <cv-text-input
+            v-model.trim="newFolder"
+            :label="$t('clients.add_folder')"
+            :placeholder="$t('clients.folder_placeholder')"
+            :helper-text="$t('clients.folder_helper')"
+            :invalid-message="error.newFolder ? $t(error.newFolder) : ''"
+            ref="newFolder"
+            class="add-folder-input"
+          />
+          <NsButton
+            kind="primary"
+            size="field"
+            :icon="Launch20"
+            type="submit"
+            class="add-folder-button"
+            >{{ $t("clients.folder_add_open") }}</NsButton
+          >
+        </cv-form>
+      </template>
+      <template slot="secondary-button">{{ core.$t("common.close") }}</template>
+    </NsModal>
+    <NsModal
+      size="default"
       kind="danger"
       :visible="isShownRemoveModal"
       :primary-button-disabled="loading.removeClient"
@@ -374,7 +485,17 @@
       }}</template>
       <template slot="content">
         <p class="mg-bottom">{{ $t("clients.remove_warning") }}</p>
-        <p>{{ $t("clients.remove_snapshots") }}</p>
+        <cv-checkbox
+          v-model="deleteSnapshots"
+          value="deleteSnapshots"
+          :label="$t('clients.delete_snapshots')"
+          :disabled="loading.removeClient"
+          class="mg-bottom"
+        />
+        <p v-if="deleteSnapshots">
+          {{ $t("clients.delete_snapshots_warning") }}
+        </p>
+        <p v-else>{{ $t("clients.remove_snapshots") }}</p>
       </template>
       <template slot="secondary-button">{{
         core.$t("common.cancel")
@@ -395,6 +516,9 @@ import {
   DateTimeService,
 } from "@nethserver/ns8-ui-lib";
 import ModuleTask from "@/mixins/moduleTask";
+
+// Kopia compares paths as text: a Windows path keeps its backslashes and drive letter
+const FOLDER_PATTERNS = [/^\/./, /^[A-Za-z]:\\/, /^\\\\[^\\]+\\[^\\]+/];
 
 // Same rule as the backend
 const NAME_PATTERN = /^[a-z0-9]([a-z0-9._-]{0,62}[a-z0-9])?$/;
@@ -441,6 +565,10 @@ export default {
       newUsername: "",
       newHostname: "",
       newOwnerEmail: "",
+      // Name already checked for old snapshots: the next click saves
+      verifiedName: "",
+      existingSnapshots: null,
+      deleteSnapshots: false,
       isShownEnrollmentModal: false,
       enrollmentName: "",
       enrollment: null,
@@ -448,25 +576,43 @@ export default {
       clientToReset: null,
       isShownRemoveModal: false,
       clientToRemove: null,
+      isShownFoldersModal: false,
+      foldersClient: "",
+      folders: [],
+      newFolder: "",
+      host: "",
       loading: {
         getConfiguration: false,
         listClients: false,
         addClient: false,
+        countSnapshots: false,
         getEnrollment: false,
         resetClient: false,
         removeClient: false,
+        listFolders: false,
       },
       error: {
         listClients: "",
         addClient: "",
+        countSnapshots: "",
         getEnrollment: "",
         resetClient: "",
         removeClient: "",
+        listFolders: "",
+        newFolder: "",
         username: "",
         hostname: "",
         owner_email: "",
       },
     };
+  },
+  watch: {
+    newUsername() {
+      this.resetVerification();
+    },
+    newHostname() {
+      this.resetVerification();
+    },
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
@@ -519,6 +665,7 @@ export default {
         action: "get-configuration",
         completed: (config) => {
           this.configured = config.host !== "";
+          this.host = config.host;
           done();
           if (this.configured) {
             this.listClients();
@@ -549,6 +696,7 @@ export default {
       this.newUsername = "";
       this.newHostname = "";
       this.newOwnerEmail = "";
+      this.resetVerification();
       this.error.addClient = "";
       this.error.username = "";
       this.error.hostname = "";
@@ -579,10 +727,63 @@ export default {
       }
       return !focus;
     },
-    addClient() {
+    resetVerification() {
+      this.verifiedName = "";
+      this.existingSnapshots = null;
+      this.error.countSnapshots = "";
+    },
+    verifyOrAddClient() {
       if (!this.validateAddClient()) {
         return;
       }
+      const name = `${this.newUsername}@${this.newHostname}`;
+      if (this.verifiedName === name) {
+        this.addClient();
+        return;
+      }
+      this.loading.countSnapshots = true;
+      this.error.countSnapshots = "";
+      // The admin may cancel or change the name while the check runs: ignore a stale answer
+      const isCurrent = () =>
+        this.isShownAddModal &&
+        `${this.newUsername}@${this.newHostname}` === name;
+      const fail = (message) => {
+        this.loading.countSnapshots = false;
+        if (isCurrent()) {
+          this.error.countSnapshots = message;
+        }
+      };
+      this.runModuleTask({
+        action: "count-snapshots",
+        data: { name },
+        completed: (output) => {
+          this.loading.countSnapshots = false;
+          if (!isCurrent()) {
+            return;
+          }
+          this.verifiedName = name;
+          if (output.count > 0) {
+            // The admin reads the warning, then saves on purpose
+            this.existingSnapshots = output;
+          } else {
+            this.addClient();
+          }
+        },
+        validationFailed: (validationErrors) => {
+          this.loading.countSnapshots = false;
+          if (!isCurrent()) {
+            return;
+          }
+          for (const e of validationErrors) {
+            this.error[e.parameter] = "clients." + e.error;
+          }
+          this.focusElement(validationErrors[0].parameter);
+        },
+        aborted: fail,
+        failed: fail,
+      });
+    },
+    addClient() {
       this.loading.addClient = true;
       this.error.addClient = "";
       const fail = (message) => {
@@ -688,8 +889,59 @@ export default {
         failed: fail,
       });
     },
+    showFoldersModal(client) {
+      this.foldersClient = client.name;
+      this.folders = [];
+      this.newFolder = "";
+      this.error.newFolder = "";
+      this.isShownFoldersModal = true;
+      this.listFolders();
+    },
+    listFolders() {
+      const name = this.foldersClient;
+      this.loading.listFolders = true;
+      this.error.listFolders = "";
+      const fail = (message) => {
+        this.error.listFolders = message;
+        this.loading.listFolders = false;
+      };
+      this.runModuleTask({
+        action: "list-client-folders",
+        data: { name },
+        completed: (output) => {
+          // The modal may show another machine by now
+          if (name === this.foldersClient) {
+            this.folders = output.folders;
+          }
+          this.loading.listFolders = false;
+        },
+        aborted: fail,
+        failed: fail,
+      });
+    },
+    // The Policies form of the Kopia web UI rejects user@host:/path (kopia/kopia#5815),
+    // its editor accepts the target in the URL
+    openFolderPolicy(path) {
+      const [userName, host] = this.foldersClient.split("@");
+      const query = new URLSearchParams({ userName, host, path });
+      window.open(
+        `https://${this.host}/policies/edit?${query}`,
+        "_blank",
+        "noopener"
+      );
+    },
+    addFolder() {
+      this.error.newFolder = "";
+      if (!FOLDER_PATTERNS.some((p) => p.test(this.newFolder))) {
+        this.error.newFolder = "clients.folder_invalid";
+        this.focusElement("newFolder");
+        return;
+      }
+      this.openFolderPolicy(this.newFolder);
+    },
     showRemoveModal(client) {
       this.clientToRemove = client;
+      this.deleteSnapshots = false;
       this.error.removeClient = "";
       this.isShownRemoveModal = true;
     },
@@ -708,7 +960,7 @@ export default {
       };
       this.runModuleTask({
         action: "remove-client",
-        data: { name: client.name },
+        data: { name: client.name, delete_snapshots: this.deleteSnapshots },
         title: this.$t("clients.removing_machine", { name: client.name }),
         isNotificationHidden: false,
         completed: () => {
@@ -729,6 +981,57 @@ export default {
 
 .mg-bottom {
   margin-bottom: $spacing-05;
+}
+
+.folder-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-03;
+}
+
+.folder-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-03 $spacing-05;
+}
+
+.folder-path {
+  flex: 1 1 14rem;
+  font-family: monospace;
+  overflow-wrap: anywhere;
+}
+
+.folders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-03;
+}
+
+.folders-label {
+  font-weight: 600;
+}
+
+.add-folder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: $spacing-03 $spacing-05;
+}
+
+.add-folder-input {
+  flex: 1 1 18rem;
+}
+
+// Line the button up with the input, below the label
+.add-folder-button {
+  margin-top: 1.5rem;
+}
+
+.folder-date {
+  font-size: 0.75rem;
+  color: $text-02;
 }
 
 .toolbar {

@@ -22,7 +22,9 @@
         "reset-client-password": "Reset the password of a machine",
         "get-client-enrollment": "Get the enrollment script",
         "get-repository-password": "Show the repository password",
-        "send-test-mail": "Send a test mail"
+        "send-test-mail": "Send a test mail",
+        "count-snapshots": "Check old snapshots",
+        "list-client-folders": "List the folders"
     },
     "error": {
         "error": "Error",
@@ -144,7 +146,23 @@
         "enrollment_once_title": "Copy the script now",
         "enrollment_once_description": "It holds the password of the machine. It will not be shown again. To get a new script, reset the password.",
         "enrollment_hidden_title": "Enrollment script no longer available",
-        "enrollment_hidden_description": "The script holds the machine password, and the server does not keep it. To install or reinstall this machine, reset its password to get a new script. Until you run the new script, the machine cannot back up."
+        "enrollment_hidden_description": "The script holds the machine password, and the server does not keep it. To install or reinstall this machine, reset its password to get a new script. Until you run the new script, the machine cannot back up.",
+        "verify": "Verify",
+        "save": "Save",
+        "existing_snapshots_title": "This name already has snapshots",
+        "existing_snapshots_description": "{count} snapshots from {first} to {last} belong to this name. The new machine will see and restore them. Save to keep them, or pick another name.",
+        "delete_snapshots": "Also delete all its snapshots",
+        "delete_snapshots_warning": "Every snapshot and folder of this machine is deleted. This cannot be undone, except from a module backup. Maintenance frees the space within a day or two.",
+        "folders": "Folders",
+        "folders_title": "Folders of {name}",
+        "no_folders": "No folder yet. Add one below, or the machine adds its first one with a snapshot.",
+        "folder_never": "Never backed up",
+        "folder_open": "Edit in Kopia",
+        "add_folder": "Add a folder",
+        "folder_placeholder": "C:\\Users\\anna\\Documents",
+        "folder_helper": "Absolute path on the machine, such as /home/anna/Documents or C:\\Users\\anna\\Documents. Save the policy in Kopia, then click Refresh. The machine sees the folder within 4 hours, or at once with the refresh button of KopiaUI.",
+        "folder_add_open": "Open in Kopia",
+        "folder_invalid": "Use an absolute path: /home/anna/Documents, C:\\Users\\anna\\Documents or \\\\server\\share. Windows paths keep their backslashes."
     },
     "settings": {
         "title": "Settings",

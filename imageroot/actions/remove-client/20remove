@@ -10,7 +10,8 @@ import sys
 import agent
 import kopia_module as km
 
-name = json.load(sys.stdin)["name"]
+request = json.load(sys.stdin)
+name = request["name"]
 with km.clients_lock():
     clients = km.load_clients()
     agent.assert_exp(any(c["name"] == name for c in clients), "client not found")
@@ -23,3 +24,16 @@ with km.clients_lock():
     hashes.pop(name, None)
     km.save_client_hashes(hashes)
 km.server_refresh()
+
+# Outside the lock: a long delete must not block other machines, and a failure here leaves the
+# machine removed with only its snapshots left. The machine cannot delete them, its access is APPEND.
+if request.get("delete_snapshots"):
+    ids = [snap["id"] for snap in km.machine_snapshots(name)]
+    if ids:
+        km.kopia(["snapshot", "delete", "--delete"] + ids, timeout=3600)
+        print(f"Deleted {len(ids)} snapshots of {name}", file=sys.stderr)
+    # A new machine with this name would otherwise get these folders back
+    targets = [f'{name}:{pol["target"]["path"]}' for pol in km.machine_policies(name) if pol["target"]["path"]]
+    if targets:
+        km.kopia(["policy", "delete"] + targets)
+        print(f"Deleted {len(targets)} folder policies of {name}", file=sys.stderr)
