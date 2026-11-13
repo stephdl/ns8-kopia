@@ -28,7 +28,7 @@ try {{
 }}
 # The user picks the folders in KopiaUI, which then runs the scheduled snapshots from the tray
 Start-Process "$env:LOCALAPPDATA\\Programs\\KopiaUI\\KopiaUI.exe"
-Write-Host "Enrolled. In KopiaUI, open Snapshots, click New Snapshot and add the folders to back up."
+Write-Host "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
 """
 
 UNIX_CONNECT = """KOPIA_PASSWORD='{password}' "$kopia" repository connect server \\
@@ -48,7 +48,7 @@ for kopia in "$(command -v kopia)" /opt/KopiaUI/resources/server/kopia \\
     [ -x "$kopia" ] && break
 done
 [ -x "$kopia" ] || {{ echo "kopia is not installed: install KopiaUI" >&2; exit 1; }}
-""" + UNIX_CONNECT + """echo "Enrolled. Start KopiaUI, open Snapshots, click New Snapshot and add the folders to back up."
+""" + UNIX_CONNECT + """echo "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
 echo "Keep KopiaUI running: it takes the scheduled snapshots."
 """
 

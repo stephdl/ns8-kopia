@@ -289,17 +289,32 @@ The script:
 1. connects to `https://<host>:<client port>` and pins the module certificate fingerprint;
 2. stores the password in the OS keyring (or in the Kopia config folder on Linux without a
    keyring);
-3. on a desktop, takes no snapshot: the user picks the folders in KopiaUI, under Snapshots,
-   **New Snapshot**. The module cannot choose them for every machine, and a machine cannot set
-   its own policy. KopiaUI then snapshots each picked folder at the policy interval while it
-   runs. It starts on Windows, and on Linux and macOS you start it. Checking "Launch at
-   Startup" in KopiaUI is up to the admin of the machine, the script does not do it;
+3. on a desktop, takes no snapshot. The machine cannot pick its own folders: **New Snapshot**
+   in KopiaUI fails with access denied, because it writes a policy and a machine only reads
+   its policies. The admin adds the folders instead, on the Clients page, under **Folders**
+   in the menu of the machine (see below). KopiaUI then snapshots each folder at the policy
+   interval while it runs. It starts on Windows, and on Linux and macOS you start it.
+   Checking "Launch at Startup" in KopiaUI is up to the admin of the machine, the script does
+   not do it;
 4. on a Linux server, backs up the whole home directory: the script adds a
    `kopia-snapshot.timer` systemd user timer at the policy interval (none in manual mode), and
    enables lingering so it keeps running after logout. The interval is written in the timer:
    after you change it, reset the password of the server and run the new script.
 
 The machine shows **Never seen** on the Clients page until its first snapshot, then **OK**.
+
+### Folders of a desktop
+
+On the Clients page, **Folders** in the menu of a machine lists the folders it backs up and
+the date of their last snapshot. To add one, type its absolute path as the machine sees it,
+such as `/home/anna/Documents` or `C:\Users\anna\Documents`, and click **Open in Kopia**.
+The Kopia web UI opens on the policy of that folder: log in as `admin` and click
+**Save Policy**. Windows paths keep their backslashes. KopiaUI on the machine sees the new
+folder at its next refresh, within 4 hours, or at once with its refresh button. To remove a
+folder, delete its policy in the Kopia web UI.
+
+The module opens the policy editor by its URL because the Policies form of the Kopia web UI
+rejects `user@host:/path` targets in Kopia 0.23.1 (kopia/kopia#5815).
 
 ### macOS permissions and schedule
 
