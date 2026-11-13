@@ -2,14 +2,13 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Configure kopia",
     "$id": "http://schema.nethserver.org/kopia/configure-module-input.json",
-    "description": "Configure the Kopia repository server. Send only the fields to change: the others keep their value. The first configuration needs host, admin_password and repository_password.",
+    "description": "Configure the Kopia repository server. Send only the fields to change: the others keep their value. The first configuration needs host and admin_password.",
     "examples": [
         {
             "host": "kopia.example.org",
             "lets_encrypt": true,
             "client_port": 51515,
             "admin_password": "Admin-pass-2026",
-            "repository_password": "Write-it-down-2026",
             "snapshot_interval": 4,
             "keep_latest": 10,
             "keep_hourly": 48,
@@ -55,12 +54,6 @@
             "minLength": 12,
             "maxLength": 64,
             "description": "Password of the admin user of the web UI. Omit to keep the current one."
-        },
-        "repository_password": {
-            "type": "string",
-            "minLength": 12,
-            "maxLength": 64,
-            "description": "Password that encrypts the repository. Accepted only before the repository exists."
         },
         "snapshot_interval": {
             "type": "integer",

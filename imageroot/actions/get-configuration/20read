@@ -20,7 +20,6 @@ config = {
     # Before the first configuration, suggest the first free port
     "client_port": int(os.environ.get("CLIENT_PORT") or km.free_port(rdb)),
     "admin_password_set": bool(secrets.get("KOPIA_SERVER_PASSWORD")),
-    "repository_password_set": bool(secrets.get("KOPIA_PASSWORD")),
     "clients_count": len(km.load_clients()),
     "smarthost_enabled": agent.get_smarthost_settings(rdb)["enabled"],
     "default_sender": f"noreply@{host}" if host else "",

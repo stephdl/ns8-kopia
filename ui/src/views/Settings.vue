@@ -135,47 +135,6 @@
               :disabled="stillLoading"
               class="mg-bottom maxwidth"
             />
-            <!-- repository password -->
-            <h6 class="mg-bottom">{{ $t("settings.repository_title") }}</h6>
-            <div v-if="!loading.getConfiguration" class="maxwidth">
-              <template v-if="!repositoryPasswordSet">
-                <NsInlineNotification
-                  kind="warning"
-                  :title="$t('settings.repository_password_warning_title')"
-                  :description="$t('settings.repository_password_warning')"
-                  :showCloseButton="false"
-                />
-                <RepositoryPasswordInput
-                  v-model="repositoryPassword"
-                  :acknowledged="repositoryPasswordWritten"
-                  :error="error.repository_password"
-                  :confirmError="error.repository_password_confirm"
-                  :focus="focusRepositoryPassword"
-                  :disabled="stillLoading"
-                  @validation="repositoryPasswordValidation = $event"
-                  @acknowledge="repositoryPasswordWritten = $event"
-                />
-              </template>
-              <template v-else>
-                <NsInlineNotification
-                  kind="warning"
-                  :title="$t('settings.repository_password_warning_title')"
-                  :description="$t('settings.repository_password_warning')"
-                  :showCloseButton="false"
-                />
-                <div class="button-row mg-bottom">
-                  <NsButton
-                    type="button"
-                    kind="tertiary"
-                    :icon="View20"
-                    :disabled="stillLoading"
-                    @click="isShownShowPasswordModal = true"
-                    >{{ $t("settings.show_repository_password") }}</NsButton
-                  >
-                </div>
-              </template>
-            </div>
-            <cv-skeleton-text v-else :paragraph="true" :line-count="3" />
             <cv-row v-if="error.configureModule">
               <cv-column>
                 <NsInlineNotification
@@ -205,17 +164,11 @@
         </cv-tile>
       </cv-column>
     </cv-row>
-    <ShowRepositoryPasswordModal
-      :visible="isShownShowPasswordModal"
-      @hide="isShownShowPasswordModal = false"
-    />
   </cv-grid>
 </template>
 
 <script>
 import { mapState } from "vuex";
-// Not in IconService.
-import View20 from "@carbon/icons-vue/es/view/20";
 import {
   QueryParamService,
   UtilService,
@@ -225,8 +178,6 @@ import {
 } from "@nethserver/ns8-ui-lib";
 import ModuleTask from "@/mixins/moduleTask";
 import { passwordError } from "@/lib/password";
-import RepositoryPasswordInput from "@/components/RepositoryPasswordInput.vue";
-import ShowRepositoryPasswordModal from "@/components/ShowRepositoryPasswordModal.vue";
 
 export default {
   name: "Settings",
@@ -238,10 +189,6 @@ export default {
     PageTitleService,
     ModuleTask,
   ],
-  components: {
-    RepositoryPasswordInput,
-    ShowRepositoryPasswordModal,
-  },
   pageTitle() {
     return this.$t("settings.title") + " - " + this.appName;
   },
@@ -251,7 +198,6 @@ export default {
         page: "settings",
       },
       urlCheckInterval: null,
-      View20,
       firstError: "",
       host: "",
       configuredHost: "",
@@ -264,12 +210,6 @@ export default {
       adminPasswordValidation: null,
       focusAdminPassword: { element: "" },
       isChangeAdminPassword: false,
-      repositoryPasswordSet: false,
-      repositoryPassword: "",
-      repositoryPasswordValidation: null,
-      repositoryPasswordWritten: false,
-      focusRepositoryPassword: { element: "" },
-      isShownShowPasswordModal: false,
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -281,8 +221,6 @@ export default {
         client_port: "",
         admin_password: "",
         admin_password_confirm: "",
-        repository_password: "",
-        repository_password_confirm: "",
       },
     };
   },
@@ -290,10 +228,6 @@ export default {
     adminPassword() {
       this.error.admin_password = "";
       this.error.admin_password_confirm = "";
-    },
-    repositoryPassword() {
-      this.error.repository_password = "";
-      this.error.repository_password_confirm = "";
     },
     isChangeAdminPassword() {
       this.adminPassword = "";
@@ -328,9 +262,6 @@ export default {
       }
       return !this.adminPasswordSet || this.isChangeAdminPassword;
     },
-    isRepositoryPasswordRequired() {
-      return !this.loading.getConfiguration && !this.repositoryPasswordSet;
-    },
     missingFields() {
       const missing = [];
       if (!this.host || !this.host.includes(".")) {
@@ -341,13 +272,6 @@ export default {
       }
       if (this.isAdminPasswordActive && !this.adminPassword) {
         missing.push(this.$t("settings.admin_password"));
-      }
-      if (this.isRepositoryPasswordRequired) {
-        if (!this.repositoryPassword) {
-          missing.push(this.$t("settings.repository_password"));
-        } else if (!this.repositoryPasswordWritten) {
-          missing.push(this.$t("settings.repository_password_written_down"));
-        }
       }
       return missing;
     },
@@ -402,7 +326,6 @@ export default {
       this.clientsCount = config.clients_count;
       this.routeMissing = config.route_missing;
       this.adminPasswordSet = config.admin_password_set;
-      this.repositoryPasswordSet = config.repository_password_set;
       this.loading.getConfiguration = false;
       this.focusElement("host");
     },
@@ -428,19 +351,6 @@ export default {
           this.firstError = this.firstError || "admin_password";
         }
       }
-      if (this.isRepositoryPasswordRequired) {
-        const v = this.repositoryPasswordValidation;
-        const error = passwordError(this.repositoryPassword);
-        if (error) {
-          this.error.repository_password = error;
-          this.focusRepositoryPassword = { element: "newPassword" };
-          this.firstError = this.firstError || "repository_password";
-        } else if (!v || !v.isEqualOk) {
-          this.error.repository_password_confirm = "settings.password_mismatch";
-          this.focusRepositoryPassword = { element: "confirmPassword" };
-          this.firstError = this.firstError || "repository_password";
-        }
-      }
       if (this.firstError && !this.firstError.endsWith("password")) {
         this.focusElement(this.firstError);
       }
@@ -456,8 +366,6 @@ export default {
         if (!focusAlreadySet) {
           if (param === "admin_password") {
             this.focusAdminPassword = { element: "newPassword" };
-          } else if (param === "repository_password") {
-            this.focusRepositoryPassword = { element: "newPassword" };
           } else {
             this.focusElement(param);
           }
@@ -479,10 +387,6 @@ export default {
       // Without a new password the backend keeps the current one
       if (this.isAdminPasswordActive) {
         data.admin_password = this.adminPassword;
-      }
-      // Accepted only before the repository exists: the password never changes afterwards
-      if (this.isRepositoryPasswordRequired) {
-        data.repository_password = this.repositoryPassword;
       }
       this.runModuleTask({
         action: "configure-module",
@@ -508,8 +412,6 @@ export default {
       this.loading.configureModule = false;
       this.adminPassword = "";
       this.isChangeAdminPassword = false;
-      this.repositoryPassword = "";
-      this.repositoryPasswordWritten = false;
       this.getConfiguration();
     },
   },
@@ -525,12 +427,5 @@ export default {
 
 .maxwidth {
   max-width: 38rem;
-}
-
-.button-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-05;
-  margin-top: $spacing-05;
 }
 </style>

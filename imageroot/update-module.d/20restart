@@ -8,12 +8,11 @@
 set -e
 exec 1>&2
 
-if [[ ! -f secrets/kopia.env ]] || ! grep -q '^KOPIA_PASSWORD=' secrets/kopia.env; then
+if ! grep -q '^TRAEFIK_HOST=' environment; then
     # Not configured yet: nothing runs
     exit 0
 fi
 
-systemctl --user daemon-reload
 systemctl --user enable kopia-check.timer kopia-verify.timer
 # A stopped server must come back too: apply-config waits for it
 runagent kopia-restart-server --force
