@@ -120,6 +120,13 @@ policies, the host policy and the global policy. It can append content to the re
 which every backup needs. It cannot change any policy or its own account. Anyone holding the script can read, restore and delete the backups of that machine,
 from anywhere. If a script leaks, reset the password.
 
+The ACLs protect the policies in the repository, not the machine itself. Its user can still
+leave out any folder: Kopia reads a `.kopiaignore` file in each folder it backs up, with
+gitignore rules, and that file never goes through the server. The same user can also stop
+KopiaUI or disconnect from the repository. The module cannot force a machine to back up, it
+can only notice it: the late backup alerts cover a machine that stops. Back up the folders
+that matter, such as a shared accounting folder, from a server, not from a user machine.
+
 The clients are covered in the next section.
 
 ### Alerts
