@@ -8,60 +8,69 @@
 import os
 import kopia_module as km
 
-WINDOWS_SCRIPT = """# Kopia enrollment of {name}
-# Run it in the session of the user who owns the files, not as administrator.
-$ErrorActionPreference = "Stop"
-$kopia = "$env:LOCALAPPDATA\\Programs\\KopiaUI\\resources\\server\\kopia.exe"
-if (-not (Test-Path $kopia)) {{
-    winget install -e --id Kopia.KopiaUI --silent --accept-package-agreements --accept-source-agreements
+# The scripts are pasted in a terminal. Each one is a single block, so a failure skips the rest
+# without closing the terminal: no exit, no set -e. Unix blocks hold no comment, because zsh,
+# the macOS shell, runs a pasted "#" line as a command. A failure still sets the exit status.
+WINDOWS_SCRIPT = """& {{
+    # Kopia enrollment of {name}
+    # Run it in the session of the user who owns the files, not as administrator.
+    $ErrorActionPreference = "Stop"
+    $kopia = "$env:LOCALAPPDATA\\Programs\\KopiaUI\\resources\\server\\kopia.exe"
+    if (-not (Test-Path $kopia)) {{
+        winget install -e --id Kopia.KopiaUI --silent --accept-package-agreements --accept-source-agreements
+    }}
+    $env:KOPIA_PASSWORD = "{password}"
+    try {{
+        & $kopia repository connect server `
+            --url "{url}" `
+            --server-cert-fingerprint "{fingerprint}" `
+            --override-username "{user}" `
+            --override-hostname "{machine}"
+        if ($LASTEXITCODE -ne 0) {{ throw "kopia repository connect failed" }}
+    }} finally {{
+        Remove-Item Env:KOPIA_PASSWORD -ErrorAction SilentlyContinue
+    }}
+    # The user picks the folders in KopiaUI, which then runs the scheduled snapshots from the tray
+    Start-Process "$env:LOCALAPPDATA\\Programs\\KopiaUI\\KopiaUI.exe"
+    Write-Host "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
 }}
-$env:KOPIA_PASSWORD = "{password}"
-try {{
-    & $kopia repository connect server `
-        --url "{url}" `
-        --server-cert-fingerprint "{fingerprint}" `
-        --override-username "{user}" `
-        --override-hostname "{machine}"
-    if ($LASTEXITCODE -ne 0) {{ throw "kopia repository connect failed" }}
-}} finally {{
-    Remove-Item Env:KOPIA_PASSWORD -ErrorAction SilentlyContinue
-}}
-# The user picks the folders in KopiaUI, which then runs the scheduled snapshots from the tray
-Start-Process "$env:LOCALAPPDATA\\Programs\\KopiaUI\\KopiaUI.exe"
-Write-Host "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
 """
 
 UNIX_CONNECT = """KOPIA_PASSWORD='{password}' "$kopia" repository connect server \\
-    --url='{url}' \\
-    --server-cert-fingerprint='{fingerprint}' \\
-    --override-username='{user}' \\
-    --override-hostname='{machine}'
-"""
+        --url='{url}' \\
+        --server-cert-fingerprint='{fingerprint}' \\
+        --override-username='{user}' \\
+        --override-hostname='{machine}'"""
 
-UNIX_SCRIPT = """#!/bin/sh
-# Kopia enrollment of {name}
-# Run it as the user who owns the files. Install KopiaUI first: https://kopia.io/docs/installation/
-set -e
 # KopiaUI ships its own kopia outside the PATH
-for kopia in "$(command -v kopia)" /opt/KopiaUI/resources/server/kopia \\
+UNIX_SCRIPT = """for kopia in "$(command -v kopia)" /opt/KopiaUI/resources/server/kopia \\
         /Applications/KopiaUI.app/Contents/Resources/server/kopia; do
     [ -x "$kopia" ] && break
+    kopia=
 done
-[ -x "$kopia" ] || {{ echo "kopia is not installed: install KopiaUI" >&2; exit 1; }}
-""" + UNIX_CONNECT + """echo "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
-echo "Keep KopiaUI running: it takes the scheduled snapshots."
+if [ -z "$kopia" ]; then
+    echo "kopia is not installed: install KopiaUI first, see https://kopia.io/docs/installation/" >&2
+    false
+elif """ + UNIX_CONNECT + """; then
+    echo "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
+    echo "Keep KopiaUI running: it takes the scheduled snapshots."
+else
+    false
+fi
 """
 
-SERVER_SCRIPT = """#!/bin/sh
-# Kopia enrollment of {name}
-# Run it as the user who owns the files, in a login session. Install kopia first: https://kopia.io/docs/installation/
-set -e
-kopia="$(command -v kopia)" || {{ echo "kopia is not installed" >&2; exit 1; }}
-""" + UNIX_CONNECT + """if [ "{interval}" = "0" ]; then
+# Without lingering, the timer stops when the user logs out
+SERVER_SCRIPT = """kopia="$(command -v kopia)"
+if [ -z "$kopia" ]; then
+    echo "kopia is not installed: see https://kopia.io/docs/installation/" >&2
+    false
+elif ! """ + UNIX_CONNECT + """; then
+    false
+elif [ "{interval}" = "0" ]; then
     echo "Manual snapshots only: no timer installed. Run: kopia snapshot create ~"
 elif command -v systemctl >/dev/null && systemctl --user show-environment >/dev/null 2>&1; then
-    mkdir -p "$HOME/.config/systemd/user"
-    cat > "$HOME/.config/systemd/user/kopia-snapshot.service" <<UNIT
+    mkdir -p "$HOME/.config/systemd/user" &&
+    cat > "$HOME/.config/systemd/user/kopia-snapshot.service" <<UNIT &&
 [Unit]
 Description=Kopia snapshot of the home directory
 
@@ -70,7 +79,7 @@ Type=oneshot
 # The home directory is named on purpose: --all finds nothing in a new repository after a server restore
 ExecStart=$kopia snapshot create "$HOME"
 UNIT
-    cat > "$HOME/.config/systemd/user/kopia-snapshot.timer" <<UNIT
+    cat > "$HOME/.config/systemd/user/kopia-snapshot.timer" <<UNIT &&
 [Unit]
 Description=Kopia snapshot every {interval} hours
 
@@ -82,21 +91,20 @@ Persistent=true
 [Install]
 WantedBy=timers.target
 UNIT
-    systemctl --user daemon-reload
-    systemctl --user enable --now kopia-snapshot.timer
-    # Without lingering, the timer stops when the user logs out
+    systemctl --user daemon-reload &&
+    systemctl --user enable --now kopia-snapshot.timer &&
     if ! loginctl show-user "$(id -un)" -p Linger 2>/dev/null | grep -q yes \\
             && ! loginctl enable-linger 2>/dev/null; then
         echo "Run as root: loginctl enable-linger $(id -un). Otherwise snapshots stop at logout." >&2
-        exit 1
+        false
+    else
+        echo "Snapshots of $HOME scheduled every {interval} hours by kopia-snapshot.timer"
     fi
-    echo "Snapshots of $HOME scheduled every {interval} hours by kopia-snapshot.timer"
 else
-    echo "No systemd user session: log in as this user over SSH and run the script again." >&2
-    exit 1
+    echo "No systemd user session: log in as this user over SSH and paste the commands again." >&2
+    false
 fi
 """
-
 
 def enrollment(client, password):
     values = {

@@ -162,8 +162,11 @@ config and the password would land in another profile, and KopiaUI in the user s
 see nothing.
 
 - Windows: open PowerShell as the user, paste the script and press Enter.
-- Linux and macOS desktop, Linux server: save it as `enroll.sh` and run `sh enroll.sh`, then
-  delete the file.
+- Linux and macOS desktop, Linux server: open a terminal as the user, paste the script and
+  press Enter. It also runs from a file with `sh enroll.sh`. Delete the file after use.
+
+A failed step stops the rest of the script but leaves the terminal open, so the error stays
+on screen.
 
 The script connects to `https://<host>:<client port>`, pins the module certificate
 fingerprint, and stores the password in the OS keyring (or in the Kopia config folder on

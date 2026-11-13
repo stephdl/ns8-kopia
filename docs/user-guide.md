@@ -15,8 +15,7 @@ see nothing.
 
 - **Windows**: open PowerShell (not as administrator), paste the script and press Enter. The
   script installs KopiaUI when it is missing.
-- **Linux and macOS**: save the script as `enroll.sh`, run `sh enroll.sh` in a terminal, then
-  delete the file.
+- **Linux and macOS**: open a terminal, paste the script and press Enter.
 
 The script holds a password. Delete it after use and never send it to anyone. Anyone who has
 it can read your backups.
