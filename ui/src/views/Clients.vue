@@ -525,6 +525,16 @@
                   >{{ $t("clients.folder_open") }}</NsButton
                 >
                 <NsButton
+                  v-if="folder.stopped"
+                  kind="ghost"
+                  size="small"
+                  :icon="Play20"
+                  :loading="resumingFolder === folder.path"
+                  :disabled="!!resumingFolder"
+                  @click="resumeFolder(folder)"
+                  >{{ $t("clients.folder_resume") }}</NsButton
+                >
+                <NsButton
                   kind="ghost"
                   size="small"
                   :icon="TrashCan20"
@@ -610,6 +620,7 @@ import {
 } from "@nethserver/ns8-ui-lib";
 import ModuleTask from "@/mixins/moduleTask";
 import { createSealKey, openSealed } from "@/lib/seal";
+import Play20 from "@carbon/icons-vue/es/play/20";
 
 // Kopia compares paths as text: a Windows path keeps its backslashes and drive letter
 const FOLDER_PATTERNS = [/^\/./, /^[A-Za-z]:\\/, /^\\\\[^\\]+\\[^\\]+/];
@@ -633,6 +644,8 @@ export default {
   },
   data() {
     return {
+      // Not in the icon service of ns8-ui-lib
+      Play20,
       scriptTabs: [
         {
           id: "tab-windows",
@@ -673,6 +686,7 @@ export default {
       isShownFoldersModal: false,
       foldersClient: "",
       folderToRemove: "",
+      resumingFolder: "",
       folderRemoveMode: "stop",
       folders: [],
       newFolder: "",
@@ -1056,6 +1070,28 @@ export default {
         },
         aborted: fail,
         failed: fail,
+      });
+    },
+    resumeFolder(folder) {
+      const name = this.foldersClient;
+      this.resumingFolder = folder.path;
+      this.error.listFolders = "";
+      const done = (message) => {
+        this.resumingFolder = "";
+        if (message) {
+          this.error.listFolders = message;
+        } else if (name === this.foldersClient) {
+          this.listFolders();
+        }
+      };
+      this.runModuleTask({
+        action: "resume-client-folder",
+        data: { name, path: folder.path },
+        title: this.$t("clients.resuming_folder", { path: folder.path }),
+        completed: () => done(""),
+        validationFailed: () => done(this.$t("clients.folder_not_found")),
+        aborted: done,
+        failed: done,
       });
     },
     askRemoveFolder(folder) {

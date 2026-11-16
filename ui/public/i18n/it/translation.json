@@ -24,6 +24,7 @@
         "send-test-mail": "Invia una mail di prova",
         "count-snapshots": "Controlla i vecchi snapshot",
         "list-client-folders": "Elenca le cartelle",
+        "resume-client-folder": "Riprendi una cartella",
         "remove-client-folder": "Rimuovi una cartella"
     },
     "error": {
@@ -160,12 +161,14 @@
         "no_folders": "Ancora nessuna cartella. Aggiungine una qui sotto, oppure la macchina aggiunge la prima con uno snapshot.",
         "folder_never": "Mai salvata",
         "folder_open": "Modifica in Kopia",
+        "folder_resume": "Riprendi",
+        "resuming_folder": "Ripresa di {path}",
         "folder_remove": "Rimuovi",
         "folder_stopped": "Fermato",
         "folder_remove_title": "Rimuovi {path}",
         "folder_remove_stop": "Smetti di salvarla, mantieni i suoi snapshot",
         "folder_remove_delete": "Eliminala con tutti i suoi snapshot",
-        "folder_remove_stop_description": "La macchina non prende più snapshot di questa cartella. I vecchi restano ripristinabili e scadono con la retention. Per salvarla di nuovo, modificala in Kopia e riporta Manual Snapshots Only su inherit.",
+        "folder_remove_stop_description": "La macchina non prende più snapshot di questa cartella. I vecchi restano ripristinabili e scadono con la retention. Per salvarla di nuovo, clicca Riprendi accanto a essa.",
         "folder_remove_delete_description": "Tutti gli snapshot di questa cartella vengono eliminati e la macchina la dimentica. Non si può annullare, se non da un backup del modulo. La manutenzione libera lo spazio entro un giorno o due.",
         "folder_remove_stop_button": "Ferma i backup",
         "folder_remove_delete_button": "Elimina cartella",

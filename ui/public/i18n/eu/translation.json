@@ -24,6 +24,7 @@
         "send-test-mail": "Bidali proba-posta",
         "count-snapshots": "Egiaztatu snapshot zaharrak",
         "list-client-folders": "Zerrendatu karpetak",
+        "resume-client-folder": "Berrekin karpeta bat",
         "remove-client-folder": "Kendu karpeta bat"
     },
     "error": {
@@ -160,12 +161,14 @@
         "no_folders": "Oraindik ez dago karpetarik. Gehitu bat behean, edo makinak lehena gehitzen du snapshot batekin.",
         "folder_never": "Inoiz babestu gabea",
         "folder_open": "Editatu Kopian",
+        "folder_resume": "Berrekin",
+        "resuming_folder": "{path} berrekiten",
         "folder_remove": "Kendu",
         "folder_stopped": "Geldituta",
         "folder_remove_title": "Kendu {path}",
         "folder_remove_stop": "Utzi babeskopia egiteari, gorde bere snapshotak",
         "folder_remove_delete": "Ezabatu bere snapshot guztiekin",
-        "folder_remove_stop_description": "Makinak ez du karpeta honen snapshot berririk egingo. Zaharrak leheneratu daitezke eta atxikipenarekin iraungitzen dira. Berriro babesteko, editatu Kopian eta jarri Manual Snapshots Only inherit-en.",
+        "folder_remove_stop_description": "Makinak ez du karpeta honen snapshot berririk egingo. Zaharrak leheneratu daitezke eta atxikipenarekin iraungitzen dira. Berriro babesteko, egin klik ondoko Berrekin botoian.",
         "folder_remove_delete_description": "Karpeta honen snapshot guztiak ezabatzen dira eta makinak ahaztu egiten du. Ezin da desegin, moduluaren babeskopia batetik izan ezik. Mantentzeak egun bat edo bitan askatzen du lekua.",
         "folder_remove_stop_button": "Gelditu babeskopiak",
         "folder_remove_delete_button": "Ezabatu karpeta",

@@ -82,7 +82,7 @@ Check if the server still expires old snapshots
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    1
 
-Check if a folder can be stopped and then deleted
+Check if a folder can be stopped, resumed and deleted
     ${rc} =    Execute Command    api-cli run module/${module_id}/remove-client-folder --data '{"name": "ci@runner", "path": "/home/u"}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
@@ -90,6 +90,13 @@ Check if a folder can be stopped and then deleted
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    [True]
+    ${rc} =    Execute Command    api-cli run module/${module_id}/resume-client-folder --data '{"name": "ci@runner", "path": "/home/u"}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-client-folders --data '{"name": "ci@runner"}' | python3 -c 'import json,sys; print([f["stopped"] for f in json.load(sys.stdin)["folders"] if f["path"] == "/home/u"])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    [False]
     ${rc} =    Execute Command    api-cli run module/${module_id}/remove-client-folder --data '{"name": "ci@runner", "path": "/home/u", "delete_snapshots": true}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0

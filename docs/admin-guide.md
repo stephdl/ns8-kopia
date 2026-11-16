@@ -206,8 +206,7 @@ To remove a folder, click **Remove** next to it. You choose between two ways:
 
 - **Stop backing it up, keep its snapshots**: the folder gets a manual-only policy and shows
   **Stopped**. The machine takes no new snapshot, the old ones stay restorable and expire with
-  the retention. To back it up again, open it with **Edit in Kopia** and set **Manual
-  Snapshots Only** back to inherit.
+  the retention. To back it up again, click **Resume** next to it.
 - **Delete it with all its snapshots**: the snapshots and the policy are deleted, and the
   machine forgets the folder. Maintenance frees the space within a day or two.
 

@@ -24,6 +24,7 @@
         "send-test-mail": "Testmail senden",
         "count-snapshots": "Alte Snapshots prüfen",
         "list-client-folders": "Ordner auflisten",
+        "resume-client-folder": "Ordner fortsetzen",
         "remove-client-folder": "Ordner entfernen"
     },
     "error": {
@@ -160,12 +161,14 @@
         "no_folders": "Noch kein Ordner. Fügen Sie unten einen hinzu, oder der Rechner fügt seinen ersten mit einem Snapshot hinzu.",
         "folder_never": "Nie gesichert",
         "folder_open": "In Kopia bearbeiten",
+        "folder_resume": "Fortsetzen",
+        "resuming_folder": "{path} wird fortgesetzt",
         "folder_remove": "Entfernen",
         "folder_stopped": "Gestoppt",
         "folder_remove_title": "{path} entfernen",
         "folder_remove_stop": "Nicht mehr sichern, Snapshots behalten",
         "folder_remove_delete": "Mit allen Snapshots löschen",
-        "folder_remove_stop_description": "Der Rechner erstellt keine neuen Snapshots dieses Ordners. Die alten bleiben wiederherstellbar und laufen mit der Aufbewahrung ab. Um ihn wieder zu sichern, bearbeiten Sie ihn in Kopia und setzen Manual Snapshots Only auf inherit zurück.",
+        "folder_remove_stop_description": "Der Rechner erstellt keine neuen Snapshots dieses Ordners. Die alten bleiben wiederherstellbar und laufen mit der Aufbewahrung ab. Um ihn wieder zu sichern, klicken Sie daneben auf Fortsetzen.",
         "folder_remove_delete_description": "Alle Snapshots dieses Ordners werden gelöscht und der Rechner vergisst ihn. Dies kann nicht rückgängig gemacht werden, außer aus einer Modulsicherung. Die Wartung gibt den Speicher in ein bis zwei Tagen frei.",
         "folder_remove_stop_button": "Sicherungen stoppen",
         "folder_remove_delete_button": "Ordner löschen",
