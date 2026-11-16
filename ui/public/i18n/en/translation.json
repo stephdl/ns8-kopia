@@ -135,6 +135,8 @@
         "tab_linux_server": "Linux server",
         "copy": "Copy to clipboard",
         "copied": "Copied",
+        "show_script": "Show the whole script",
+        "hide_script": "Show less",
         "reset_title": "Reset the password of {name}",
         "reset_warning": "The machine loses its connection to the server until you run the new enrollment script on it. Its snapshots are kept.",
         "resetting_password": "Resetting the password of {name}",

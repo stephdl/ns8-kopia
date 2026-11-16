@@ -277,13 +277,60 @@
           :showCloseButton="false"
         />
         <template v-if="enrollment">
-          <NsInlineNotification
-            v-if="enrollment.password"
-            kind="warning"
-            :title="$t('clients.enrollment_once_title')"
-            :description="$t('clients.enrollment_once_description')"
-            :showCloseButton="false"
-          />
+          <template v-if="enrollment.password">
+            <!-- One warning for the three rules, so the script stays in view -->
+            <NsInlineNotification
+              kind="warning"
+              :title="$t('clients.enrollment_once_title')"
+              :showCloseButton="false"
+              class="enrollment-warning"
+            >
+              <template slot="description">
+                <ul class="warning-list">
+                  <li>{{ $t("clients.enrollment_once_description") }}</li>
+                  <li>
+                    <strong>{{ $t("clients.enrollment_user_title") }}.</strong>
+                    {{ $t("clients.enrollment_user_description") }}
+                  </li>
+                  <li>
+                    <strong
+                      >{{ $t("clients.enrollment_secret_title") }}.</strong
+                    >
+                    {{ $t("clients.enrollment_secret_description") }}
+                  </li>
+                </ul>
+              </template>
+            </NsInlineNotification>
+            <NsInlineNotification
+              kind="info"
+              :description="$t('clients.enrollment_intro')"
+              :showCloseButton="false"
+            />
+            <NsTabs
+              :container="false"
+              :aria-label="$t('clients.script_tabs')"
+              class="enrollment-tabs"
+            >
+              <cv-tab
+                v-for="(tab, index) in scriptTabs"
+                :key="tab.id"
+                :id="tab.id"
+                :label="$t(tab.label)"
+                :selected="index === 0"
+              >
+                <!-- Folded to a few lines: the copy button still takes the whole script -->
+                <NsCodeSnippet
+                  :copyTooltip="$t('clients.copy')"
+                  :copyFeedback="$t('clients.copied')"
+                  :feedbackAriaLabel="$t('clients.copied')"
+                  :moreText="$t('clients.show_script')"
+                  :lessText="$t('clients.hide_script')"
+                  :wrapText="true"
+                  >{{ enrollment[tab.script] }}</NsCodeSnippet
+                >
+              </cv-tab>
+            </NsTabs>
+          </template>
           <NsInlineNotification
             v-else
             kind="info"
@@ -293,66 +340,23 @@
             @action="resetFromEnrollment"
             :showCloseButton="false"
           />
-          <p class="mg-bottom">
-            {{
-              enrollment.password
-                ? $t("clients.enrollment_intro")
-                : $t("clients.enrollment_details_intro")
-            }}
+          <p class="facts-caption">
+            {{ $t("clients.enrollment_details_intro") }}
           </p>
-          <NsInlineNotification
-            v-if="enrollment.password"
-            kind="warning"
-            :title="$t('clients.enrollment_user_title')"
-            :description="$t('clients.enrollment_user_description')"
-            :showCloseButton="false"
-          />
-          <NsInlineNotification
-            v-if="enrollment.password"
-            kind="warning"
-            :title="$t('clients.enrollment_secret_title')"
-            :description="$t('clients.enrollment_secret_description')"
-            :showCloseButton="false"
-          />
-          <div class="enrollment-facts mg-bottom">
-            <div>
-              <span class="fact-label">{{ $t("clients.url") }}</span>
-              <code class="break-word">{{ enrollment.url }}</code>
-            </div>
-            <div>
-              <span class="fact-label">{{ $t("clients.fingerprint") }}</span>
-              <code class="break-word">{{ enrollment.fingerprint }}</code>
-            </div>
-            <div>
-              <span class="fact-label">{{ $t("clients.identity") }}</span>
-              <code class="break-word"
-                >{{ enrollment.username }}@{{ enrollment.hostname }}</code
-              >
-            </div>
-          </div>
-          <NsTabs
-            v-if="enrollment.password"
-            :container="false"
-            :aria-label="$t('clients.script_tabs')"
-          >
-            <cv-tab
-              v-for="(tab, index) in scriptTabs"
-              :key="tab.id"
-              :id="tab.id"
-              :label="$t(tab.label)"
-              :selected="index === 0"
-            >
-              <NsCodeSnippet
-                :copyTooltip="$t('clients.copy')"
-                :copyFeedback="$t('clients.copied')"
-                :feedbackAriaLabel="$t('clients.copied')"
-                :expanded="true"
-                :hideExpandButton="true"
-                :wrapText="true"
-                >{{ enrollment[tab.script] }}</NsCodeSnippet
-              >
-            </cv-tab>
-          </NsTabs>
+          <dl class="enrollment-facts">
+            <dt>{{ $t("clients.url") }}</dt>
+            <dd>
+              <code>{{ enrollment.url }}</code>
+            </dd>
+            <dt>{{ $t("clients.fingerprint") }}</dt>
+            <dd>
+              <code>{{ enrollment.fingerprint }}</code>
+            </dd>
+            <dt>{{ $t("clients.identity") }}</dt>
+            <dd>
+              <code>{{ enrollment.username }}@{{ enrollment.hostname }}</code>
+            </dd>
+          </dl>
         </template>
       </template>
       <template slot="secondary-button">{{ core.$t("common.close") }}</template>
@@ -1101,15 +1105,56 @@ export default {
   color: #161616;
 }
 
-.enrollment-facts {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-03;
+// Title above the list, not beside it as Carbon does for a short description
+.enrollment-warning ::v-deep .bx--inline-notification__subtitle {
+  flex-basis: 100%;
 }
 
-.fact-label {
-  display: inline-block;
-  min-width: 8rem;
-  font-weight: 600;
+.warning-list {
+  list-style: disc;
+  padding-left: $spacing-05;
+
+  li + li {
+    margin-top: $spacing-02;
+  }
+}
+
+.enrollment-tabs {
+  margin-top: $spacing-05;
+}
+
+.facts-caption {
+  margin-top: $spacing-06;
+  margin-bottom: $spacing-03;
+  font-size: 0.875rem;
+  color: $text-02;
+}
+
+.enrollment-facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: $spacing-03 $spacing-06;
+  padding: $spacing-05;
+  border: 1px solid $ui-03;
+
+  dt {
+    font-weight: 600;
+  }
+
+  dd code {
+    overflow-wrap: anywhere;
+  }
+}
+
+// On a phone the value goes under its label
+@media (max-width: 42rem) {
+  .enrollment-facts {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: $spacing-02;
+
+    dd {
+      margin-bottom: $spacing-03;
+    }
+  }
 }
 </style>

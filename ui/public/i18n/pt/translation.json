@@ -135,6 +135,8 @@
         "tab_linux_server": "Servidor Linux",
         "copy": "Copiar para a área de transferência",
         "copied": "Copiado",
+        "show_script": "Mostrar o script completo",
+        "hide_script": "Mostrar menos",
         "reset_title": "Repor a palavra-passe de {name}",
         "reset_warning": "A máquina perde a ligação ao servidor até executar nela o novo script de registo. Os seus instantâneos são mantidos.",
         "resetting_password": "A repor a palavra-passe de {name}",

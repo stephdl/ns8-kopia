@@ -135,6 +135,8 @@
         "tab_linux_server": "Servidor Linux",
         "copy": "Copiar al portapapeles",
         "copied": "Copiado",
+        "show_script": "Mostrar todo el script",
+        "hide_script": "Mostrar menos",
         "reset_title": "Restablecer la contraseña de {name}",
         "reset_warning": "El equipo pierde su conexión con el servidor hasta que ejecute en él el nuevo script de registro. Sus instantáneas se conservan.",
         "resetting_password": "Restableciendo la contraseña de {name}",

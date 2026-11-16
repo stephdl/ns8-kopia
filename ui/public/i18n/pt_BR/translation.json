@@ -135,6 +135,8 @@
         "tab_linux_server": "Servidor Linux",
         "copy": "Copiar para a área de transferência",
         "copied": "Copiado",
+        "show_script": "Mostrar o script completo",
+        "hide_script": "Mostrar menos",
         "reset_title": "Redefinir a senha de {name}",
         "reset_warning": "A máquina perde a conexão com o servidor até você executar nela o novo script de registro. Os snapshots dela são mantidos.",
         "resetting_password": "Redefinindo a senha de {name}",

@@ -135,6 +135,8 @@
         "tab_linux_server": "Serveur Linux",
         "copy": "Copier dans le presse-papiers",
         "copied": "Copié",
+        "show_script": "Afficher tout le script",
+        "hide_script": "Réduire",
         "reset_title": "Réinitialiser le mot de passe de {name}",
         "reset_warning": "La machine perd sa connexion au serveur tant que vous n'avez pas lancé le nouveau script d'enrôlement dessus. Ses instantanés sont conservés.",
         "resetting_password": "Réinitialisation du mot de passe de {name}",

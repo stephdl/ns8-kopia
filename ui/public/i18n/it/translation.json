@@ -135,6 +135,8 @@
         "tab_linux_server": "Server Linux",
         "copy": "Copia negli appunti",
         "copied": "Copiato",
+        "show_script": "Mostra tutto lo script",
+        "hide_script": "Mostra meno",
         "reset_title": "Reimposta la password di {name}",
         "reset_warning": "La macchina perde la connessione al server finché non esegui su di essa il nuovo script di registrazione. I suoi snapshot restano.",
         "resetting_password": "Reimpostazione della password di {name}",

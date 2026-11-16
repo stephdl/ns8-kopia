@@ -135,6 +135,8 @@
         "tab_linux_server": "Linux zerbitzaria",
         "copy": "Kopiatu arbelera",
         "copied": "Kopiatuta",
+        "show_script": "Erakutsi script osoa",
+        "hide_script": "Erakutsi gutxiago",
         "reset_title": "Berrezarri {name} makinaren pasahitza",
         "reset_warning": "Makinak zerbitzariarekiko konexioa galtzen du, bertan izen-emateko script berria exekutatu arte. Bere snapshotak gordetzen dira.",
         "resetting_password": "{name} makinaren pasahitza berrezartzen",

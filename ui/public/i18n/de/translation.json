@@ -135,6 +135,8 @@
         "tab_linux_server": "Linux-Server",
         "copy": "In die Zwischenablage kopieren",
         "copied": "Kopiert",
+        "show_script": "Ganzes Skript anzeigen",
+        "hide_script": "Weniger anzeigen",
         "reset_title": "Passwort von {name} zurücksetzen",
         "reset_warning": "Der Rechner verliert seine Verbindung zum Server, bis Sie das neue Registrierungsskript auf ihm ausführen. Seine Snapshots bleiben erhalten.",
         "resetting_password": "Passwort von {name} wird zurückgesetzt",
