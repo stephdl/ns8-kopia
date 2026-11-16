@@ -36,15 +36,16 @@
             <NsButton
               kind="primary"
               :icon="Add20"
-              :disabled="!configured || loading.getConfiguration"
+              :loading="isPageLoading"
+              :disabled="isPageLoading || !configured"
               @click="showAddModal"
               >{{ $t("clients.add_machine") }}</NsButton
             >
             <NsButton
               kind="secondary"
               :icon="Restart20"
-              :loading="loading.listClients"
-              :disabled="loading.listClients || !configured"
+              :loading="isPageLoading"
+              :disabled="isPageLoading || !configured"
               @click="listClients"
               >{{ $t("clients.refresh") }}</NsButton
             >
@@ -742,6 +743,11 @@ export default {
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
+    // The configuration loads first, then the machines: one state for both, so the two buttons
+    // spin together instead of one after the other
+    isPageLoading() {
+      return this.loading.getConfiguration || this.loading.listClients;
+    },
     i18nTableColumns() {
       return this.tableColumns.map((column) =>
         this.$t("clients.col_" + column)
