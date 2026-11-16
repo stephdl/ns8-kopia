@@ -27,6 +27,7 @@ def fail(field, error):
 for field in ("username", "hostname"):
     if not km.NAME_PATTERN.match(data[field]):
         fail(field, "name_format")
+seal_key = kopia_enroll.load_public_key(data.get("public_key"))
 with km.clients_lock():
     clients = km.load_clients()
     if any(c["name"] == name for c in clients):
@@ -40,6 +41,5 @@ with km.clients_lock():
     clients.append(client)
     km.save_clients(clients)
 km.server_refresh()
-# The core keeps task outputs about 8 hours, readable by cluster admins only. They can read the
-# repository password anyway, which opens every backup.
-json.dump(kopia_enroll.enrollment(client, password), fp=sys.stdout)
+# The core keeps task outputs about 8 hours: the UI sends a key so the password is not readable there
+json.dump(kopia_enroll.seal(kopia_enroll.enrollment(client, password), seal_key), fp=sys.stdout)

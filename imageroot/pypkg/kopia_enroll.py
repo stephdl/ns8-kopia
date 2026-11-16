@@ -5,8 +5,16 @@
 
 """Enrollment scripts of a machine. They hold its password only right after it is created or reset."""
 
+import base64
+import json
 import os
+import sys
+import agent
 import kopia_module as km
+from cryptography.exceptions import UnsupportedAlgorithm
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # The scripts are pasted in a terminal, so a failure must not close it. PowerShell runs the
 # block as one script block. The Unix scripts run in a child sh fed by a heredoc: set -e and
@@ -124,3 +132,44 @@ def enrollment(client, password):
             "username": values["user"], "hostname": values["machine"], "password": password or "",
             "powershell": WINDOWS_SCRIPT.format(**values), "shell": UNIX_SCRIPT.format(**values),
             "server": SERVER_SCRIPT.format(**values)}
+
+
+def _invalid_public_key():
+    agent.set_status("validation-failed")
+    json.dump([{"field": "public_key", "parameter": "public_key", "value": "", "error": "invalid_public_key"}], fp=sys.stdout)
+    sys.exit(2)
+
+
+def load_public_key(public_key):
+    """Return the RSA key of the browser, None without one, or end the action with invalid_public_key.
+
+    Call it before changing any state, so a bad key leaves nothing half done.
+    """
+    if public_key is None:
+        return None
+    try:
+        key = serialization.load_der_public_key(base64.b64decode(public_key))
+    except (ValueError, TypeError, UnsupportedAlgorithm):
+        _invalid_public_key()
+    if not isinstance(key, rsa.RSAPublicKey) or key.key_size < 2048:
+        _invalid_public_key()
+    return key
+
+
+def seal(payload, key):
+    """Encrypt payload for the browser that owns key (RSA-OAEP SHA-256 wrapping an AES-GCM key).
+
+    The core keeps task output in Redis for hours: only ciphertext must land there.
+    Without a key, the payload is returned as is, for api-cli users on the node.
+    """
+    if key is None:
+        return payload
+    aes_key = AESGCM.generate_key(bit_length=256)
+    iv = os.urandom(12)
+    data = AESGCM(aes_key).encrypt(iv, json.dumps(payload).encode(), None)
+    wrapped = key.encrypt(aes_key, padding.OAEP(mgf=padding.MGF1(hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+    return {"sealed": {
+        "key": base64.b64encode(wrapped).decode(),
+        "iv": base64.b64encode(iv).decode(),
+        "data": base64.b64encode(data).decode(),
+    }}

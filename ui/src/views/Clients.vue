@@ -520,6 +520,7 @@ import {
   DateTimeService,
 } from "@nethserver/ns8-ui-lib";
 import ModuleTask from "@/mixins/moduleTask";
+import { createSealKey, openSealed } from "@/lib/seal";
 
 // Kopia compares paths as text: a Windows path keeps its backslashes and drive letter
 const FOLDER_PATTERNS = [/^\/./, /^[A-Za-z]:\\/, /^\\\\[^\\]+\\[^\\]+/];
@@ -627,6 +628,9 @@ export default {
     },
   },
   created() {
+    // One key pair for the page, ready before any click. Without WebCrypto (page not served
+    // over HTTPS) it is null and the actions answer in plain text.
+    this.sealKey = createSealKey().catch(() => null);
     this.getConfiguration();
   },
   beforeRouteEnter(to, from, next) {
@@ -787,35 +791,58 @@ export default {
         failed: fail,
       });
     },
-    addClient() {
+    async addClient() {
       this.loading.addClient = true;
       this.error.addClient = "";
       const fail = (message) => {
         this.error.addClient = message;
         this.loading.addClient = false;
       };
+      // Read before the await: these are the values the snapshot check verified
+      const data = {
+        username: this.newUsername,
+        hostname: this.newHostname,
+        owner_email: this.newOwnerEmail,
+      };
+      const seal = await this.sealKey;
+      if (seal) {
+        data.public_key = seal.publicKey;
+      }
       this.runModuleTask({
         action: "add-client",
-        data: {
-          username: this.newUsername,
-          hostname: this.newHostname,
-          owner_email: this.newOwnerEmail,
-        },
+        data,
         title: this.$t("clients.adding_machine"),
         // The output holds the machine password: keep it out of the notification list
         isNotificationHidden: true,
-        completed: (output) => {
+        completed: async (sealed) => {
+          // The machine exists whatever happens to its script
+          this.listClients();
+          let output;
+          try {
+            output = await openSealed(sealed, seal);
+          } catch (e) {
+            console.error("cannot read the add-client output", e);
+            fail(this.$t("error.generic_error"));
+            return;
+          }
           this.loading.addClient = false;
           this.isShownAddModal = false;
-          this.listClients();
           this.showEnrollment({ name: output.name }, output);
         },
         validationFailed: (validationErrors) => {
+          const fields = validationErrors.filter(
+            (e) => e.parameter in this.error
+          );
+          if (!fields.length) {
+            // public_key has no input to show an error on
+            fail(this.$t("error.generic_error"));
+            return;
+          }
           this.loading.addClient = false;
-          for (const e of validationErrors) {
+          for (const e of fields) {
             this.error[e.parameter] = "clients." + e.error;
           }
-          this.focusElement(validationErrors[0].parameter);
+          this.focusElement(fields[0].parameter);
         },
         aborted: fail,
         failed: fail,
@@ -870,7 +897,7 @@ export default {
       this.isShownResetModal = false;
       this.clientToReset = null;
     },
-    resetClient() {
+    async resetClient() {
       const client = this.clientToReset;
       this.loading.resetClient = true;
       this.error.resetClient = "";
@@ -878,17 +905,31 @@ export default {
         this.error.resetClient = message;
         this.loading.resetClient = false;
       };
+      const data = { name: client.name };
+      const seal = await this.sealKey;
+      if (seal) {
+        data.public_key = seal.publicKey;
+      }
       this.runModuleTask({
         action: "reset-client-password",
-        data: { name: client.name },
+        data,
         title: this.$t("clients.resetting_password", { name: client.name }),
         // The output holds the machine password: keep it out of the notification list
         isNotificationHidden: true,
-        completed: (output) => {
+        completed: async (sealed) => {
+          let output;
+          try {
+            output = await openSealed(sealed, seal);
+          } catch (e) {
+            console.error("cannot read the reset-client-password output", e);
+            fail(this.$t("error.generic_error"));
+            return;
+          }
           this.loading.resetClient = false;
           this.hideResetModal();
           this.showEnrollment(client, output);
         },
+        validationFailed: () => fail(this.$t("error.generic_error")),
         aborted: fail,
         failed: fail,
       });
