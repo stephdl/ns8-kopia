@@ -1207,15 +1207,15 @@ export default {
   gap: $spacing-03;
 }
 
+// One line per folder: path, date, then the actions, whatever buttons the folder has
 .folder-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   gap: $spacing-03 $spacing-05;
 }
 
 .folder-path {
-  flex: 1 1 14rem;
   font-family: monospace;
   overflow-wrap: anywhere;
 }
@@ -1254,7 +1254,18 @@ export default {
 
 .folder-actions {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+// On a phone the date and the actions go under the path
+@media (max-width: 42rem) {
+  .folder-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .folder-actions {
+    justify-content: flex-start;
+  }
 }
 
 .folder-remove-link {
