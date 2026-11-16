@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+  Copyright (C) 2026 Nethesis S.r.l.
+  SPDX-License-Identifier: GPL-3.0-or-later
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Kopia</title>
+  </head>
+  <body>
+    <script>
+      // The Kopia policy editor goes back one page after a save. In a new tab there is no
+      // page to go back to, and its spinner turns forever. This page is that previous page:
+      // it sends the tab to the editor, and to the list of policies when the editor comes back.
+      window.addEventListener("pageshow", function () {
+        var query = new URLSearchParams(window.location.search);
+        var host = query.get("server") || "";
+        if (!/^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$/i.test(host)) {
+          return;
+        }
+        var base = "https://" + host + "/policies";
+        var seen = false;
+        try {
+          seen =
+            sessionStorage.getItem("kopia-folder-policy") ===
+            window.location.search;
+          sessionStorage.setItem("kopia-folder-policy", window.location.search);
+        } catch (e) {
+          // No storage: the editor still opens
+        }
+        if (seen) {
+          window.location.replace(base);
+          return;
+        }
+        query.delete("server");
+        // A navigation started while the page loads replaces it in the history: wait for the load to end
+        setTimeout(function () {
+          window.location.assign(base + "/edit?" + query);
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
