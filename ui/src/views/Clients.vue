@@ -437,27 +437,9 @@
           <h6 class="mg-bottom-sm">
             {{ $t("clients.folder_remove_title", { path: folderToRemove }) }}
           </h6>
-          <cv-radio-group vertical class="mg-bottom">
-            <cv-radio-button
-              v-model="folderRemoveMode"
-              name="folder-remove-mode"
-              value="stop"
-              :label="$t('clients.folder_remove_stop')"
-            />
-            <cv-radio-button
-              v-model="folderRemoveMode"
-              name="folder-remove-mode"
-              value="delete"
-              :label="$t('clients.folder_remove_delete')"
-            />
-          </cv-radio-group>
           <NsInlineNotification
-            :kind="folderRemoveMode === 'delete' ? 'warning' : 'info'"
-            :description="
-              folderRemoveMode === 'delete'
-                ? $t('clients.folder_remove_delete_description')
-                : $t('clients.folder_remove_stop_description')
-            "
+            kind="warning"
+            :description="$t('clients.folder_remove_description')"
             :showCloseButton="false"
           />
           <NsInlineNotification
@@ -482,11 +464,7 @@
               :loading="loading.removeFolder"
               :disabled="loading.removeFolder"
               @click="removeFolder"
-              >{{
-                folderRemoveMode === "delete"
-                  ? $t("clients.folder_remove_delete_button")
-                  : $t("clients.folder_remove_stop_button")
-              }}</NsButton
+              >{{ $t("clients.folder_remove") }}</NsButton
             >
           </div>
         </div>
@@ -500,10 +478,10 @@
                 <div class="folder-path">{{ folder.path }}</div>
                 <div class="folder-meta">
                   <NsTag
-                    v-if="folder.stopped"
+                    v-if="folder.disabled"
                     size="sm"
                     kind="gray"
-                    :label="$t('clients.folder_stopped')"
+                    :label="$t('clients.folder_disabled')"
                   />
                   <span>{{
                     folder.last_backup
@@ -513,9 +491,13 @@
                 </div>
               </div>
               <cv-inline-loading
-                v-if="resumingFolder === folder.path"
+                v-if="busyFolder === folder.path"
                 state="loading"
-                :loading-text="$t('clients.folder_resume')"
+                :loading-text="
+                  folder.disabled
+                    ? $t('clients.folder_enable')
+                    : $t('clients.folder_disable')
+                "
               />
               <!-- Same menu as the machine rows: the list stays readable with long paths -->
               <cv-overflow-menu
@@ -531,13 +513,23 @@
                   />
                 </cv-overflow-menu-item>
                 <cv-overflow-menu-item
-                  v-if="folder.stopped"
-                  :disabled="!!resumingFolder"
-                  @click="resumeFolder(folder)"
+                  v-if="folder.disabled"
+                  :disabled="!!busyFolder"
+                  @click="setFolderEnabled(folder, true)"
                 >
                   <NsMenuItem
                     :icon="Play20"
-                    :label="$t('clients.folder_resume')"
+                    :label="$t('clients.folder_enable')"
+                  />
+                </cv-overflow-menu-item>
+                <cv-overflow-menu-item
+                  v-else
+                  :disabled="!!busyFolder"
+                  @click="setFolderEnabled(folder, false)"
+                >
+                  <NsMenuItem
+                    :icon="Pause20"
+                    :label="$t('clients.folder_disable')"
                   />
                 </cv-overflow-menu-item>
                 <NsMenuDivider />
@@ -628,6 +620,7 @@ import {
 import ModuleTask from "@/mixins/moduleTask";
 import { createSealKey, openSealed } from "@/lib/seal";
 import Play20 from "@carbon/icons-vue/es/play/20";
+import Pause20 from "@carbon/icons-vue/es/pause/20";
 
 // Kopia compares paths as text: a Windows path keeps its backslashes and drive letter
 const FOLDER_PATTERNS = [/^\/./, /^[A-Za-z]:\\/, /^\\\\[^\\]+\\[^\\]+/];
@@ -653,6 +646,7 @@ export default {
     return {
       // Not in the icon service of ns8-ui-lib
       Play20,
+      Pause20,
       scriptTabs: [
         {
           id: "tab-windows",
@@ -693,8 +687,7 @@ export default {
       isShownFoldersModal: false,
       foldersClient: "",
       folderToRemove: "",
-      resumingFolder: "",
-      folderRemoveMode: "stop",
+      busyFolder: "",
       folders: [],
       newFolder: "",
       host: "",
@@ -1080,12 +1073,13 @@ export default {
         failed: fail,
       });
     },
-    resumeFolder(folder) {
+    // Disable keeps the snapshots and is undone with Enable: no confirmation needed
+    setFolderEnabled(folder, enabled) {
       const name = this.foldersClient;
-      this.resumingFolder = folder.path;
+      this.busyFolder = folder.path;
       this.error.listFolders = "";
       const done = (message) => {
-        this.resumingFolder = "";
+        this.busyFolder = "";
         if (message) {
           this.error.listFolders = message;
         } else if (name === this.foldersClient) {
@@ -1093,9 +1087,12 @@ export default {
         }
       };
       this.runModuleTask({
-        action: "resume-client-folder",
+        action: enabled ? "enable-client-folder" : "disable-client-folder",
         data: { name, path: folder.path },
-        title: this.$t("clients.resuming_folder", { path: folder.path }),
+        title: this.$t(
+          enabled ? "clients.enabling_folder" : "clients.disabling_folder",
+          { path: folder.path }
+        ),
         completed: () => done(""),
         validationFailed: () => done(this.$t("clients.folder_not_found")),
         aborted: done,
@@ -1104,8 +1101,6 @@ export default {
     },
     askRemoveFolder(folder) {
       this.error.removeFolder = "";
-      // A stopped folder has nothing left to stop: only deleting it changes anything
-      this.folderRemoveMode = folder.stopped ? "delete" : "stop";
       this.folderToRemove = folder.path;
     },
     cancelRemoveFolder() {
@@ -1125,7 +1120,6 @@ export default {
         data: {
           name,
           path: this.folderToRemove,
-          delete_snapshots: this.folderRemoveMode === "delete",
         },
         title: this.$t("clients.removing_folder", {
           path: this.folderToRemove,
@@ -1237,6 +1231,8 @@ export default {
 // One grid for the whole list, so dates and actions line up from one folder to the next
 .folder-list {
   border-top: 1px solid $ui-03;
+  // The hidden tooltip of each menu sits right of its button and made the window scroll sideways
+  overflow-x: hidden;
 }
 
 .folder-row {
@@ -1251,13 +1247,6 @@ export default {
 .folder-menu {
   position: relative;
   flex: 0 0 auto;
-
-  // Its hidden tooltip starts at the button and would make the window scroll sideways
-  ::v-deep .bx--assistive-text {
-    left: auto;
-    right: 0;
-    transform: none;
-  }
 }
 
 .folder-main {

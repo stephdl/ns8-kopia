@@ -5,9 +5,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# Deleting the policy alone does not stop a machine: KopiaUI schedules every folder that has a
-# snapshot. A manual-only policy stops the schedule and keeps the snapshots restorable. Only
-# deleting the snapshots too makes the folder disappear from the machine.
+# The policy and the snapshots both go: KopiaUI keeps scheduling a folder while one of them exists.
+# To stop backups and keep the snapshots, disable-client-folder does it.
 
 import json
 import sys
@@ -28,13 +27,9 @@ if not snapshots and not has_policy:
 
 # The first colon splits identity and path, so Windows paths keep their drive letter
 target = f"{name}:{path}"
-if request.get("delete_snapshots"):
-    if snapshots:
-        km.kopia(["snapshot", "delete", "--delete"] + [s["id"] for s in snapshots], timeout=3600)
-    if has_policy:
-        km.kopia(["policy", "delete", target])
-    print(f"Deleted the folder {target} and its {len(snapshots)} snapshots", file=sys.stderr)
-else:
-    km.kopia(["policy", "set", target, "--manual"])
-    print(f"Stopped the backups of {target}", file=sys.stderr)
+if snapshots:
+    km.kopia(["snapshot", "delete", "--delete"] + [s["id"] for s in snapshots], timeout=3600)
+if has_policy:
+    km.kopia(["policy", "delete", target])
+print(f"Removed the folder {target} and its {len(snapshots)} snapshots", file=sys.stderr)
 km.server_refresh()

@@ -2,13 +2,29 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "remove-client-folder input",
     "$id": "http://schema.nethserver.org/kopia/remove-client-folder-input.json",
-    "description": "Stop backing up a folder of a machine. Its snapshots stay restorable unless delete_snapshots is set.",
-    "examples": [{"name": "accounting@pc-accounting-01", "path": "C:\\Users\\anna\\Documents"}, {"name": "accounting@pc-accounting-01", "path": "/home/anna/Old", "delete_snapshots": true}],
+    "description": "Remove a folder of a machine with all its snapshots. Maintenance frees the space later.",
+    "examples": [
+        {
+            "name": "accounting@pc-accounting-01",
+            "path": "C:\\Users\\anna\\Documents"
+        }
+    ],
     "type": "object",
-    "required": ["name", "path"],
+    "required": [
+        "name",
+        "path"
+    ],
     "properties": {
-        "name": {"type": "string", "pattern": "^[^@]+@[^@]+$", "description": "Machine identity, username@hostname."},
-        "path": {"type": "string", "minLength": 1, "maxLength": 4096, "description": "Folder path as the machine reports it."},
-        "delete_snapshots": {"type": "boolean", "default": false, "description": "Also delete every snapshot of the folder. Maintenance frees the space later."}
+        "name": {
+            "type": "string",
+            "pattern": "^[^@]+@[^@]+$",
+            "description": "Machine identity, username@hostname."
+        },
+        "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "description": "Folder path as the machine reports it."
+        }
     }
 }

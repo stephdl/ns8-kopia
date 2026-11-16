@@ -5,6 +5,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
+# Deleting the policy alone does not stop a machine: KopiaUI schedules every folder that has a
+# snapshot. A manual-only policy stops the schedule and keeps the snapshots restorable.
+
 import json
 import sys
 import agent
@@ -15,13 +18,14 @@ name = request["name"]
 path = request["path"]
 agent.assert_exp(any(c["name"] == name for c in km.load_clients()), "client not found")
 
-if not any(p["target"]["path"] == path for p in km.machine_policies(name)):
+known = any(s["source"]["path"] == path for s in km.machine_snapshots(name)) \
+    or any(p["target"]["path"] == path for p in km.machine_policies(name))
+if not known:
     agent.set_status("validation-failed")
     json.dump([{"field": "path", "parameter": "path", "value": path, "error": "folder_not_found"}], fp=sys.stdout)
     sys.exit(2)
 
 target = f"{name}:{path}"
-# Kopia 0.23.1 has no flag to clear Manual Snapshots Only: any policy set without --manual does it
-km.kopia(["policy", "set", target, "--run-missed=inherit"])
-print(f"Resumed the backups of {target}", file=sys.stderr)
+km.kopia(["policy", "set", target, "--manual"])
+print(f"Disabled the backups of {target}", file=sys.stderr)
 km.server_refresh()
