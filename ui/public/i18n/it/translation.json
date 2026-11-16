@@ -157,7 +157,7 @@
         "existing_snapshots_title": "Questo nome ha già degli snapshot",
         "existing_snapshots_description": "1 snapshot del {first} appartiene a questo nome. La nuova macchina lo vedrà e potrà ripristinarlo. Salva per tenerlo, oppure scegli un altro nome. | {count} snapshot dal {first} al {last} appartengono a questo nome. La nuova macchina li vedrà e potrà ripristinarli. Salva per tenerli, oppure scegli un altro nome.",
         "delete_snapshots": "Elimina anche tutti i suoi snapshot",
-        "delete_snapshots_warning": "Tutti gli snapshot e le cartelle di questa macchina vengono eliminati. Non si può annullare, se non da un backup del modulo. La manutenzione libera lo spazio entro un giorno o due.",
+        "delete_snapshots_warning": "Tutti gli snapshot e le cartelle di questa macchina vengono eliminati. Non si può annullare. La manutenzione libera lo spazio entro un giorno o due.",
         "folders": "Cartelle",
         "folders_title": "Cartelle di {name}",
         "no_folders": "Ancora nessuna cartella. Aggiungine una qui sotto, oppure la macchina aggiunge la prima con uno snapshot.",

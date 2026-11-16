@@ -157,7 +157,7 @@
         "existing_snapshots_title": "Izen honek snapshotak ditu jada",
         "existing_snapshots_description": "{first} datako snapshot 1 izen honena da. Makina berriak ikusi egingo du eta leheneratu ahal izango du. Gorde mantentzeko, edo aukeratu beste izen bat. | {first} eta {last} arteko {count} snapshot izen honenak dira. Makina berriak ikusi egingo ditu eta leheneratu ahal izango ditu. Gorde haiek mantentzeko, edo aukeratu beste izen bat.",
         "delete_snapshots": "Ezabatu bere snapshot guztiak ere",
-        "delete_snapshots_warning": "Makina honen snapshot eta karpeta guztiak ezabatzen dira. Ezin da desegin, moduluaren babeskopia batetik izan ezik. Mantentze-lanek egun bat edo bitan askatzen dute lekua.",
+        "delete_snapshots_warning": "Makina honen snapshot eta karpeta guztiak ezabatzen dira. Ezin da desegin. Mantentze-lanek egun bat edo bitan askatzen dute lekua.",
         "folders": "Karpetak",
         "folders_title": "{name} makinaren karpetak",
         "no_folders": "Oraindik ez dago karpetarik. Gehitu bat behean, edo makinak lehena gehitzen du snapshot batekin.",
