@@ -153,12 +153,6 @@
                         :label="$t('clients.show_enrollment')"
                       />
                     </cv-overflow-menu-item>
-                    <cv-overflow-menu-item @click="showFoldersModal(row)">
-                      <NsMenuItem
-                        :icon="Folder20"
-                        :label="$t('clients.folders')"
-                      />
-                    </cv-overflow-menu-item>
                     <cv-overflow-menu-item @click="showResetModal(row)">
                       <NsMenuItem
                         :icon="Reset20"

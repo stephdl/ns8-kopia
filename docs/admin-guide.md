@@ -193,7 +193,7 @@ a dedicated account instead.
 A desktop cannot pick its own folders: **New Snapshot** in KopiaUI fails with access denied,
 because it writes a policy and a machine only reads its policies. You add them.
 
-On the **Clients** page, **Folders** in the menu of the machine lists the folders it backs up
+On the **Clients** page, **Manage** in the **Folders** column lists the folders a machine backs up
 and the date of their last snapshot. To add one, type its absolute path as the machine sees
 it, such as `/home/anna/Documents` or `C:\Users\anna\Documents`, and click **Open in Kopia**.
 The Kopia web UI opens on the policy of that folder: log in as `admin` and click
