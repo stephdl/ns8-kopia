@@ -145,7 +145,7 @@ def load_public_key(public_key):
 
     Call it before changing any state, so a bad key leaves nothing half done.
     """
-    if not public_key:
+    if public_key is None:
         return None
     try:
         key = serialization.load_der_public_key(base64.b64decode(public_key))

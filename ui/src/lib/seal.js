@@ -30,13 +30,18 @@ export async function createSealKey() {
   return { publicKey: toBase64(spki), privateKey: pair.privateKey };
 }
 
-export async function openSealed(result, privateKey) {
-  if (!result.sealed) {
+// seal is the result of createSealKey, or null when the request carried no key
+export async function openSealed(result, seal) {
+  if (!seal) {
     return result;
+  }
+  if (!result.sealed) {
+    // A key was sent: plain output means the secret went through Redis in clear
+    throw new Error("the output is not sealed");
   }
   const rawKey = await crypto.subtle.decrypt(
     { name: "RSA-OAEP" },
-    privateKey,
+    seal.privateKey,
     fromBase64(result.sealed.key)
   );
   const aesKey = await crypto.subtle.importKey(

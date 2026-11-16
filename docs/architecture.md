@@ -123,7 +123,8 @@ The core keeps task output in Redis for about 8 hours. The UI sends the public k
 key pair that lives only in the page, in the `public_key` field of `add-client` and
 `reset-client-password`. The action encrypts its output for that key, so only ciphertext lands
 in Redis and the password cannot be read back from there. Called from `api-cli` without
-`public_key`, the two actions return plain text.
+`public_key`, the two actions return plain text. The UI does the same when the browser has no
+WebCrypto, which happens only when the page is not served over HTTPS.
 
 A reset gives the same identity a new password. The machine finds its old snapshots after it
 runs the new script. Until then, the old password in its keyring stops working.
