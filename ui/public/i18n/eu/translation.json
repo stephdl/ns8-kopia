@@ -92,6 +92,8 @@
         "col_owner_email": "Jabea",
         "col_last_backup": "Azken babeskopia",
         "col_state": "Egoera",
+        "col_folders": "Karpetak",
+        "manage_folders": "Kudeatu",
         "state_ok": "Ondo",
         "state_late": "Atzeratuta",
         "state_late_admin": "Oso atzeratuta",

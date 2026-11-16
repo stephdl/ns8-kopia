@@ -92,6 +92,8 @@
         "col_owner_email": "Proprietario",
         "col_last_backup": "Ultimo backup",
         "col_state": "Stato",
+        "col_folders": "Cartelle",
+        "manage_folders": "Gestisci",
         "state_ok": "OK",
         "state_late": "In ritardo",
         "state_late_admin": "Molto in ritardo",

@@ -92,6 +92,8 @@
         "col_owner_email": "Proprietário",
         "col_last_backup": "Última cópia",
         "col_state": "Estado",
+        "col_folders": "Pastas",
+        "manage_folders": "Gerir",
         "state_ok": "OK",
         "state_late": "Atrasada",
         "state_late_admin": "Muito atrasada",

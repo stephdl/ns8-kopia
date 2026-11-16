@@ -92,6 +92,8 @@
         "col_owner_email": "Propietario",
         "col_last_backup": "Última copia",
         "col_state": "Estado",
+        "col_folders": "Carpetas",
+        "manage_folders": "Gestionar",
         "state_ok": "OK",
         "state_late": "Con retraso",
         "state_late_admin": "Con mucho retraso",

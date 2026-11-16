@@ -135,6 +135,16 @@
                     :class="{ 'tag-late': row.state === 'late' }"
                   />
                 </cv-data-table-cell>
+                <cv-data-table-cell>
+                  <!-- A desktop backs up nothing until the admin adds its folders: keep the way in sight -->
+                  <NsButton
+                    kind="ghost"
+                    size="small"
+                    :icon="Folder20"
+                    @click="showFoldersModal(row)"
+                    >{{ $t("clients.manage_folders") }}</NsButton
+                  >
+                </cv-data-table-cell>
                 <cv-data-table-cell class="table-overflow-menu-cell">
                   <cv-overflow-menu flip-menu class="table-overflow-menu">
                     <cv-overflow-menu-item @click="showEnrollment(row)">
@@ -568,7 +578,7 @@ export default {
       urlCheckInterval: null,
       clients: [],
       tablePage: [],
-      tableColumns: ["name", "owner_email", "last_backup", "state"],
+      tableColumns: ["name", "owner_email", "last_backup", "state", "folders"],
       // Before the first configuration there is no server to ask
       configured: true,
       isShownAddModal: false,

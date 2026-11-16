@@ -92,6 +92,8 @@
         "col_owner_email": "Besitzer",
         "col_last_backup": "Letztes Backup",
         "col_state": "Zustand",
+        "col_folders": "Ordner",
+        "manage_folders": "Verwalten",
         "state_ok": "OK",
         "state_late": "Verspätet",
         "state_late_admin": "Stark verspätet",
