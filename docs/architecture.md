@@ -117,9 +117,13 @@ sequenceDiagram
 
 Each machine has its own account `user@host` and its own random password. The module keeps
 only the scrypt hash of that password. The password appears once, inside the enrollment
-script returned when the machine is added or its password reset. The core keeps that task
-output for about 8 hours, readable by cluster admins only. They can read the repository
-password anyway.
+script returned when the machine is added or its password reset.
+
+The core keeps task output in Redis for about 8 hours. The UI sends the public key of an RSA
+key pair that lives only in the page, in the `public_key` field of `add-client` and
+`reset-client-password`. The action encrypts its output for that key, so only ciphertext lands
+in Redis and the password cannot be read back from there. Called from `api-cli` without
+`public_key`, the two actions return plain text.
 
 A reset gives the same identity a new password. The machine finds its old snapshots after it
 runs the new script. Until then, the old password in its keyring stops working.

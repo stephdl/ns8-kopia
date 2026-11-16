@@ -520,6 +520,7 @@ import {
   DateTimeService,
 } from "@nethserver/ns8-ui-lib";
 import ModuleTask from "@/mixins/moduleTask";
+import { createSealKey, openSealed } from "@/lib/seal";
 
 // Kopia compares paths as text: a Windows path keeps its backslashes and drive letter
 const FOLDER_PATTERNS = [/^\/./, /^[A-Za-z]:\\/, /^\\\\[^\\]+\\[^\\]+/];
@@ -787,7 +788,8 @@ export default {
         failed: fail,
       });
     },
-    addClient() {
+    async addClient() {
+      const seal = await createSealKey();
       this.loading.addClient = true;
       this.error.addClient = "";
       const fail = (message) => {
@@ -800,11 +802,13 @@ export default {
           username: this.newUsername,
           hostname: this.newHostname,
           owner_email: this.newOwnerEmail,
+          public_key: seal.publicKey,
         },
         title: this.$t("clients.adding_machine"),
         // The output holds the machine password: keep it out of the notification list
         isNotificationHidden: true,
-        completed: (output) => {
+        completed: async (sealed) => {
+          const output = await openSealed(sealed, seal.privateKey);
           this.loading.addClient = false;
           this.isShownAddModal = false;
           this.listClients();
@@ -870,8 +874,9 @@ export default {
       this.isShownResetModal = false;
       this.clientToReset = null;
     },
-    resetClient() {
+    async resetClient() {
       const client = this.clientToReset;
+      const seal = await createSealKey();
       this.loading.resetClient = true;
       this.error.resetClient = "";
       const fail = (message) => {
@@ -880,11 +885,12 @@ export default {
       };
       this.runModuleTask({
         action: "reset-client-password",
-        data: { name: client.name },
+        data: { name: client.name, public_key: seal.publicKey },
         title: this.$t("clients.resetting_password", { name: client.name }),
         // The output holds the machine password: keep it out of the notification list
         isNotificationHidden: true,
-        completed: (output) => {
+        completed: async (sealed) => {
+          const output = await openSealed(sealed, seal.privateKey);
           this.loading.resetClient = false;
           this.hideResetModal();
           this.showEnrollment(client, output);

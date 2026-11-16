@@ -6,5 +6,8 @@
     "examples": [{"name": "accounting@pc-accounting-01"}],
     "type": "object",
     "required": ["name"],
-    "properties": {"name": {"type": "string", "pattern": "^[^@]+@[^@]+$", "description": "Machine identity, username@hostname."}}
+    "properties": {
+        "name": {"type": "string", "pattern": "^[^@]+@[^@]+$", "description": "Machine identity, username@hostname."},
+        "public_key": {"type": "string", "maxLength": 2048, "description": "Base64 SPKI RSA-OAEP key of the browser: the output is encrypted for it."}
+    }
 }

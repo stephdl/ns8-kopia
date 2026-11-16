@@ -9,6 +9,7 @@
     "properties": {
         "username": {"type": "string", "minLength": 1, "maxLength": 64, "description": "Lowercase letters, digits, dot, dash and underscore."},
         "hostname": {"type": "string", "minLength": 1, "maxLength": 64, "description": "Lowercase letters, digits, dot, dash and underscore."},
-        "owner_email": {"type": "string", "anyOf": [{"const": ""}, {"format": "email"}], "description": "Owner of the machine, who gets the first stale backup mail."}
+        "owner_email": {"type": "string", "anyOf": [{"const": ""}, {"format": "email"}], "description": "Owner of the machine, who gets the first stale backup mail."},
+        "public_key": {"type": "string", "maxLength": 2048, "description": "Base64 SPKI RSA-OAEP key of the browser: the output is encrypted for it."}
     }
 }
