@@ -438,6 +438,64 @@
           :paragraph="true"
           :line-count="3"
         />
+        <!-- Confirmation in place: a second modal over this one would hide the folder list -->
+        <div v-else-if="folderToRemove" class="folder-remove">
+          <h6 class="mg-bottom-sm">
+            {{ $t("clients.folder_remove_title", { path: folderToRemove }) }}
+          </h6>
+          <cv-radio-group vertical class="mg-bottom">
+            <cv-radio-button
+              v-model="folderRemoveMode"
+              name="folder-remove-mode"
+              value="stop"
+              :label="$t('clients.folder_remove_stop')"
+            />
+            <cv-radio-button
+              v-model="folderRemoveMode"
+              name="folder-remove-mode"
+              value="delete"
+              :label="$t('clients.folder_remove_delete')"
+            />
+          </cv-radio-group>
+          <NsInlineNotification
+            :kind="folderRemoveMode === 'delete' ? 'warning' : 'info'"
+            :description="
+              folderRemoveMode === 'delete'
+                ? $t('clients.folder_remove_delete_description')
+                : $t('clients.folder_remove_stop_description')
+            "
+            :showCloseButton="false"
+          />
+          <NsInlineNotification
+            v-if="error.removeFolder"
+            kind="error"
+            :title="$t('action.remove-client-folder')"
+            :description="error.removeFolder"
+            :showCloseButton="false"
+          />
+          <div class="folder-remove-buttons">
+            <NsButton
+              kind="secondary"
+              size="field"
+              :disabled="loading.removeFolder"
+              @click="cancelRemoveFolder"
+              >{{ core.$t("common.cancel") }}</NsButton
+            >
+            <NsButton
+              kind="danger"
+              size="field"
+              :icon="TrashCan20"
+              :loading="loading.removeFolder"
+              :disabled="loading.removeFolder"
+              @click="removeFolder"
+              >{{
+                folderRemoveMode === "delete"
+                  ? $t("clients.folder_remove_delete_button")
+                  : $t("clients.folder_remove_stop_button")
+              }}</NsButton
+            >
+          </div>
+        </div>
         <template v-else>
           <p v-if="!folders.length" class="mg-bottom">
             {{ $t("clients.no_folders") }}
@@ -448,7 +506,15 @@
               :key="folder.path"
               class="folder-row"
             >
-              <div class="folder-path">{{ folder.path }}</div>
+              <div class="folder-path">
+                {{ folder.path }}
+                <NsTag
+                  v-if="folder.stopped"
+                  size="sm"
+                  kind="gray"
+                  :label="$t('clients.folder_stopped')"
+                />
+              </div>
               <div class="folder-date">
                 {{
                   folder.last_backup
@@ -456,17 +522,31 @@
                     : $t("clients.folder_never")
                 }}
               </div>
-              <NsButton
-                kind="ghost"
-                size="small"
-                :icon="Launch20"
-                @click="openFolderPolicy(folder.path)"
-                >{{ $t("clients.folder_open") }}</NsButton
-              >
+              <div class="folder-actions">
+                <NsButton
+                  kind="ghost"
+                  size="small"
+                  :icon="Launch20"
+                  @click="openFolderPolicy(folder.path)"
+                  >{{ $t("clients.folder_open") }}</NsButton
+                >
+                <NsButton
+                  kind="ghost"
+                  size="small"
+                  :icon="TrashCan20"
+                  class="folder-remove-link"
+                  @click="askRemoveFolder(folder)"
+                  >{{ $t("clients.folder_remove") }}</NsButton
+                >
+              </div>
             </div>
           </div>
         </template>
-        <cv-form @submit.prevent="addFolder" class="add-folder">
+        <cv-form
+          v-if="!folderToRemove"
+          @submit.prevent="addFolder"
+          class="add-folder"
+        >
           <cv-text-input
             v-model.trim="newFolder"
             :label="$t('clients.add_folder')"
@@ -598,10 +678,13 @@ export default {
       clientToRemove: null,
       isShownFoldersModal: false,
       foldersClient: "",
+      folderToRemove: "",
+      folderRemoveMode: "stop",
       folders: [],
       newFolder: "",
       host: "",
       loading: {
+        removeFolder: false,
         getConfiguration: false,
         listClients: false,
         addClient: false,
@@ -612,6 +695,7 @@ export default {
         listFolders: false,
       },
       error: {
+        removeFolder: "",
         listClients: "",
         addClient: "",
         countSnapshots: "",
@@ -951,6 +1035,7 @@ export default {
     },
     showFoldersModal(client) {
       this.foldersClient = client.name;
+      this.folderToRemove = "";
       this.folders = [];
       this.newFolder = "";
       this.error.newFolder = "";
@@ -975,6 +1060,46 @@ export default {
           }
           this.loading.listFolders = false;
         },
+        aborted: fail,
+        failed: fail,
+      });
+    },
+    askRemoveFolder(folder) {
+      this.error.removeFolder = "";
+      // A stopped folder has nothing left to stop: only deleting it changes anything
+      this.folderRemoveMode = folder.stopped ? "delete" : "stop";
+      this.folderToRemove = folder.path;
+    },
+    cancelRemoveFolder() {
+      this.folderToRemove = "";
+      this.error.removeFolder = "";
+    },
+    removeFolder() {
+      const name = this.foldersClient;
+      this.loading.removeFolder = true;
+      this.error.removeFolder = "";
+      const fail = (message) => {
+        this.error.removeFolder = message;
+        this.loading.removeFolder = false;
+      };
+      this.runModuleTask({
+        action: "remove-client-folder",
+        data: {
+          name,
+          path: this.folderToRemove,
+          delete_snapshots: this.folderRemoveMode === "delete",
+        },
+        title: this.$t("clients.removing_folder", {
+          path: this.folderToRemove,
+        }),
+        completed: () => {
+          this.loading.removeFolder = false;
+          if (name === this.foldersClient) {
+            this.folderToRemove = "";
+            this.listFolders();
+          }
+        },
+        validationFailed: () => fail(this.$t("clients.folder_not_found")),
         aborted: fail,
         failed: fail,
       });
@@ -1095,6 +1220,28 @@ export default {
 .folder-date {
   font-size: 0.75rem;
   color: $text-02;
+}
+
+.folder-actions {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.folder-remove-link {
+  color: $danger-01;
+}
+
+.folder-remove {
+  padding: $spacing-05;
+  border: 1px solid $ui-03;
+  margin-bottom: $spacing-05;
+}
+
+.folder-remove-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-03;
+  margin-top: $spacing-05;
 }
 
 .toolbar {

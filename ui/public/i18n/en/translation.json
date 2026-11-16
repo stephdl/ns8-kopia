@@ -23,7 +23,8 @@
         "get-client-enrollment": "Get the enrollment script",
         "send-test-mail": "Send a test mail",
         "count-snapshots": "Check old snapshots",
-        "list-client-folders": "List the folders"
+        "list-client-folders": "List the folders",
+        "remove-client-folder": "Remove a folder"
     },
     "error": {
         "error": "Error",
@@ -159,6 +160,17 @@
         "no_folders": "No folder yet. Add one below, or the machine adds its first one with a snapshot.",
         "folder_never": "Never backed up",
         "folder_open": "Edit in Kopia",
+        "folder_remove": "Remove",
+        "folder_stopped": "Stopped",
+        "folder_remove_title": "Remove {path}",
+        "folder_remove_stop": "Stop backing it up, keep its snapshots",
+        "folder_remove_delete": "Delete it with all its snapshots",
+        "folder_remove_stop_description": "The machine takes no new snapshot of this folder. The old ones stay restorable and expire with the retention. To back it up again, edit it in Kopia and set Manual Snapshots Only back to inherit.",
+        "folder_remove_delete_description": "Every snapshot of this folder is deleted and the machine forgets it. This cannot be undone, except from a module backup. Maintenance frees the space within a day or two.",
+        "folder_remove_stop_button": "Stop backups",
+        "folder_remove_delete_button": "Delete folder",
+        "removing_folder": "Removing {path}",
+        "folder_not_found": "This folder no longer exists. Refresh the list.",
         "add_folder": "Add a folder",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
         "folder_helper": "Absolute path on the machine, such as /home/anna/Documents or C:\\Users\\anna\\Documents. Save the policy in Kopia, then click Refresh. The machine sees the folder within 4 hours, or at once with the refresh button of KopiaUI.",

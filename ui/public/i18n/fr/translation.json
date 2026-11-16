@@ -23,7 +23,8 @@
         "get-client-enrollment": "Lire le script d'enrôlement",
         "send-test-mail": "Envoyer un mail de test",
         "count-snapshots": "Vérifier les anciens instantanés",
-        "list-client-folders": "Lister les dossiers"
+        "list-client-folders": "Lister les dossiers",
+        "remove-client-folder": "Retirer un dossier"
     },
     "error": {
         "error": "Erreur",
@@ -159,6 +160,17 @@
         "no_folders": "Aucun dossier pour l'instant. Ajoutez-en un ci-dessous, ou la machine ajoute le premier avec un instantané.",
         "folder_never": "Jamais sauvegardé",
         "folder_open": "Modifier dans Kopia",
+        "folder_remove": "Retirer",
+        "folder_stopped": "Arrêté",
+        "folder_remove_title": "Retirer {path}",
+        "folder_remove_stop": "Arrêter de le sauvegarder, garder ses instantanés",
+        "folder_remove_delete": "Le supprimer avec tous ses instantanés",
+        "folder_remove_stop_description": "La machine ne prend plus d'instantané de ce dossier. Les anciens restent restaurables et expirent avec la rétention. Pour le sauvegarder à nouveau, modifiez-le dans Kopia et remettez Manual Snapshots Only sur inherit.",
+        "folder_remove_delete_description": "Tous les instantanés de ce dossier sont supprimés et la machine l'oublie. Impossible d'annuler, sauf depuis une sauvegarde du module. La maintenance libère l'espace sous un ou deux jours.",
+        "folder_remove_stop_button": "Arrêter les sauvegardes",
+        "folder_remove_delete_button": "Supprimer le dossier",
+        "removing_folder": "Retrait de {path}",
+        "folder_not_found": "Ce dossier n'existe plus. Actualisez la liste.",
         "add_folder": "Ajouter un dossier",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
         "folder_helper": "Chemin absolu sur la machine, comme /home/anna/Documents ou C:\\Users\\anna\\Documents. Enregistrez la policy dans Kopia, puis cliquez sur Actualiser. La machine voit le dossier sous 4 heures, ou tout de suite avec le bouton de rafraîchissement de KopiaUI.",

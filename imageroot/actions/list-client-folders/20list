@@ -20,7 +20,7 @@ folders = {}
 
 
 def folder(path):
-    return folders.setdefault(path, {"path": path, "policy": False, "last_backup": None})
+    return folders.setdefault(path, {"path": path, "policy": False, "stopped": False, "last_backup": None})
 
 
 for snap in km.machine_snapshots(name):
@@ -31,7 +31,10 @@ for snap in km.machine_snapshots(name):
             entry["last_backup"] = end
 for pol in km.machine_policies(name):
     if pol["target"]["path"]:
-        folder(pol["target"]["path"])["policy"] = True
+        entry = folder(pol["target"]["path"])
+        entry["policy"] = True
+        # Set by remove-client-folder: the machine keeps the snapshots but takes no new one
+        entry["stopped"] = bool((pol.get("scheduling") or {}).get("manual"))
 
 for entry in folders.values():
     if entry["last_backup"]:

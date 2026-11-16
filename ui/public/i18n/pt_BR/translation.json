@@ -23,7 +23,8 @@
         "get-client-enrollment": "Ler o script de registro",
         "send-test-mail": "Enviar um e-mail de teste",
         "count-snapshots": "Verificar snapshots antigos",
-        "list-client-folders": "Listar as pastas"
+        "list-client-folders": "Listar as pastas",
+        "remove-client-folder": "Remover uma pasta"
     },
     "error": {
         "error": "Erro",
@@ -159,6 +160,17 @@
         "no_folders": "Nenhuma pasta ainda. Adicione uma abaixo, ou a máquina adiciona a primeira com um snapshot.",
         "folder_never": "Nunca teve backup",
         "folder_open": "Editar no Kopia",
+        "folder_remove": "Remover",
+        "folder_stopped": "Parada",
+        "folder_remove_title": "Remover {path}",
+        "folder_remove_stop": "Parar de fazer backup, manter os snapshots",
+        "folder_remove_delete": "Excluir com todos os snapshots",
+        "folder_remove_stop_description": "A máquina não tira novos snapshots desta pasta. Os antigos continuam restauráveis e expiram com a retenção. Para fazer backup de novo, edite-a no Kopia e volte Manual Snapshots Only para inherit.",
+        "folder_remove_delete_description": "Todos os snapshots desta pasta são excluídos e a máquina a esquece. Não pode ser desfeito, exceto a partir de um backup do módulo. A manutenção libera o espaço em um ou dois dias.",
+        "folder_remove_stop_button": "Parar backups",
+        "folder_remove_delete_button": "Excluir pasta",
+        "removing_folder": "Removendo {path}",
+        "folder_not_found": "Esta pasta não existe mais. Atualize a lista.",
         "add_folder": "Adicionar uma pasta",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
         "folder_helper": "Caminho absoluto na máquina, como /home/anna/Documents ou C:\\Users\\anna\\Documents. Salve a política no Kopia e clique em Atualizar. A máquina vê a pasta em até 4 horas, ou na hora com o botão de atualizar do KopiaUI.",

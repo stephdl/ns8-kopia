@@ -23,7 +23,8 @@
         "get-client-enrollment": "Registrierungsskript lesen",
         "send-test-mail": "Testmail senden",
         "count-snapshots": "Alte Snapshots prüfen",
-        "list-client-folders": "Ordner auflisten"
+        "list-client-folders": "Ordner auflisten",
+        "remove-client-folder": "Ordner entfernen"
     },
     "error": {
         "error": "Fehler",
@@ -159,6 +160,17 @@
         "no_folders": "Noch kein Ordner. Fügen Sie unten einen hinzu, oder der Rechner fügt seinen ersten mit einem Snapshot hinzu.",
         "folder_never": "Nie gesichert",
         "folder_open": "In Kopia bearbeiten",
+        "folder_remove": "Entfernen",
+        "folder_stopped": "Gestoppt",
+        "folder_remove_title": "{path} entfernen",
+        "folder_remove_stop": "Nicht mehr sichern, Snapshots behalten",
+        "folder_remove_delete": "Mit allen Snapshots löschen",
+        "folder_remove_stop_description": "Der Rechner erstellt keine neuen Snapshots dieses Ordners. Die alten bleiben wiederherstellbar und laufen mit der Aufbewahrung ab. Um ihn wieder zu sichern, bearbeiten Sie ihn in Kopia und setzen Manual Snapshots Only auf inherit zurück.",
+        "folder_remove_delete_description": "Alle Snapshots dieses Ordners werden gelöscht und der Rechner vergisst ihn. Dies kann nicht rückgängig gemacht werden, außer aus einer Modulsicherung. Die Wartung gibt den Speicher in ein bis zwei Tagen frei.",
+        "folder_remove_stop_button": "Sicherungen stoppen",
+        "folder_remove_delete_button": "Ordner löschen",
+        "removing_folder": "{path} wird entfernt",
+        "folder_not_found": "Dieser Ordner existiert nicht mehr. Aktualisieren Sie die Liste.",
         "add_folder": "Ordner hinzufügen",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
         "folder_helper": "Absoluter Pfad auf dem Rechner, etwa /home/anna/Documents oder C:\\Users\\anna\\Documents. Speichern Sie die Richtlinie in Kopia und klicken Sie dann auf Aktualisieren. Der Rechner sieht den Ordner innerhalb von 4 Stunden, oder sofort mit der Aktualisieren-Schaltfläche von KopiaUI.",

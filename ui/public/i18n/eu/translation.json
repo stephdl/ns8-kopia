@@ -23,7 +23,8 @@
         "get-client-enrollment": "Irakurri izen-emateko scripta",
         "send-test-mail": "Bidali proba-posta",
         "count-snapshots": "Egiaztatu snapshot zaharrak",
-        "list-client-folders": "Zerrendatu karpetak"
+        "list-client-folders": "Zerrendatu karpetak",
+        "remove-client-folder": "Kendu karpeta bat"
     },
     "error": {
         "error": "Errorea",
@@ -159,6 +160,17 @@
         "no_folders": "Oraindik ez dago karpetarik. Gehitu bat behean, edo makinak lehena gehitzen du snapshot batekin.",
         "folder_never": "Inoiz babestu gabea",
         "folder_open": "Editatu Kopian",
+        "folder_remove": "Kendu",
+        "folder_stopped": "Geldituta",
+        "folder_remove_title": "Kendu {path}",
+        "folder_remove_stop": "Utzi babeskopia egiteari, gorde bere snapshotak",
+        "folder_remove_delete": "Ezabatu bere snapshot guztiekin",
+        "folder_remove_stop_description": "Makinak ez du karpeta honen snapshot berririk egingo. Zaharrak leheneratu daitezke eta atxikipenarekin iraungitzen dira. Berriro babesteko, editatu Kopian eta jarri Manual Snapshots Only inherit-en.",
+        "folder_remove_delete_description": "Karpeta honen snapshot guztiak ezabatzen dira eta makinak ahaztu egiten du. Ezin da desegin, moduluaren babeskopia batetik izan ezik. Mantentzeak egun bat edo bitan askatzen du lekua.",
+        "folder_remove_stop_button": "Gelditu babeskopiak",
+        "folder_remove_delete_button": "Ezabatu karpeta",
+        "removing_folder": "{path} kentzen",
+        "folder_not_found": "Karpeta hau ez dago jada. Freskatu zerrenda.",
         "add_folder": "Gehitu karpeta bat",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
         "folder_helper": "Makinako bide absolutua, adibidez /home/anna/Documents edo C:\\Users\\anna\\Documents. Gorde politika Kopian, eta sakatu Eguneratu. Makinak 4 orduko epean ikusten du karpeta, edo berehala KopiaUI-ren eguneratze-botoiarekin.",

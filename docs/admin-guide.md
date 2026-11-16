@@ -201,7 +201,19 @@ The Kopia web UI opens on the policy of that folder: log in as `admin` and click
 
 KopiaUI on the machine sees the new folder at its next refresh, within 4 hours, or at once
 with its refresh button. It then snapshots each folder at the policy interval while it runs.
-To remove a folder, delete its policy in the Kopia web UI, opened with **Edit in Kopia**.
+
+To remove a folder, click **Remove** next to it. You choose between two ways:
+
+- **Stop backing it up, keep its snapshots**: the folder gets a manual-only policy and shows
+  **Stopped**. The machine takes no new snapshot, the old ones stay restorable and expire with
+  the retention. To back it up again, open it with **Edit in Kopia** and set **Manual
+  Snapshots Only** back to inherit.
+- **Delete it with all its snapshots**: the snapshots and the policy are deleted, and the
+  machine forgets the folder. Maintenance frees the space within a day or two.
+
+Deleting the policy alone in the Kopia web UI does not stop the backups: KopiaUI keeps
+snapshotting every folder that already has a snapshot. The machine applies a removal at its
+next refresh, like an added folder.
 
 The module opens the policy editor by its URL because the Policies form of the Kopia web UI
 rejects `user@host:/path` targets in Kopia 0.23.1 (kopia/kopia#5815).
