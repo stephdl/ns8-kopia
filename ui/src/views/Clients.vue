@@ -1251,6 +1251,13 @@ export default {
 .folder-menu {
   position: relative;
   flex: 0 0 auto;
+
+  // Its hidden tooltip starts at the button and would make the window scroll sideways
+  ::v-deep .bx--assistive-text {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
 }
 
 .folder-main {
