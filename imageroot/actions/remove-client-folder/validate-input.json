@@ -22,9 +22,9 @@
         },
         "path": {
             "type": "string",
-            "minLength": 1,
             "maxLength": 4096,
-            "description": "Folder path as the machine reports it."
+            "description": "Folder path as the machine reports it.",
+            "pattern": "^(/.|[A-Za-z]:\\\\|\\\\\\\\[^\\\\]+\\\\[^\\\\]+)"
         }
     }
 }

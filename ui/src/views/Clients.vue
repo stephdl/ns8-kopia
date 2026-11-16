@@ -420,6 +420,14 @@
             >{{ $t("clients.refresh") }}</NsButton
           >
         </div>
+        <!-- Outside the chain below: a failed action must not hide the folder list -->
+        <NsInlineNotification
+          v-if="error.folderAction"
+          kind="error"
+          :title="$t('action.' + error.folderAction.action)"
+          :description="error.folderAction.message"
+          :showCloseButton="false"
+        />
         <NsInlineNotification
           v-if="error.listFolders"
           kind="error"
@@ -491,7 +499,7 @@
                 </div>
               </div>
               <cv-inline-loading
-                v-if="busyFolder === folder.path"
+                v-if="busyFolder === foldersClient + ':' + folder.path"
                 state="loading"
                 :loading-text="
                   folder.disabled
@@ -533,7 +541,11 @@
                   />
                 </cv-overflow-menu-item>
                 <NsMenuDivider />
-                <cv-overflow-menu-item danger @click="askRemoveFolder(folder)">
+                <cv-overflow-menu-item
+                  danger
+                  :disabled="!!busyFolder"
+                  @click="askRemoveFolder(folder)"
+                >
                   <NsMenuItem
                     :icon="TrashCan20"
                     :label="$t('clients.folder_remove')"
@@ -705,6 +717,7 @@ export default {
       },
       error: {
         removeFolder: "",
+        folderAction: null,
         listClients: "",
         addClient: "",
         countSnapshots: "",
@@ -1045,6 +1058,7 @@ export default {
     showFoldersModal(client) {
       this.foldersClient = client.name;
       this.folderToRemove = "";
+      this.error.folderAction = null;
       this.folders = [];
       this.newFolder = "";
       this.error.newFolder = "";
@@ -1076,18 +1090,22 @@ export default {
     // Disable keeps the snapshots and is undone with Enable: no confirmation needed
     setFolderEnabled(folder, enabled) {
       const name = this.foldersClient;
-      this.busyFolder = folder.path;
-      this.error.listFolders = "";
+      const action = enabled ? "enable-client-folder" : "disable-client-folder";
+      this.busyFolder = name + ":" + folder.path;
+      this.error.folderAction = null;
       const done = (message) => {
         this.busyFolder = "";
-        if (message) {
-          this.error.listFolders = message;
-        } else if (name === this.foldersClient) {
-          this.listFolders();
+        // The window may show another machine by now
+        if (name !== this.foldersClient) {
+          return;
         }
+        if (message) {
+          this.error.folderAction = { action, message };
+        }
+        this.listFolders();
       };
       this.runModuleTask({
-        action: enabled ? "enable-client-folder" : "disable-client-folder",
+        action,
         data: { name, path: folder.path },
         title: this.$t(
           enabled ? "clients.enabling_folder" : "clients.disabling_folder",
@@ -1112,8 +1130,10 @@ export default {
       this.loading.removeFolder = true;
       this.error.removeFolder = "";
       const fail = (message) => {
-        this.error.removeFolder = message;
         this.loading.removeFolder = false;
+        if (name === this.foldersClient) {
+          this.error.removeFolder = message;
+        }
       };
       this.runModuleTask({
         action: "remove-client-folder",
@@ -1160,9 +1180,12 @@ export default {
       const name = this.foldersClient;
       const path = this.newFolder;
       this.loading.addFolder = true;
+      this.error.folderAction = null;
       const fail = (message) => {
-        this.error.listFolders = message;
         this.loading.addFolder = false;
+        if (name === this.foldersClient) {
+          this.error.folderAction = { action: "add-client-folder", message };
+        }
       };
       this.runModuleTask({
         action: "add-client-folder",
@@ -1177,7 +1200,14 @@ export default {
         },
         validationFailed: (errors) => {
           this.loading.addFolder = false;
-          this.error.newFolder = "clients." + errors[0].error;
+          if (name !== this.foldersClient) {
+            return;
+          }
+          // Only folder_exists has a string: schema errors mean the path is not valid
+          this.error.newFolder =
+            errors[0].error === "folder_exists"
+              ? "clients.folder_exists"
+              : "clients.folder_invalid";
           this.focusElement("newFolder");
         },
         aborted: fail,

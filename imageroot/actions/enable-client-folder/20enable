@@ -23,5 +23,7 @@ if not any(p["target"]["path"] == path for p in km.machine_policies(name)):
 target = f"{name}:{path}"
 # Kopia 0.23.1 has no flag to clear Manual Snapshots Only: any policy set without --manual does it
 km.kopia(["policy", "set", target, "--run-missed=inherit"])
+pol = next(p for p in km.machine_policies(name) if p["target"]["path"] == path)
+agent.assert_exp(not (pol.get("scheduling") or {}).get("manual"), "Kopia kept Manual Snapshots Only")
 print(f"Enabled the backups of {target}", file=sys.stderr)
 km.server_refresh()

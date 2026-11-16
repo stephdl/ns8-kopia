@@ -210,7 +210,9 @@ Each folder has a menu with three entries:
 - **Disable**: the machine stops backing up the folder and it shows **Disabled**. Its
   snapshots stay restorable and expire with the retention. **Enable** backs it up again.
 - **Remove**: its snapshots and its policy are deleted, and the machine forgets the folder.
-  Maintenance frees the space within a day or two. This cannot be undone.
+  Maintenance frees the space within a day or two. This cannot be undone. KopiaUI keeps its
+  old folder list until its next refresh: a snapshot taken before that brings the folder
+  back. To be sure, disable the folder first, let the machine refresh, then remove it.
 - **Edit in Kopia**: change a setting for that folder only.
 
 Deleting the policy alone in the Kopia web UI does not stop the backups: KopiaUI keeps

@@ -15,10 +15,15 @@ import kopia_module as km
 
 request = json.load(sys.stdin)
 name = request["name"]
-path = request["path"]
+# A trailing separator would make a second folder that the machine never reports
+path = request["path"].rstrip("/\\") or "/"
+if len(path) == 2 and path[1] == ":":
+    path += "\\"
 agent.assert_exp(any(c["name"] == name for c in km.load_clients()), "client not found")
 
-if any(p["target"]["path"] == path for p in km.machine_policies(name)):
+known = {km.folder_key(p["target"]["path"]) for p in km.machine_policies(name)}
+known |= {km.folder_key(s["source"]["path"]) for s in km.machine_snapshots(name)}
+if km.folder_key(path) in known:
     agent.set_status("validation-failed")
     json.dump([{"field": "path", "parameter": "path", "value": path, "error": "folder_exists"}], fp=sys.stdout)
     sys.exit(2)

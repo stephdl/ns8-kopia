@@ -420,6 +420,14 @@ def parse_time(value):
     return datetime.fromisoformat(value)
 
 
+def folder_key(path):
+    """Compare folder paths the way a machine reports them: no trailing separator, Windows drive
+    letter and path case ignored, since Windows paths are case-insensitive."""
+    if re.match(r"^[A-Za-z]:\\", path) or path.startswith("\\\\"):
+        return path.rstrip("\\").lower() if len(path) > 3 else path.lower()
+    return path.rstrip("/") or "/"
+
+
 def machine_snapshots(name):
     """Return the snapshot manifests of every source of a machine identity, incomplete ones too."""
     return [snap for snap in kopia_json(["snapshot", "list", "--all", "--incomplete"]) or []
