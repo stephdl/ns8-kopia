@@ -171,7 +171,7 @@
         "folder_disabled": "Desactivada",
         "folder_remove": "Quitar",
         "folder_remove_title": "Quitar {path}",
-        "folder_remove_description": "Se eliminan todas las instantáneas de esta carpeta y el equipo la olvida. No se puede deshacer, salvo desde una copia del módulo. Para detener las copias y conservar las instantáneas, use Desactivar.",
+        "folder_remove_description": "Se eliminan todas las instantáneas de esta carpeta y el equipo la olvida. No se puede deshacer. Para detener las copias y conservar las instantáneas, use Desactivar.",
         "removing_folder": "Quitando {path}",
         "folder_not_found": "Esta carpeta ya no existe. Actualice la lista.",
         "add_folder": "Añadir una carpeta",

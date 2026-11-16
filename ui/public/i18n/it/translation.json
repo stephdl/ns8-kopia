@@ -171,7 +171,7 @@
         "folder_disabled": "Disabilitata",
         "folder_remove": "Rimuovi",
         "folder_remove_title": "Rimuovi {path}",
-        "folder_remove_description": "Tutti gli snapshot di questa cartella vengono eliminati e la macchina la dimentica. Non si può annullare, se non da un backup del modulo. Per fermare i backup e mantenere gli snapshot, usa invece Disabilita.",
+        "folder_remove_description": "Tutti gli snapshot di questa cartella vengono eliminati e la macchina la dimentica. Non si può annullare. Per fermare i backup e mantenere gli snapshot, usa invece Disabilita.",
         "removing_folder": "Rimozione di {path}",
         "folder_not_found": "Questa cartella non esiste più. Aggiorna l'elenco.",
         "add_folder": "Aggiungi una cartella",

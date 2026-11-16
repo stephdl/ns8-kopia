@@ -171,7 +171,7 @@
         "folder_disabled": "Désactivé",
         "folder_remove": "Retirer",
         "folder_remove_title": "Retirer {path}",
-        "folder_remove_description": "Tous les instantanés de ce dossier sont supprimés et la machine l'oublie. Impossible d'annuler, sauf depuis une sauvegarde du module. Pour arrêter les sauvegardes en gardant les instantanés, utilisez plutôt Désactiver.",
+        "folder_remove_description": "Tous les instantanés de ce dossier sont supprimés et la machine l'oublie. Impossible d'annuler. Pour arrêter les sauvegardes en gardant les instantanés, utilisez plutôt Désactiver.",
         "removing_folder": "Retrait de {path}",
         "folder_not_found": "Ce dossier n'existe plus. Actualisez la liste.",
         "add_folder": "Ajouter un dossier",

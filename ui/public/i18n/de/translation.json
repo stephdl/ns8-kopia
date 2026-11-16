@@ -171,7 +171,7 @@
         "folder_disabled": "Deaktiviert",
         "folder_remove": "Entfernen",
         "folder_remove_title": "{path} entfernen",
-        "folder_remove_description": "Alle Snapshots dieses Ordners werden gelöscht und der Rechner vergisst ihn. Dies kann nicht rückgängig gemacht werden, außer aus einer Modulsicherung. Um die Sicherungen zu stoppen und die Snapshots zu behalten, verwenden Sie stattdessen Deaktivieren.",
+        "folder_remove_description": "Alle Snapshots dieses Ordners werden gelöscht und der Rechner vergisst ihn. Dies kann nicht rückgängig gemacht werden. Um die Sicherungen zu stoppen und die Snapshots zu behalten, verwenden Sie stattdessen Deaktivieren.",
         "removing_folder": "{path} wird entfernt",
         "folder_not_found": "Dieser Ordner existiert nicht mehr. Aktualisieren Sie die Liste.",
         "add_folder": "Ordner hinzufügen",

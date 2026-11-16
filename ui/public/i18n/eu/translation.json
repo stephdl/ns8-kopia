@@ -171,7 +171,7 @@
         "folder_disabled": "Desgaituta",
         "folder_remove": "Kendu",
         "folder_remove_title": "Kendu {path}",
-        "folder_remove_description": "Karpeta honen snapshot guztiak ezabatzen dira eta makinak ahaztu egiten du. Ezin da desegin, moduluaren babeskopia batetik izan ezik. Babeskopiak gelditu eta snapshotak gordetzeko, erabili Desgaitu.",
+        "folder_remove_description": "Karpeta honen snapshot guztiak ezabatzen dira eta makinak ahaztu egiten du. Ezin da desegin. Babeskopiak gelditu eta snapshotak gordetzeko, erabili Desgaitu.",
         "removing_folder": "{path} kentzen",
         "folder_not_found": "Karpeta hau ez dago jada. Freskatu zerrenda.",
         "add_folder": "Gehitu karpeta bat",

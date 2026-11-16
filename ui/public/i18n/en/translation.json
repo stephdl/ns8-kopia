@@ -171,7 +171,7 @@
         "folder_disabled": "Disabled",
         "folder_remove": "Remove",
         "folder_remove_title": "Remove {path}",
-        "folder_remove_description": "Every snapshot of this folder is deleted and the machine forgets it. This cannot be undone, except from a module backup. To stop the backups and keep the snapshots, use Disable instead.",
+        "folder_remove_description": "Every snapshot of this folder is deleted and the machine forgets it. This cannot be undone. To stop the backups and keep the snapshots, use Disable instead.",
         "removing_folder": "Removing {path}",
         "folder_not_found": "This folder no longer exists. Refresh the list.",
         "add_folder": "Add a folder",

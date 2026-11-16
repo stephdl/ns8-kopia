@@ -171,7 +171,7 @@
         "folder_disabled": "Desativada",
         "folder_remove": "Remover",
         "folder_remove_title": "Remover {path}",
-        "folder_remove_description": "Todos os snapshots desta pasta são excluídos e a máquina a esquece. Não pode ser desfeito, exceto a partir de um backup do módulo. Para parar os backups e manter os snapshots, use Desativar.",
+        "folder_remove_description": "Todos os snapshots desta pasta são excluídos e a máquina a esquece. Não pode ser desfeito. Para parar os backups e manter os snapshots, use Desativar.",
         "removing_folder": "Removendo {path}",
         "folder_not_found": "Esta pasta não existe mais. Atualize a lista.",
         "add_folder": "Adicionar uma pasta",
