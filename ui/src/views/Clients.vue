@@ -521,7 +521,7 @@
               <cv-overflow-menu
                 v-else
                 flip-menu
-                class="table-overflow-menu"
+                class="folder-menu"
                 :label="$t('clients.folder_actions')"
               >
                 <cv-overflow-menu-item @click="openFolderPolicy(folder.path)">
@@ -1245,6 +1245,12 @@ export default {
   gap: $spacing-05;
   padding: $spacing-04 0;
   border-bottom: 1px solid $ui-03;
+}
+
+// The table menu style is absolute for table cells: in this list the menu sits in the row
+.folder-menu {
+  position: relative;
+  flex: 0 0 auto;
 }
 
 .folder-main {
