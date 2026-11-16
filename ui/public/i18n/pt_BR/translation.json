@@ -25,6 +25,7 @@
         "count-snapshots": "Verificar snapshots antigos",
         "list-client-folders": "Listar as pastas",
         "resume-client-folder": "Retomar uma pasta",
+        "add-client-folder": "Adicionar uma pasta",
         "remove-client-folder": "Remover uma pasta"
     },
     "error": {
@@ -176,8 +177,10 @@
         "folder_not_found": "Esta pasta não existe mais. Atualize a lista.",
         "add_folder": "Adicionar uma pasta",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
-        "folder_helper": "Caminho absoluto na máquina, como /home/anna/Documents ou C:\\Users\\anna\\Documents. Salve a política no Kopia e clique em Atualizar. A máquina vê a pasta em até 4 horas, ou na hora com o botão de atualizar do KopiaUI.",
-        "folder_add_open": "Abrir no Kopia",
+        "folder_helper": "Caminho absoluto na máquina, como /home/anna/Documents ou C:\\Users\\anna\\Documents. A máquina vê a pasta em até 4 horas, ou na hora com o botão de atualizar do KopiaUI.",
+        "folder_add": "Adicionar",
+        "adding_folder": "Adicionando {path}",
+        "folder_exists": "Esta pasta já está na lista",
         "folder_invalid": "Use um caminho absoluto: /home/anna/Documents, C:\\Users\\anna\\Documents ou \\\\server\\share. Os caminhos do Windows mantêm as barras invertidas."
     },
     "settings": {

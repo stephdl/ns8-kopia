@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# A machine only reads its policies, so the folder exists for KopiaUI once it has a policy
+# of its own. An empty one inherits every setting of the global policy.
+
+import json
+import sys
+import agent
+import kopia_module as km
+
+request = json.load(sys.stdin)
+name = request["name"]
+path = request["path"]
+agent.assert_exp(any(c["name"] == name for c in km.load_clients()), "client not found")
+
+if any(p["target"]["path"] == path for p in km.machine_policies(name)):
+    agent.set_status("validation-failed")
+    json.dump([{"field": "path", "parameter": "path", "value": path, "error": "folder_exists"}], fp=sys.stdout)
+    sys.exit(2)
+
+target = f"{name}:{path}"
+# Kopia refuses a policy set with no change: this one changes nothing and creates the policy
+km.kopia(["policy", "set", target, "--run-missed=inherit"])
+print(f"Added the folder {target}", file=sys.stderr)
+km.server_refresh()

@@ -25,6 +25,7 @@
         "count-snapshots": "Egiaztatu snapshot zaharrak",
         "list-client-folders": "Zerrendatu karpetak",
         "resume-client-folder": "Berrekin karpeta bat",
+        "add-client-folder": "Gehitu karpeta bat",
         "remove-client-folder": "Kendu karpeta bat"
     },
     "error": {
@@ -176,8 +177,10 @@
         "folder_not_found": "Karpeta hau ez dago jada. Freskatu zerrenda.",
         "add_folder": "Gehitu karpeta bat",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
-        "folder_helper": "Makinako bide absolutua, adibidez /home/anna/Documents edo C:\\Users\\anna\\Documents. Gorde politika Kopian, eta sakatu Eguneratu. Makinak 4 orduko epean ikusten du karpeta, edo berehala KopiaUI-ren eguneratze-botoiarekin.",
-        "folder_add_open": "Ireki Kopian",
+        "folder_helper": "Makinako bide-izen absolutua, adibidez /home/anna/Documents edo C:\\Users\\anna\\Documents. Makinak 4 orduko epean ikusten du karpeta, edo berehala KopiaUI-ren freskatze botoiarekin.",
+        "folder_add": "Gehitu",
+        "adding_folder": "{path} gehitzen",
+        "folder_exists": "Karpeta hau zerrendan dago jada",
         "folder_invalid": "Erabili bide absolutu bat: /home/anna/Documents, C:\\Users\\anna\\Documents edo \\\\server\\share. Windows bideek alderantzizko barrak mantentzen dituzte."
     },
     "settings": {

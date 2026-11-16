@@ -563,10 +563,12 @@
           <NsButton
             kind="primary"
             size="field"
-            :icon="Launch20"
+            :icon="Add20"
             type="submit"
+            :loading="loading.addFolder"
+            :disabled="loading.addFolder"
             class="add-folder-button"
-            >{{ $t("clients.folder_add_open") }}</NsButton
+            >{{ $t("clients.folder_add") }}</NsButton
           >
         </cv-form>
       </template>
@@ -693,6 +695,7 @@ export default {
       host: "",
       loading: {
         removeFolder: false,
+        addFolder: false,
         getConfiguration: false,
         listClients: false,
         addClient: false,
@@ -1155,7 +1158,32 @@ export default {
         this.focusElement("newFolder");
         return;
       }
-      this.openFolderPolicy(this.newFolder);
+      const name = this.foldersClient;
+      const path = this.newFolder;
+      this.loading.addFolder = true;
+      const fail = (message) => {
+        this.error.listFolders = message;
+        this.loading.addFolder = false;
+      };
+      this.runModuleTask({
+        action: "add-client-folder",
+        data: { name, path },
+        title: this.$t("clients.adding_folder", { path }),
+        completed: () => {
+          this.loading.addFolder = false;
+          if (name === this.foldersClient) {
+            this.newFolder = "";
+            this.listFolders();
+          }
+        },
+        validationFailed: (errors) => {
+          this.loading.addFolder = false;
+          this.error.newFolder = "clients." + errors[0].error;
+          this.focusElement("newFolder");
+        },
+        aborted: fail,
+        failed: fail,
+      });
     },
     showRemoveModal(client) {
       this.clientToRemove = client;

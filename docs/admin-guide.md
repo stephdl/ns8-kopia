@@ -195,9 +195,10 @@ because it writes a policy and a machine only reads its policies. You add them.
 
 On the **Clients** page, **Manage** in the **Folders** column lists the folders a machine backs up
 and the date of their last snapshot. To add one, type its absolute path as the machine sees
-it, such as `/home/anna/Documents` or `C:\Users\anna\Documents`, and click **Open in Kopia**.
-The Kopia web UI opens on the policy of that folder: log in as `admin` and click
-**Save Policy**. Windows paths keep their backslashes.
+it, such as `/home/anna/Documents` or `C:\Users\anna\Documents`, and click **Add**. The
+folder gets a policy of its own that inherits the global one. Windows paths keep their
+backslashes. To change a setting for that folder only, click **Edit in Kopia** and log in
+as `admin`.
 
 KopiaUI on the machine sees the new folder at its next refresh, within 4 hours, or at once
 with its refresh button. It then snapshots each folder at the policy interval while it runs.

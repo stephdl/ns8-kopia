@@ -25,6 +25,7 @@
         "count-snapshots": "Comprobar instantáneas antiguas",
         "list-client-folders": "Listar las carpetas",
         "resume-client-folder": "Reanudar una carpeta",
+        "add-client-folder": "Añadir una carpeta",
         "remove-client-folder": "Quitar una carpeta"
     },
     "error": {
@@ -176,8 +177,10 @@
         "folder_not_found": "Esta carpeta ya no existe. Actualice la lista.",
         "add_folder": "Añadir una carpeta",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
-        "folder_helper": "Ruta absoluta en el equipo, como /home/anna/Documents o C:\\Users\\anna\\Documents. Guarde la política en Kopia y luego haga clic en Actualizar. El equipo ve la carpeta en 4 horas como máximo, o al instante con el botón de actualizar de KopiaUI.",
-        "folder_add_open": "Abrir en Kopia",
+        "folder_helper": "Ruta absoluta en el equipo, como /home/anna/Documents o C:\\Users\\anna\\Documents. El equipo ve la carpeta en 4 horas, o al momento con el botón de actualizar de KopiaUI.",
+        "folder_add": "Añadir",
+        "adding_folder": "Añadiendo {path}",
+        "folder_exists": "Esta carpeta ya está en la lista",
         "folder_invalid": "Use una ruta absoluta: /home/anna/Documents, C:\\Users\\anna\\Documents o \\\\server\\share. Las rutas de Windows conservan sus barras invertidas."
     },
     "settings": {

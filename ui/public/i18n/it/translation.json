@@ -25,6 +25,7 @@
         "count-snapshots": "Controlla i vecchi snapshot",
         "list-client-folders": "Elenca le cartelle",
         "resume-client-folder": "Riprendi una cartella",
+        "add-client-folder": "Aggiungi una cartella",
         "remove-client-folder": "Rimuovi una cartella"
     },
     "error": {
@@ -176,8 +177,10 @@
         "folder_not_found": "Questa cartella non esiste più. Aggiorna l'elenco.",
         "add_folder": "Aggiungi una cartella",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
-        "folder_helper": "Percorso assoluto sulla macchina, come /home/anna/Documents o C:\\Users\\anna\\Documents. Salva il criterio in Kopia, poi clicca su Aggiorna. La macchina vede la cartella entro 4 ore, o subito con il pulsante di aggiornamento di KopiaUI.",
-        "folder_add_open": "Apri in Kopia",
+        "folder_helper": "Percorso assoluto sulla macchina, come /home/anna/Documents o C:\\Users\\anna\\Documents. La macchina vede la cartella entro 4 ore, o subito con il pulsante di aggiornamento di KopiaUI.",
+        "folder_add": "Aggiungi",
+        "adding_folder": "Aggiunta di {path}",
+        "folder_exists": "Questa cartella è già nell'elenco",
         "folder_invalid": "Usa un percorso assoluto: /home/anna/Documents, C:\\Users\\anna\\Documents o \\\\server\\share. I percorsi Windows mantengono le barre rovesciate."
     },
     "settings": {

@@ -25,6 +25,7 @@
         "count-snapshots": "Vérifier les anciens instantanés",
         "list-client-folders": "Lister les dossiers",
         "resume-client-folder": "Reprendre un dossier",
+        "add-client-folder": "Ajouter un dossier",
         "remove-client-folder": "Retirer un dossier"
     },
     "error": {
@@ -176,8 +177,10 @@
         "folder_not_found": "Ce dossier n'existe plus. Actualisez la liste.",
         "add_folder": "Ajouter un dossier",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
-        "folder_helper": "Chemin absolu sur la machine, comme /home/anna/Documents ou C:\\Users\\anna\\Documents. Enregistrez la policy dans Kopia, puis cliquez sur Actualiser. La machine voit le dossier sous 4 heures, ou tout de suite avec le bouton de rafraîchissement de KopiaUI.",
-        "folder_add_open": "Ouvrir dans Kopia",
+        "folder_helper": "Chemin absolu sur la machine, comme /home/anna/Documents ou C:\\Users\\anna\\Documents. La machine voit le dossier sous 4 heures, ou tout de suite avec le bouton d'actualisation de KopiaUI.",
+        "folder_add": "Ajouter",
+        "adding_folder": "Ajout de {path}",
+        "folder_exists": "Ce dossier est déjà dans la liste",
         "folder_invalid": "Saisissez un chemin absolu : /home/anna/Documents, C:\\Users\\anna\\Documents ou \\\\serveur\\partage. Les chemins Windows gardent leurs antislashs."
     },
     "settings": {

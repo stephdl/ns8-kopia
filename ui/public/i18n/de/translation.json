@@ -25,6 +25,7 @@
         "count-snapshots": "Alte Snapshots prüfen",
         "list-client-folders": "Ordner auflisten",
         "resume-client-folder": "Ordner fortsetzen",
+        "add-client-folder": "Ordner hinzufügen",
         "remove-client-folder": "Ordner entfernen"
     },
     "error": {
@@ -176,8 +177,10 @@
         "folder_not_found": "Dieser Ordner existiert nicht mehr. Aktualisieren Sie die Liste.",
         "add_folder": "Ordner hinzufügen",
         "folder_placeholder": "C:\\Users\\anna\\Documents",
-        "folder_helper": "Absoluter Pfad auf dem Rechner, etwa /home/anna/Documents oder C:\\Users\\anna\\Documents. Speichern Sie die Richtlinie in Kopia und klicken Sie dann auf Aktualisieren. Der Rechner sieht den Ordner innerhalb von 4 Stunden, oder sofort mit der Aktualisieren-Schaltfläche von KopiaUI.",
-        "folder_add_open": "In Kopia öffnen",
+        "folder_helper": "Absoluter Pfad auf dem Rechner, etwa /home/anna/Documents oder C:\\Users\\anna\\Documents. Der Rechner sieht den Ordner innerhalb von 4 Stunden, oder sofort mit der Aktualisieren-Schaltfläche von KopiaUI.",
+        "folder_add": "Hinzufügen",
+        "adding_folder": "{path} wird hinzugefügt",
+        "folder_exists": "Dieser Ordner ist bereits in der Liste",
         "folder_invalid": "Verwenden Sie einen absoluten Pfad: /home/anna/Documents, C:\\Users\\anna\\Documents oder \\\\server\\share. Windows-Pfade behalten ihre Backslashes."
     },
     "settings": {
