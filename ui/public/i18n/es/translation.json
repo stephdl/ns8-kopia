@@ -161,6 +161,7 @@
         "folders_title": "Carpetas de {name}",
         "no_folders": "Aún no hay carpetas. Añada una abajo, o el equipo añade la primera con una instantánea.",
         "folder_never": "Nunca copiada",
+        "folder_actions": "Acciones de la carpeta",
         "folder_open": "Editar en Kopia",
         "folder_resume": "Reanudar",
         "resuming_folder": "Reanudando {path}",

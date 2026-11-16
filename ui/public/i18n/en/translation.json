@@ -161,6 +161,7 @@
         "folders_title": "Folders of {name}",
         "no_folders": "No folder yet. Add one below, or the machine adds its first one with a snapshot.",
         "folder_never": "Never backed up",
+        "folder_actions": "Folder actions",
         "folder_open": "Edit in Kopia",
         "folder_resume": "Resume",
         "resuming_folder": "Resuming {path}",

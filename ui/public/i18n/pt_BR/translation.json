@@ -161,6 +161,7 @@
         "folders_title": "Pastas de {name}",
         "no_folders": "Nenhuma pasta ainda. Adicione uma abaixo, ou a máquina adiciona a primeira com um snapshot.",
         "folder_never": "Nunca teve backup",
+        "folder_actions": "Ações da pasta",
         "folder_open": "Editar no Kopia",
         "folder_resume": "Retomar",
         "resuming_folder": "Retomando {path}",

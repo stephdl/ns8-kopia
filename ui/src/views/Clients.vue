@@ -494,57 +494,62 @@
           <p v-if="!folders.length" class="mg-bottom">
             {{ $t("clients.no_folders") }}
           </p>
-          <div v-else class="folder-list mg-bottom">
-            <div
-              v-for="folder in folders"
-              :key="folder.path"
-              class="folder-row"
-            >
-              <div class="folder-path">
-                {{ folder.path }}
-                <NsTag
-                  v-if="folder.stopped"
-                  size="sm"
-                  kind="gray"
-                  :label="$t('clients.folder_stopped')"
-                />
+          <ul v-else class="folder-list mg-bottom">
+            <li v-for="folder in folders" :key="folder.path" class="folder-row">
+              <div class="folder-main">
+                <div class="folder-path">{{ folder.path }}</div>
+                <div class="folder-meta">
+                  <NsTag
+                    v-if="folder.stopped"
+                    size="sm"
+                    kind="gray"
+                    :label="$t('clients.folder_stopped')"
+                  />
+                  <span>{{
+                    folder.last_backup
+                      ? formatDateTime(folder.last_backup)
+                      : $t("clients.folder_never")
+                  }}</span>
+                </div>
               </div>
-              <div class="folder-date">
-                {{
-                  folder.last_backup
-                    ? formatDateTime(folder.last_backup)
-                    : $t("clients.folder_never")
-                }}
-              </div>
-              <div class="folder-actions">
-                <NsButton
-                  kind="ghost"
-                  size="small"
-                  :icon="Launch20"
-                  @click="openFolderPolicy(folder.path)"
-                  >{{ $t("clients.folder_open") }}</NsButton
-                >
-                <NsButton
+              <cv-inline-loading
+                v-if="resumingFolder === folder.path"
+                state="loading"
+                :loading-text="$t('clients.folder_resume')"
+              />
+              <!-- Same menu as the machine rows: the list stays readable with long paths -->
+              <cv-overflow-menu
+                v-else
+                flip-menu
+                class="table-overflow-menu"
+                :label="$t('clients.folder_actions')"
+              >
+                <cv-overflow-menu-item @click="openFolderPolicy(folder.path)">
+                  <NsMenuItem
+                    :icon="Launch20"
+                    :label="$t('clients.folder_open')"
+                  />
+                </cv-overflow-menu-item>
+                <cv-overflow-menu-item
                   v-if="folder.stopped"
-                  kind="ghost"
-                  size="small"
-                  :icon="Play20"
-                  :loading="resumingFolder === folder.path"
                   :disabled="!!resumingFolder"
                   @click="resumeFolder(folder)"
-                  >{{ $t("clients.folder_resume") }}</NsButton
                 >
-                <NsButton
-                  kind="ghost"
-                  size="small"
-                  :icon="TrashCan20"
-                  class="folder-remove-link"
-                  @click="askRemoveFolder(folder)"
-                  >{{ $t("clients.folder_remove") }}</NsButton
-                >
-              </div>
-            </div>
-          </div>
+                  <NsMenuItem
+                    :icon="Play20"
+                    :label="$t('clients.folder_resume')"
+                  />
+                </cv-overflow-menu-item>
+                <NsMenuDivider />
+                <cv-overflow-menu-item danger @click="askRemoveFolder(folder)">
+                  <NsMenuItem
+                    :icon="TrashCan20"
+                    :label="$t('clients.folder_remove')"
+                  />
+                </cv-overflow-menu-item>
+              </cv-overflow-menu>
+            </li>
+          </ul>
         </template>
         <cv-form
           v-if="!folderToRemove"
@@ -1229,23 +1234,36 @@ export default {
   margin-bottom: $spacing-05;
 }
 
+// One grid for the whole list, so dates and actions line up from one folder to the next
 .folder-list {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-03;
+  border-top: 1px solid $ui-03;
 }
 
-// One line per folder: path, date, then the actions, whatever buttons the folder has
 .folder-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  display: flex;
   align-items: center;
-  gap: $spacing-03 $spacing-05;
+  gap: $spacing-05;
+  padding: $spacing-04 0;
+  border-bottom: 1px solid $ui-03;
+}
+
+.folder-main {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .folder-path {
   font-family: monospace;
   overflow-wrap: anywhere;
+}
+
+.folder-meta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-03;
+  margin-top: $spacing-02;
+  font-size: 0.75rem;
+  color: $text-02;
 }
 
 .folders-header {
@@ -1273,31 +1291,6 @@ export default {
 // Line the button up with the input, below the label
 .add-folder-button {
   margin-top: 1.5rem;
-}
-
-.folder-date {
-  font-size: 0.75rem;
-  color: $text-02;
-}
-
-.folder-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-// On a phone the date and the actions go under the path
-@media (max-width: 42rem) {
-  .folder-row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .folder-actions {
-    justify-content: flex-start;
-  }
-}
-
-.folder-remove-link {
-  color: $danger-01;
 }
 
 .folder-remove {

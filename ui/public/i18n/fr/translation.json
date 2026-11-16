@@ -161,6 +161,7 @@
         "folders_title": "Dossiers de {name}",
         "no_folders": "Aucun dossier pour l'instant. Ajoutez-en un ci-dessous, ou la machine ajoute le premier avec un instantané.",
         "folder_never": "Jamais sauvegardé",
+        "folder_actions": "Actions du dossier",
         "folder_open": "Modifier dans Kopia",
         "folder_resume": "Reprendre",
         "resuming_folder": "Reprise de {path}",

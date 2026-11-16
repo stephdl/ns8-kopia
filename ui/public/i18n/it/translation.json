@@ -161,6 +161,7 @@
         "folders_title": "Cartelle di {name}",
         "no_folders": "Ancora nessuna cartella. Aggiungine una qui sotto, oppure la macchina aggiunge la prima con uno snapshot.",
         "folder_never": "Mai salvata",
+        "folder_actions": "Azioni della cartella",
         "folder_open": "Modifica in Kopia",
         "folder_resume": "Riprendi",
         "resuming_folder": "Ripresa di {path}",

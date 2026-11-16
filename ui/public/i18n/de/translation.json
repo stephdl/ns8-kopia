@@ -161,6 +161,7 @@
         "folders_title": "Ordner von {name}",
         "no_folders": "Noch kein Ordner. Fügen Sie unten einen hinzu, oder der Rechner fügt seinen ersten mit einem Snapshot hinzu.",
         "folder_never": "Nie gesichert",
+        "folder_actions": "Ordneraktionen",
         "folder_open": "In Kopia bearbeiten",
         "folder_resume": "Fortsetzen",
         "resuming_folder": "{path} wird fortgesetzt",
