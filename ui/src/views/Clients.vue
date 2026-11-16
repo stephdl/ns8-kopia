@@ -968,15 +968,14 @@ export default {
     // its editor accepts the target in the URL. folder-policy.html sends the new tab there.
     openFolderPolicy(path) {
       const [userName, host] = this.foldersClient.split("@");
-      const query = new URLSearchParams({
-        server: this.host,
-        userName,
-        host,
-        path,
-      });
       const page = new URL("folder-policy.html", window.location.href);
       page.hash = "";
-      page.search = query;
+      page.search = new URLSearchParams({ userName, host, path });
+      try {
+        localStorage.setItem(`kopia-host:${page.pathname}`, this.host);
+      } catch (e) {
+        // Without storage the page asks to open the link from here
+      }
       window.open(page, "_blank", "noopener");
     },
     addFolder() {

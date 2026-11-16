@@ -9,34 +9,36 @@
     <title>Kopia</title>
   </head>
   <body>
+    <p id="missing" hidden>
+      Open this link from the Folders window of the machine.
+    </p>
     <script>
-      // The Kopia policy editor goes back one page after a save. In a new tab there is no
-      // page to go back to, and its spinner turns forever. This page is that previous page:
-      // it sends the tab to the editor, and to the list of policies when the editor comes back.
+      // The Kopia policy editor goes back one page after a save. In a new tab there is no page
+      // to go back to, and its spinner turns forever. This page is that previous page.
       window.addEventListener("pageshow", function () {
-        var query = new URLSearchParams(window.location.search);
-        var host = query.get("server") || "";
-        if (!/^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$/i.test(host)) {
+        // The mark lives in this history entry only: Kopia came back to it after a save or Return
+        if (history.state && history.state.policies) {
+          window.location.replace(history.state.policies);
           return;
         }
-        var base = "https://" + host + "/policies";
-        var seen = false;
+        // Written by the Machines page, never read from the URL: a link cannot send the tab elsewhere
+        var server = null;
         try {
-          seen =
-            sessionStorage.getItem("kopia-folder-policy") ===
-            window.location.search;
-          sessionStorage.setItem("kopia-folder-policy", window.location.search);
+          server = localStorage.getItem(
+            "kopia-host:" + window.location.pathname
+          );
         } catch (e) {
-          // No storage: the editor still opens
+          server = null;
         }
-        if (seen) {
-          window.location.replace(base);
+        if (!server || !/^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$/i.test(server)) {
+          document.getElementById("missing").hidden = false;
           return;
         }
-        query.delete("server");
+        var policies = "https://" + server + "/policies";
+        history.replaceState({ policies: policies }, "");
         // A navigation started while the page loads replaces it in the history: wait for the load to end
         setTimeout(function () {
-          window.location.assign(base + "/edit?" + query);
+          window.location.assign(policies + "/edit" + window.location.search);
         }, 100);
       });
     </script>
