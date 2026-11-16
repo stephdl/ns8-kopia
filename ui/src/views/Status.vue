@@ -224,14 +224,10 @@
             class="min-height-card"
           >
             <template slot="content">
-              <div class="card-rows">
-                <div v-if="health.certificate">
-                  {{ $t("status.certificate_expires") }}
+              <div>
+                <span v-if="health.certificate">
                   {{ formatDateTime(health.certificate.expires) }}
-                </div>
-                <div class="mg-top-sm">
-                  {{ $t("status.certificate_note") }}
-                </div>
+                </span>
               </div>
             </template>
           </NsInfoCard>
