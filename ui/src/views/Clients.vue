@@ -970,15 +970,18 @@ export default {
       });
     },
     // The Policies form of the Kopia web UI rejects user@host:/path (kopia/kopia#5815),
-    // its editor accepts the target in the URL
+    // its editor accepts the target in the URL. folder-policy.html sends the new tab there.
     openFolderPolicy(path) {
       const [userName, host] = this.foldersClient.split("@");
-      const query = new URLSearchParams({ userName, host, path });
-      window.open(
-        `https://${this.host}/policies/edit?${query}`,
-        "_blank",
-        "noopener"
-      );
+      const page = new URL("folder-policy.html", window.location.href);
+      page.hash = "";
+      page.search = new URLSearchParams({ userName, host, path });
+      try {
+        localStorage.setItem(`kopia-host:${page.pathname}`, this.host);
+      } catch (e) {
+        // Without storage the page asks to open the link from here
+      }
+      window.open(page, "_blank", "noopener");
     },
     addFolder() {
       this.error.newFolder = "";

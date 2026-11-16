@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+  Copyright (C) 2026 Nethesis S.r.l.
+  SPDX-License-Identifier: GPL-3.0-or-later
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Kopia</title>
+  </head>
+  <body>
+    <p id="missing" hidden>
+      Open this link from the Folders window of the machine.
+    </p>
+    <script>
+      // The Kopia policy editor goes back one page after a save. In a new tab there is no page
+      // to go back to, and its spinner turns forever. This page is that previous page.
+      window.addEventListener("pageshow", function () {
+        // The mark lives in this history entry only: Kopia came back to it after a save or Return
+        if (history.state && history.state.policies) {
+          window.location.replace(history.state.policies);
+          return;
+        }
+        // Written by the Machines page, never read from the URL: a link cannot send the tab elsewhere
+        var server = null;
+        try {
+          server = localStorage.getItem(
+            "kopia-host:" + window.location.pathname
+          );
+        } catch (e) {
+          server = null;
+        }
+        if (!server || !/^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$/i.test(server)) {
+          document.getElementById("missing").hidden = false;
+          return;
+        }
+        var policies = "https://" + server + "/policies";
+        history.replaceState({ policies: policies }, "");
+        // A navigation started while the page loads replaces it in the history: wait for the load to end
+        setTimeout(function () {
+          window.location.assign(policies + "/edit" + window.location.search);
+        }, 100);
+      });
+    </script>
+  </body>
+</html>
