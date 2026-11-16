@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "enable-client-folder input",
+    "$id": "http://schema.nethserver.org/kopia/enable-client-folder-input.json",
+    "description": "Back up again a folder that disable-client-folder disabled.",
+    "examples": [
+        {
+            "name": "accounting@pc-accounting-01",
+            "path": "C:\\Users\\anna\\Documents"
+        }
+    ],
+    "type": "object",
+    "required": [
+        "name",
+        "path"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "pattern": "^[^@]+@[^@]+$",
+            "description": "Machine identity, username@hostname."
+        },
+        "path": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "Folder path as the machine reports it.",
+            "pattern": "^(/.|[A-Za-z]:\\\\|\\\\\\\\[^\\\\]+\\\\[^\\\\]+)"
+        }
+    }
+}

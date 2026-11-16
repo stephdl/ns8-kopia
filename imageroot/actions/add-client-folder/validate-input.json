@@ -1,0 +1,13 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "add-client-folder input",
+    "$id": "http://schema.nethserver.org/kopia/add-client-folder-input.json",
+    "description": "Add a folder for a machine to back up. It inherits the global policy.",
+    "examples": [{"name": "accounting@pc-accounting-01", "path": "C:\\Users\\anna\\Documents"}, {"name": "anna@laptop", "path": "/home/anna/Documents"}],
+    "type": "object",
+    "required": ["name", "path"],
+    "properties": {
+        "name": {"type": "string", "pattern": "^[^@]+@[^@]+$", "description": "Machine identity, username@hostname."},
+        "path": {"type": "string", "maxLength": 4096, "pattern": "^(/.|[A-Za-z]:\\\\|\\\\\\\\[^\\\\]+\\\\[^\\\\]+)", "description": "Absolute path as the machine sees it: /home/anna/Documents, C:\\Users\\anna\\Documents or \\\\server\\share."}
+    }
+}

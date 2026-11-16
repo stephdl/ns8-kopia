@@ -82,6 +82,38 @@ Check if the server still expires old snapshots
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    1
 
+Check if a folder can be added without the Kopia web UI
+    ${rc} =    Execute Command    api-cli run module/${module_id}/add-client-folder --data '{"name": "ci@runner", "path": "C:\\\\Users\\\\ci\\\\Documents"}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-client-folders --data '{"name": "ci@runner"}' | python3 -c 'import json,sys; print([f["policy"] for f in json.load(sys.stdin)["folders"] if f["path"].endswith("Documents")])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    [True]
+
+Check if a folder can be disabled, enabled and removed
+    ${rc} =    Execute Command    api-cli run module/${module_id}/disable-client-folder --data '{"name": "ci@runner", "path": "/home/u"}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-client-folders --data '{"name": "ci@runner"}' | python3 -c 'import json,sys; print([f["disabled"] for f in json.load(sys.stdin)["folders"] if f["path"] == "/home/u"])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    [True]
+    ${rc} =    Execute Command    api-cli run module/${module_id}/enable-client-folder --data '{"name": "ci@runner", "path": "/home/u"}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-client-folders --data '{"name": "ci@runner"}' | python3 -c 'import json,sys; print([f["disabled"] for f in json.load(sys.stdin)["folders"] if f["path"] == "/home/u"])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    [False]
+    ${rc} =    Execute Command    api-cli run module/${module_id}/remove-client-folder --data '{"name": "ci@runner", "path": "/home/u"}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-client-folders --data '{"name": "ci@runner"}' | python3 -c 'import json,sys; print(len([f for f in json.load(sys.stdin)["folders"] if f["path"] == "/home/u"]))'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    0
+
 Check if a password reset disconnects the machine
     ${rc} =    Execute Command    api-cli run module/${module_id}/reset-client-password --data '{"name": "ci@runner"}' >/dev/null
     ...    return_rc=True  return_stdout=False

@@ -36,15 +36,16 @@
             <NsButton
               kind="primary"
               :icon="Add20"
-              :disabled="!configured || loading.getConfiguration"
+              :loading="isPageLoading"
+              :disabled="isPageLoading || !configured"
               @click="showAddModal"
               >{{ $t("clients.add_machine") }}</NsButton
             >
             <NsButton
               kind="secondary"
               :icon="Restart20"
-              :loading="loading.listClients"
-              :disabled="loading.listClients || !configured"
+              :loading="isPageLoading"
+              :disabled="isPageLoading || !configured"
               @click="listClients"
               >{{ $t("clients.refresh") }}</NsButton
             >
@@ -135,18 +136,22 @@
                     :class="{ 'tag-late': row.state === 'late' }"
                   />
                 </cv-data-table-cell>
+                <cv-data-table-cell>
+                  <!-- A desktop backs up nothing until the admin adds its folders: keep the way in sight -->
+                  <NsButton
+                    kind="ghost"
+                    size="small"
+                    :icon="Folder20"
+                    @click="showFoldersModal(row)"
+                    >{{ $t("clients.manage_folders") }}</NsButton
+                  >
+                </cv-data-table-cell>
                 <cv-data-table-cell class="table-overflow-menu-cell">
                   <cv-overflow-menu flip-menu class="table-overflow-menu">
                     <cv-overflow-menu-item @click="showEnrollment(row)">
                       <NsMenuItem
                         :icon="Document20"
                         :label="$t('clients.show_enrollment')"
-                      />
-                    </cv-overflow-menu-item>
-                    <cv-overflow-menu-item @click="showFoldersModal(row)">
-                      <NsMenuItem
-                        :icon="Folder20"
-                        :label="$t('clients.folders')"
                       />
                     </cv-overflow-menu-item>
                     <cv-overflow-menu-item @click="showResetModal(row)">
@@ -416,6 +421,14 @@
             >{{ $t("clients.refresh") }}</NsButton
           >
         </div>
+        <!-- Outside the chain below: a failed action must not hide the folder list -->
+        <NsInlineNotification
+          v-if="error.folderAction"
+          kind="error"
+          :title="$t('action.' + error.folderAction.action)"
+          :description="error.folderAction.message"
+          :showCloseButton="false"
+        />
         <NsInlineNotification
           v-if="error.listFolders"
           kind="error"
@@ -428,35 +441,126 @@
           :paragraph="true"
           :line-count="3"
         />
+        <!-- Confirmation in place: a second modal over this one would hide the folder list -->
+        <div v-else-if="folderToRemove" class="folder-remove">
+          <h6 class="mg-bottom-sm">
+            {{ $t("clients.folder_remove_title", { path: folderToRemove }) }}
+          </h6>
+          <NsInlineNotification
+            kind="warning"
+            :description="$t('clients.folder_remove_description')"
+            :showCloseButton="false"
+          />
+          <NsInlineNotification
+            v-if="error.removeFolder"
+            kind="error"
+            :title="$t('action.remove-client-folder')"
+            :description="error.removeFolder"
+            :showCloseButton="false"
+          />
+          <div class="folder-remove-buttons">
+            <NsButton
+              kind="secondary"
+              size="field"
+              :disabled="loading.removeFolder"
+              @click="cancelRemoveFolder"
+              >{{ core.$t("common.cancel") }}</NsButton
+            >
+            <NsButton
+              kind="danger"
+              size="field"
+              :icon="TrashCan20"
+              :loading="loading.removeFolder"
+              :disabled="loading.removeFolder"
+              @click="removeFolder"
+              >{{ $t("clients.folder_remove") }}</NsButton
+            >
+          </div>
+        </div>
         <template v-else>
           <p v-if="!folders.length" class="mg-bottom">
             {{ $t("clients.no_folders") }}
           </p>
-          <div v-else class="folder-list mg-bottom">
-            <div
-              v-for="folder in folders"
-              :key="folder.path"
-              class="folder-row"
-            >
-              <div class="folder-path">{{ folder.path }}</div>
-              <div class="folder-date">
-                {{
-                  folder.last_backup
-                    ? formatDateTime(folder.last_backup)
-                    : $t("clients.folder_never")
-                }}
+          <ul v-else class="folder-list mg-bottom">
+            <li v-for="folder in folders" :key="folder.path" class="folder-row">
+              <div class="folder-main">
+                <div class="folder-path">{{ folder.path }}</div>
+                <div class="folder-meta">
+                  <NsTag
+                    v-if="folder.disabled"
+                    size="sm"
+                    kind="gray"
+                    :label="$t('clients.folder_disabled')"
+                  />
+                  <span>{{
+                    folder.last_backup
+                      ? formatDateTime(folder.last_backup)
+                      : $t("clients.folder_never")
+                  }}</span>
+                </div>
               </div>
-              <NsButton
-                kind="ghost"
-                size="small"
-                :icon="Launch20"
-                @click="openFolderPolicy(folder.path)"
-                >{{ $t("clients.folder_open") }}</NsButton
+              <cv-inline-loading
+                v-if="busyFolder === foldersClient + ':' + folder.path"
+                state="loading"
+                :loading-text="
+                  folder.disabled
+                    ? $t('clients.folder_enable')
+                    : $t('clients.folder_disable')
+                "
+              />
+              <!-- Same menu as the machine rows: the list stays readable with long paths -->
+              <cv-overflow-menu
+                v-else
+                flip-menu
+                class="folder-menu"
+                :label="$t('clients.folder_actions')"
               >
-            </div>
-          </div>
+                <cv-overflow-menu-item @click="openFolderPolicy(folder.path)">
+                  <NsMenuItem
+                    :icon="Launch20"
+                    :label="$t('clients.folder_open')"
+                  />
+                </cv-overflow-menu-item>
+                <cv-overflow-menu-item
+                  v-if="folder.disabled"
+                  :disabled="!!busyFolder"
+                  @click="setFolderEnabled(folder, true)"
+                >
+                  <NsMenuItem
+                    :icon="Play20"
+                    :label="$t('clients.folder_enable')"
+                  />
+                </cv-overflow-menu-item>
+                <cv-overflow-menu-item
+                  v-else
+                  :disabled="!!busyFolder"
+                  @click="setFolderEnabled(folder, false)"
+                >
+                  <NsMenuItem
+                    :icon="Pause20"
+                    :label="$t('clients.folder_disable')"
+                  />
+                </cv-overflow-menu-item>
+                <NsMenuDivider />
+                <cv-overflow-menu-item
+                  danger
+                  :disabled="!!busyFolder"
+                  @click="askRemoveFolder(folder)"
+                >
+                  <NsMenuItem
+                    :icon="TrashCan20"
+                    :label="$t('clients.folder_remove')"
+                  />
+                </cv-overflow-menu-item>
+              </cv-overflow-menu>
+            </li>
+          </ul>
         </template>
-        <cv-form @submit.prevent="addFolder" class="add-folder">
+        <cv-form
+          v-if="!folderToRemove"
+          @submit.prevent="addFolder"
+          class="add-folder"
+        >
           <cv-text-input
             v-model.trim="newFolder"
             :label="$t('clients.add_folder')"
@@ -469,10 +573,12 @@
           <NsButton
             kind="primary"
             size="field"
-            :icon="Launch20"
+            :icon="Add20"
             type="submit"
+            :loading="loading.addFolder"
+            :disabled="loading.addFolder"
             class="add-folder-button"
-            >{{ $t("clients.folder_add_open") }}</NsButton
+            >{{ $t("clients.folder_add") }}</NsButton
           >
         </cv-form>
       </template>
@@ -526,6 +632,8 @@ import {
 } from "@nethserver/ns8-ui-lib";
 import ModuleTask from "@/mixins/moduleTask";
 import { createSealKey, openSealed } from "@/lib/seal";
+import Play20 from "@carbon/icons-vue/es/play/20";
+import Pause20 from "@carbon/icons-vue/es/pause/20";
 
 // Kopia compares paths as text: a Windows path keeps its backslashes and drive letter
 const FOLDER_PATTERNS = [/^\/./, /^[A-Za-z]:\\/, /^\\\\[^\\]+\\[^\\]+/];
@@ -549,6 +657,9 @@ export default {
   },
   data() {
     return {
+      // Not in the icon service of ns8-ui-lib
+      Play20,
+      Pause20,
       scriptTabs: [
         {
           id: "tab-windows",
@@ -568,7 +679,7 @@ export default {
       urlCheckInterval: null,
       clients: [],
       tablePage: [],
-      tableColumns: ["name", "owner_email", "last_backup", "state"],
+      tableColumns: ["name", "owner_email", "last_backup", "state", "folders"],
       // Before the first configuration there is no server to ask
       configured: true,
       isShownAddModal: false,
@@ -588,10 +699,14 @@ export default {
       clientToRemove: null,
       isShownFoldersModal: false,
       foldersClient: "",
+      folderToRemove: "",
+      busyFolder: "",
       folders: [],
       newFolder: "",
       host: "",
       loading: {
+        removeFolder: false,
+        addFolder: false,
         getConfiguration: false,
         listClients: false,
         addClient: false,
@@ -602,6 +717,8 @@ export default {
         listFolders: false,
       },
       error: {
+        removeFolder: "",
+        folderAction: null,
         listClients: "",
         addClient: "",
         countSnapshots: "",
@@ -626,6 +743,11 @@ export default {
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
+    // The configuration loads first, then the machines: one state for both, so the two buttons
+    // spin together instead of one after the other
+    isPageLoading() {
+      return this.loading.getConfiguration || this.loading.listClients;
+    },
     i18nTableColumns() {
       return this.tableColumns.map((column) =>
         this.$t("clients.col_" + column)
@@ -941,6 +1063,8 @@ export default {
     },
     showFoldersModal(client) {
       this.foldersClient = client.name;
+      this.folderToRemove = "";
+      this.error.folderAction = null;
       this.folders = [];
       this.newFolder = "";
       this.error.newFolder = "";
@@ -969,6 +1093,75 @@ export default {
         failed: fail,
       });
     },
+    // Disable keeps the snapshots and is undone with Enable: no confirmation needed
+    setFolderEnabled(folder, enabled) {
+      const name = this.foldersClient;
+      const action = enabled ? "enable-client-folder" : "disable-client-folder";
+      this.busyFolder = name + ":" + folder.path;
+      this.error.folderAction = null;
+      const done = (message) => {
+        this.busyFolder = "";
+        // The window may show another machine by now
+        if (name !== this.foldersClient) {
+          return;
+        }
+        if (message) {
+          this.error.folderAction = { action, message };
+        }
+        this.listFolders();
+      };
+      this.runModuleTask({
+        action,
+        data: { name, path: folder.path },
+        title: this.$t(
+          enabled ? "clients.enabling_folder" : "clients.disabling_folder",
+          { path: folder.path }
+        ),
+        completed: () => done(""),
+        validationFailed: () => done(this.$t("clients.folder_not_found")),
+        aborted: done,
+        failed: done,
+      });
+    },
+    askRemoveFolder(folder) {
+      this.error.removeFolder = "";
+      this.folderToRemove = folder.path;
+    },
+    cancelRemoveFolder() {
+      this.folderToRemove = "";
+      this.error.removeFolder = "";
+    },
+    removeFolder() {
+      const name = this.foldersClient;
+      this.loading.removeFolder = true;
+      this.error.removeFolder = "";
+      const fail = (message) => {
+        this.loading.removeFolder = false;
+        if (name === this.foldersClient) {
+          this.error.removeFolder = message;
+        }
+      };
+      this.runModuleTask({
+        action: "remove-client-folder",
+        data: {
+          name,
+          path: this.folderToRemove,
+        },
+        title: this.$t("clients.removing_folder", {
+          path: this.folderToRemove,
+        }),
+        completed: () => {
+          this.loading.removeFolder = false;
+          if (name === this.foldersClient) {
+            this.folderToRemove = "";
+            this.listFolders();
+          }
+        },
+        validationFailed: () => fail(this.$t("clients.folder_not_found")),
+        aborted: fail,
+        failed: fail,
+      });
+    },
     // The Policies form of the Kopia web UI rejects user@host:/path (kopia/kopia#5815),
     // its editor accepts the target in the URL. folder-policy.html sends the new tab there.
     openFolderPolicy(path) {
@@ -990,7 +1183,42 @@ export default {
         this.focusElement("newFolder");
         return;
       }
-      this.openFolderPolicy(this.newFolder);
+      const name = this.foldersClient;
+      const path = this.newFolder;
+      this.loading.addFolder = true;
+      this.error.folderAction = null;
+      const fail = (message) => {
+        this.loading.addFolder = false;
+        if (name === this.foldersClient) {
+          this.error.folderAction = { action: "add-client-folder", message };
+        }
+      };
+      this.runModuleTask({
+        action: "add-client-folder",
+        data: { name, path },
+        title: this.$t("clients.adding_folder", { path }),
+        completed: () => {
+          this.loading.addFolder = false;
+          if (name === this.foldersClient) {
+            this.newFolder = "";
+            this.listFolders();
+          }
+        },
+        validationFailed: (errors) => {
+          this.loading.addFolder = false;
+          if (name !== this.foldersClient) {
+            return;
+          }
+          // Only folder_exists has a string: schema errors mean the path is not valid
+          this.error.newFolder =
+            errors[0].error === "folder_exists"
+              ? "clients.folder_exists"
+              : "clients.folder_invalid";
+          this.focusElement("newFolder");
+        },
+        aborted: fail,
+        failed: fail,
+      });
     },
     showRemoveModal(client) {
       this.clientToRemove = client;
@@ -1036,23 +1264,44 @@ export default {
   margin-bottom: $spacing-05;
 }
 
+// One grid for the whole list, so dates and actions line up from one folder to the next
 .folder-list {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-03;
+  border-top: 1px solid $ui-03;
+  // The hidden tooltip of each menu sits right of its button and made the window scroll sideways
+  overflow-x: hidden;
 }
 
 .folder-row {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: $spacing-03 $spacing-05;
+  gap: $spacing-05;
+  padding: $spacing-04 0;
+  border-bottom: 1px solid $ui-03;
+}
+
+// The table menu style is absolute for table cells: in this list the menu sits in the row
+.folder-menu {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.folder-main {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .folder-path {
-  flex: 1 1 14rem;
   font-family: monospace;
   overflow-wrap: anywhere;
+}
+
+.folder-meta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-03;
+  margin-top: $spacing-02;
+  font-size: 0.75rem;
+  color: $text-02;
 }
 
 .folders-header {
@@ -1082,9 +1331,17 @@ export default {
   margin-top: 1.5rem;
 }
 
-.folder-date {
-  font-size: 0.75rem;
-  color: $text-02;
+.folder-remove {
+  padding: $spacing-05;
+  border: 1px solid $ui-03;
+  margin-bottom: $spacing-05;
+}
+
+.folder-remove-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-03;
+  margin-top: $spacing-05;
 }
 
 .toolbar {

@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "disable-client-folder input",
+    "$id": "http://schema.nethserver.org/kopia/disable-client-folder-input.json",
+    "description": "Stop backing up a folder of a machine and keep its snapshots restorable.",
+    "examples": [
+        {
+            "name": "accounting@pc-accounting-01",
+            "path": "C:\\Users\\anna\\Documents"
+        }
+    ],
+    "type": "object",
+    "required": [
+        "name",
+        "path"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "pattern": "^[^@]+@[^@]+$",
+            "description": "Machine identity, username@hostname."
+        },
+        "path": {
+            "type": "string",
+            "maxLength": 4096,
+            "description": "Folder path as the machine reports it.",
+            "pattern": "^(/.|[A-Za-z]:\\\\|\\\\\\\\[^\\\\]+\\\\[^\\\\]+)"
+        }
+    }
+}

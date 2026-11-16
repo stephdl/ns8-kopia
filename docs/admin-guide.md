@@ -193,15 +193,31 @@ a dedicated account instead.
 A desktop cannot pick its own folders: **New Snapshot** in KopiaUI fails with access denied,
 because it writes a policy and a machine only reads its policies. You add them.
 
-On the **Clients** page, **Folders** in the menu of the machine lists the folders it backs up
+On the **Clients** page, **Manage** in the **Folders** column lists the folders a machine backs up
 and the date of their last snapshot. To add one, type its absolute path as the machine sees
-it, such as `/home/anna/Documents` or `C:\Users\anna\Documents`, and click **Open in Kopia**.
-The Kopia web UI opens on the policy of that folder: log in as `admin` and click
-**Save Policy**. Windows paths keep their backslashes.
+it, such as `/home/anna/Documents` or `C:\Users\anna\Documents`, and click **Add**. The
+folder gets a policy of its own that inherits the global one. Windows paths keep their
+backslashes. To change a setting for that folder only, click **Edit in Kopia** and log in
+as `admin`.
 
 KopiaUI on the machine sees the new folder at its next refresh, within 4 hours, or at once
-with its refresh button. It then snapshots each folder at the policy interval while it runs.
-To remove a folder, delete its policy in the Kopia web UI, opened with **Edit in Kopia**.
+with the refresh button of its **Snapshots** tab. It then snapshots each folder at the policy
+interval while it runs. The server cannot start a snapshot on a machine: for one right away,
+the user clicks **Snapshot Now** next to the folder in KopiaUI.
+
+Each folder has a menu with three entries:
+
+- **Disable**: the machine stops backing up the folder and it shows **Disabled**. Its
+  snapshots stay restorable and expire with the retention. **Enable** backs it up again.
+- **Remove**: its snapshots and its policy are deleted, and the machine forgets the folder.
+  Maintenance frees the space within a day or two. This cannot be undone. KopiaUI keeps its
+  old folder list until its next refresh: a snapshot taken before that brings the folder
+  back. To be sure, disable the folder first, let the machine refresh, then remove it.
+- **Edit in Kopia**: change a setting for that folder only.
+
+Deleting the policy alone in the Kopia web UI does not stop the backups: KopiaUI keeps
+snapshotting every folder that already has a snapshot. The machine applies a removal at its
+next refresh, like an added folder.
 
 The module opens the policy editor by its URL because the Policies form of the Kopia web UI
 rejects `user@host:/path` targets in Kopia 0.23.1 (kopia/kopia#5815).
