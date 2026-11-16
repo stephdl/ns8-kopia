@@ -305,6 +305,7 @@
               kind="info"
               :description="$t('clients.enrollment_intro')"
               :showCloseButton="false"
+              class="enrollment-info"
             />
             <NsTabs
               :container="false"
@@ -1108,6 +1109,17 @@ export default {
 // Title above the list, not beside it as Carbon does for a short description
 .enrollment-warning ::v-deep .bx--inline-notification__subtitle {
   flex-basis: 100%;
+}
+
+// Carbon caps notifications, tabs and snippets at different widths: line them up with the details
+.enrollment-warning,
+.enrollment-info,
+.enrollment-tabs ::v-deep .bx--snippet {
+  max-width: none;
+}
+
+.enrollment-tabs ::v-deep .bx--tabs__nav-item {
+  max-width: none;
 }
 
 .warning-list {
