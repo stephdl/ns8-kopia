@@ -31,8 +31,13 @@ hidden: click its icon to open it. In the icon menu, pick **Launch At Startup**,
 again after each login. On Windows the icon may hide behind the `^` arrow next to the clock.
 
 Your administrator chooses the folders to back up. KopiaUI shows them at its next refresh,
-within 4 hours, or at once with its refresh button. If you click **New Snapshot** yourself,
-you get access denied. This is expected: ask your administrator to add the folder.
+within 4 hours. To see them at once, open KopiaUI: in the icon menu, click the first line,
+**API Server**. On the **Snapshots** tab, click the refresh button, at the top right. If you
+click **New Snapshot** yourself, you get access denied. This is expected: ask your
+administrator to add the folder.
+
+KopiaUI backs up each folder on its own schedule, shown under **Next Snapshot**. To back up a
+folder right away, click **Snapshot Now** on its line.
 
 A machine that sleeps or stays off takes no backup. A laptop backs up from anywhere it can
 reach the server, at home too. Your administrator gets a mail when your machine has not backed

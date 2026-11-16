@@ -201,7 +201,9 @@ backslashes. To change a setting for that folder only, click **Edit in Kopia** a
 as `admin`.
 
 KopiaUI on the machine sees the new folder at its next refresh, within 4 hours, or at once
-with its refresh button. It then snapshots each folder at the policy interval while it runs.
+with the refresh button of its **Snapshots** tab. It then snapshots each folder at the policy
+interval while it runs. The server cannot start a snapshot on a machine: for one right away,
+the user clicks **Snapshot Now** next to the folder in KopiaUI.
 
 Each folder has a menu with three entries:
 
