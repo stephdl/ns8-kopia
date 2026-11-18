@@ -440,18 +440,50 @@ def machine_policies(name):
             if client_name(pol["target"]["userName"], pol["target"]["host"]) == name]
 
 
-def last_snapshots():
-    """Return {user@host: newest end time} of the complete snapshots."""
-    last = {}
-    for snap in kopia_json(["snapshot", "list", "--all"]) or []:
+# About 200 bytes each: 1000 errors keep the task output near 200 KB
+MAX_LISTED_ERRORS = 1000
+
+
+def snapshot_errors(snap):
+    """Return (count, ignored, [{path, error}]) of the files and folders a snapshot could not read.
+    Kopia lists the errors a policy ignores among the others, with nothing to tell them apart,
+    so the count comes from the stats and the list may hold the ignored ones too."""
+    summ = (snap.get("rootEntry") or {}).get("summ") or {}
+    stats = snap.get("stats") or {}
+    errors = [{"path": e.get("path", ""), "error": e.get("error", "")} for e in summ.get("errors") or []]
+    count = stats.get("errorCount", summ.get("numFailed", 0))
+    ignored = stats.get("ignoredErrorCount", summ.get("numIgnoredErrors", 0))
+    return count, ignored, errors[:MAX_LISTED_ERRORS]
+
+
+def newest_snapshots(snapshots):
+    """Return {path: newest complete snapshot} of a list of snapshot manifests."""
+    newest = {}
+    for snap in snapshots:
         if snap.get("incomplete"):
             continue
-        src = snap["source"]
-        name = client_name(src["userName"], src["host"])
-        end = parse_time(snap["endTime"])
-        if name not in last or end > last[name]:
-            last[name] = end
-    return last
+        path = snap["source"]["path"]
+        if path not in newest or parse_time(snap["endTime"]) > parse_time(newest[path]["endTime"]):
+            newest[path] = snap
+    return newest
+
+
+def folder_disabled(policy):
+    """True when disable-client-folder switched the folder to manual scheduling: the machine keeps
+    the snapshots but takes no new one."""
+    return bool((policy.get("scheduling") or {}).get("manual"))
+
+
+def disabled_folders(policies):
+    return {pol["target"]["path"] for pol in policies if pol["target"]["path"] and folder_disabled(pol)}
+
+
+def by_machine(manifests, key):
+    """Group snapshot or policy manifests by user@host, from one kopia call for every machine."""
+    grouped = {}
+    for item in manifests or []:
+        grouped.setdefault(client_name(item[key]["userName"], item[key]["host"]), []).append(item)
+    return grouped
 
 
 def lateness(age_hours, settings):
@@ -463,21 +495,37 @@ def lateness(age_hours, settings):
 
 
 def clients_status(settings=None):
-    """Merge the machine list with the newest snapshot of each machine."""
+    """Merge the machine list with the newest snapshot of each folder of each machine.
+    error_count sums the read errors of the newest snapshot of each folder still enabled,
+    last_error_backup is the end time of the newest of those snapshots."""
     from datetime import datetime, timezone
     settings = settings or read_settings()
     now = datetime.now(timezone.utc)
-    last = last_snapshots()
+    snapshots = by_machine(kopia_json(["snapshot", "list", "--all"]), "source")
+    try:
+        policies = by_machine(kopia_json(["policy", "list"]), "target")
+    except (RuntimeError, OSError, ValueError) as ex:
+        # Only the error count needs the policies: keep the lateness, count every folder
+        log(f"cannot read policies: {ex}")
+        policies = {}
     result = []
     for client in load_clients():
-        end = last.get(client["name"])
+        newest = newest_snapshots(snapshots.get(client["name"], []))
+        disabled = disabled_folders(policies.get(client["name"], []))
+        ends = [parse_time(snap["endTime"]) for snap in newest.values()]
+        end = max(ends) if ends else None
         if end is None:
             state, age = "never_seen", None
         else:
             age = (now - end).total_seconds() / 3600
             state = lateness(age, settings)
+        failing = [(snap, snapshot_errors(snap)[0]) for path, snap in newest.items() if path not in disabled]
+        failing = [(snap, count) for snap, count in failing if count]
+        error_ends = [parse_time(snap["endTime"]) for snap, _ in failing]
         result.append(dict(client, last_backup=end.isoformat() if end else None,
-                           age_hours=round(age, 1) if age is not None else None, state=state))
+                           age_hours=round(age, 1) if age is not None else None, state=state,
+                           error_count=sum(count for _, count in failing),
+                           last_error_backup=max(error_ends).isoformat() if error_ends else None))
     return result
 
 

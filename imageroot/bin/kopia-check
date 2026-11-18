@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-# Hourly check of stale backups. alerts.json keeps what was already
+# Hourly check of stale backups and of backups that skipped files. alerts.json keeps what was already
 # sent, so one mail goes out when a threshold is crossed and one when things are back to normal.
 
 import json
@@ -25,6 +25,8 @@ try:
 except (FileNotFoundError, ValueError):
     alerts = {}
 machines = alerts.setdefault("machines", {})
+# Kept apart from the lateness levels: a machine can be on time and still skip files
+with_errors = alerts.setdefault("errors", {})
 
 settings = km.read_settings()
 lang = settings["alert_language"]
@@ -36,7 +38,8 @@ now = datetime.now(timezone.utc)
 
 def send(recipients, kind, **values):
     """Return True when the mail left, or when nobody has to get it."""
-    recipients = [r for r in recipients if r]
+    # The owner may be an admin recipient too
+    recipients = list(dict.fromkeys(r for r in recipients if r))
     if not recipients:
         return True
     subject, body = kopia_mail.render(kind, lang, host=host, **values)
@@ -93,10 +96,34 @@ def check_machines():
             pass
         if sent:
             machines[name] = level
+    check_errors(statuses)
     # Forget removed machines
-    for name in set(machines) - {c["name"] for c in statuses}:
-        machines.pop(name)
+    names = {c["name"] for c in statuses}
+    for state in (machines, with_errors):
+        for name in set(state) - names:
+            state.pop(name)
     return True
+
+
+def check_errors(statuses):
+    """One mail when the newest snapshot of a machine skips files, one when it is clean again."""
+    for client in statuses:
+        name = client["name"]
+        has_errors = client["error_count"] > 0
+        if has_errors == with_errors.get(name, False):
+            continue
+        values = {"machine": name, "owner": client.get("owner_email") or "-"}
+        if has_errors:
+            kind = "snapshot_errors"
+            values.update(count=client["error_count"],
+                          last=client["last_error_backup"][:16].replace("T", " ") + " UTC")
+        else:
+            # Also reached when the failing folder was disabled or removed, not only after a clean backup
+            kind = "errors_cleared"
+        recipients = [client.get("owner_email")] + admins
+        # Without any recipient the state stays put, so the mail goes out once someone is set
+        if any(recipients) and send(recipients, kind, **values):
+            with_errors[name] = has_errors
 
 
 # Longer than any backup should take: past it, the backup failed and the core skipped the resume

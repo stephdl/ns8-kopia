@@ -65,6 +65,10 @@ Check if a machine can enroll, back up and restore
     ${rc} =    Execute Command    api-cli run module/${module_id}/list-clients | grep -q '"state": "ok"'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-clients | python3 -c 'import json,sys; print([c["error_count"] for c in json.load(sys.stdin)["clients"] if c["name"] == "ci@runner"])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    [0]
 
 Check if a machine cannot delete its snapshots
     ${output}  ${rc} =    Execute Command    podman run --rm --network=host --add-host kopia.test.example.org:127.0.0.1 -e HOME=/home/u -e KOPIA_CONFIG_PATH=/home/u/.config/kopia/repository.config -e KOPIA_PERSIST_CREDENTIALS_ON_CONNECT=true -v /root/kopia-ci-home:/home/u:Z --entrypoint sh docker.io/kopia/kopia:0.23.1 -c 'kopia snapshot delete --delete "$(kopia snapshot list /home/u --json | grep -o -m1 "\\"id\\": *\\"[0-9a-f]*" | grep -o "[0-9a-f]*$")"'
@@ -81,6 +85,31 @@ Check if the server still expires old snapshots
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    1
+
+Check if read errors of a backup are reported
+    # Root in the client container reads any file, so drop the capabilities that bypass the modes
+    ${rc} =    Execute Command    mkdir -p /root/kopia-ci-err && echo secret > /root/kopia-ci-err/locked && chmod 000 /root/kopia-ci-err/locked
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${rc} =    Execute Command    podman run --rm --network=host --add-host kopia.test.example.org:127.0.0.1 --cap-drop=DAC_OVERRIDE,DAC_READ_SEARCH -e HOME=/home/u -e KOPIA_CONFIG_PATH=/home/u/.config/kopia/repository.config -e KOPIA_PERSIST_CREDENTIALS_ON_CONNECT=true -v /root/kopia-ci-home:/home/u:Z -v /root/kopia-ci-err:/err:Z --entrypoint sh docker.io/kopia/kopia:0.23.1 -c 'kopia snapshot create /err; true'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-clients | python3 -c 'import json,sys; print([c["error_count"] for c in json.load(sys.stdin)["clients"] if c["name"] == "ci@runner"])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    [1]
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-client-folders --data '{"name": "ci@runner"}' | python3 -c 'import json,sys; print([e["path"] for f in json.load(sys.stdin)["folders"] if f["path"] == "/err" for e in f["errors"]])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    ['locked']
+    ${rc} =    Execute Command    api-cli run module/${module_id}/remove-client-folder --data '{"name": "ci@runner", "path": "/err"}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-clients | python3 -c 'import json,sys; print([c["error_count"] for c in json.load(sys.stdin)["clients"] if c["name"] == "ci@runner"])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    [0]
+    Execute Command    rm -rf /root/kopia-ci-err
 
 Check if a folder can be added without the Kopia web UI
     ${rc} =    Execute Command    api-cli run module/${module_id}/add-client-folder --data '{"name": "ci@runner", "path": "C:\\\\Users\\\\ci\\\\Documents"}'

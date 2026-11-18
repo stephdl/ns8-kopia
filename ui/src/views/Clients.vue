@@ -130,11 +130,29 @@
                   <template v-else>-</template>
                 </cv-data-table-cell>
                 <cv-data-table-cell>
+                  <!-- A green OK next to an errors tag reads as a contradiction -->
                   <NsTag
+                    v-if="!(row.state === 'ok' && row.error_count > 0)"
                     :label="$t('clients.state_' + row.state)"
                     :kind="stateKind(row.state)"
                     :class="{ 'tag-late': row.state === 'late' }"
                   />
+                  <button
+                    v-if="row.error_count > 0"
+                    type="button"
+                    class="errors-button"
+                    :title="$t('clients.folder_show_errors')"
+                    @click="showFoldersModal(row, true)"
+                  >
+                    <NsTag
+                      kind="red"
+                      :label="
+                        $tc('clients.errors_count', row.error_count, {
+                          count: row.error_count,
+                        })
+                      "
+                    />
+                  </button>
                 </cv-data-table-cell>
                 <cv-data-table-cell>
                   <!-- A desktop backs up nothing until the admin adds its folders: keep the way in sight -->
@@ -401,7 +419,7 @@
     </NsModal>
     <!-- remove -->
     <NsModal
-      size="default"
+      :size="folderErrors ? 'large' : 'default'"
       :visible="isShownFoldersModal"
       @modal-hidden="isShownFoldersModal = false"
     >
@@ -477,6 +495,84 @@
             >
           </div>
         </div>
+        <div v-else-if="folderErrors" class="folder-errors">
+          <h6 class="mg-bottom-sm">
+            {{ $t("clients.folder_errors_title", { path: folderErrors.path }) }}
+          </h6>
+          <p class="mg-bottom-sm">
+            {{ $t("clients.folder_errors_description") }}
+          </p>
+          <p
+            v-if="
+              folderErrors.errors.length <
+              folderErrors.error_count + folderErrors.ignored_count
+            "
+            class="mg-bottom-sm"
+          >
+            {{
+              $t("clients.folder_errors_partial", {
+                shown: folderErrors.errors.length,
+                count: folderErrors.error_count + folderErrors.ignored_count,
+              })
+            }}
+          </p>
+          <!-- Kopia mixes the errors a policy ignores into the same list, with nothing to tell them apart -->
+          <p v-if="folderErrors.ignored_count > 0" class="mg-bottom-sm">
+            {{
+              $tc("clients.folder_errors_ignored", folderErrors.ignored_count, {
+                count: folderErrors.ignored_count,
+              })
+            }}
+          </p>
+          <NsDataTable
+            class="mg-bottom"
+            :allRows="folderErrors.errors"
+            :columns="[
+              $t('clients.col_error_path'),
+              $t('clients.col_error_reason'),
+            ]"
+            :rawColumns="['path', 'error']"
+            :sortable="true"
+            :pageSizes="[10, 25, 50, 100]"
+            isSearchable
+            :searchPlaceholder="$t('clients.search_errors')"
+            :searchClearLabel="core.$t('common.clear_search')"
+            :noSearchResultsLabel="core.$t('common.no_search_results')"
+            :noSearchResultsDescription="
+              core.$t('common.no_search_results_description')
+            "
+            :isLoading="false"
+            :itemsPerPageLabel="core.$t('pagination.items_per_page')"
+            :rangeOfTotalItemsLabel="core.$t('pagination.range_of_total_items')"
+            :ofTotalPagesLabel="core.$t('pagination.of_total_pages')"
+            :backwardText="core.$t('pagination.previous_page')"
+            :forwardText="core.$t('pagination.next_page')"
+            :pageNumberLabel="core.$t('pagination.page_number')"
+            @updatePage="errorsPage = $event"
+          >
+            <template slot="data">
+              <cv-data-table-row
+                v-for="(row, rowIndex) in errorsPage"
+                :key="`${rowIndex}`"
+                :value="`${rowIndex}`"
+              >
+                <cv-data-table-cell class="break-word error-path">{{
+                  row.path || "/"
+                }}</cv-data-table-cell>
+                <cv-data-table-cell class="break-word">{{
+                  row.error
+                }}</cv-data-table-cell>
+              </cv-data-table-row>
+            </template>
+          </NsDataTable>
+          <NsButton
+            kind="secondary"
+            size="field"
+            :icon="ArrowLeft20"
+            @click="folderErrors = null"
+            >{{ $t("clients.folder_errors_back") }}</NsButton
+          >
+        </div>
         <template v-else>
           <p v-if="!folders.length" class="mg-bottom">
             {{ $t("clients.no_folders") }}
@@ -491,6 +587,17 @@
                     size="sm"
                     kind="gray"
                     :label="$t('clients.folder_disabled')"
+                  />
+                  <!-- Gray: a disabled folder does not count for the machine state nor the mails -->
+                  <NsTag
+                    v-if="folder.error_count > 0"
+                    size="sm"
+                    :kind="folder.disabled ? 'gray' : 'red'"
+                    :label="
+                      $tc('clients.errors_count', folder.error_count, {
+                        count: folder.error_count,
+                      })
+                    "
                   />
                   <span>{{
                     folder.last_backup
@@ -515,6 +622,15 @@
                 class="folder-menu"
                 :label="$t('clients.folder_actions')"
               >
+                <cv-overflow-menu-item
+                  v-if="folder.error_count > 0"
+                  @click="folderErrors = folder"
+                >
+                  <NsMenuItem
+                    :icon="WarningAlt20"
+                    :label="$t('clients.folder_show_errors')"
+                  />
+                </cv-overflow-menu-item>
                 <cv-overflow-menu-item @click="openFolderPolicy(folder.path)">
                   <NsMenuItem
                     :icon="Launch20"
@@ -557,7 +673,7 @@
           </ul>
         </template>
         <cv-form
-          v-if="!folderToRemove"
+          v-if="!folderToRemove && !folderErrors"
           @submit.prevent="addFolder"
           class="add-folder"
         >
@@ -634,6 +750,8 @@ import ModuleTask from "@/mixins/moduleTask";
 import { createSealKey, openSealed } from "@/lib/seal";
 import Play20 from "@carbon/icons-vue/es/play/20";
 import Pause20 from "@carbon/icons-vue/es/pause/20";
+import WarningAlt20 from "@carbon/icons-vue/es/warning--alt/20";
+import ArrowLeft20 from "@carbon/icons-vue/es/arrow--left/20";
 
 // Kopia compares paths as text: a Windows path keeps its backslashes and drive letter
 const FOLDER_PATTERNS = [/^\/./, /^[A-Za-z]:\\/, /^\\\\[^\\]+\\[^\\]+/];
@@ -660,6 +778,8 @@ export default {
       // Not in the icon service of ns8-ui-lib
       Play20,
       Pause20,
+      WarningAlt20,
+      ArrowLeft20,
       scriptTabs: [
         {
           id: "tab-windows",
@@ -700,6 +820,10 @@ export default {
       isShownFoldersModal: false,
       foldersClient: "",
       folderToRemove: "",
+      // Folder whose read errors replace the list in the window
+      folderErrors: null,
+      errorsPage: [],
+      openErrorsOnLoad: false,
       busyFolder: "",
       folders: [],
       newFolder: "",
@@ -1061,9 +1185,11 @@ export default {
         failed: fail,
       });
     },
-    showFoldersModal(client) {
+    showFoldersModal(client, openErrors = false) {
+      this.openErrorsOnLoad = openErrors;
       this.foldersClient = client.name;
       this.folderToRemove = "";
+      this.folderErrors = null;
       this.error.folderAction = null;
       this.folders = [];
       this.newFolder = "";
@@ -1086,6 +1212,14 @@ export default {
           // The modal may show another machine by now
           if (name === this.foldersClient) {
             this.folders = output.folders;
+            // From the errors tag: go straight to the errors when only one folder has some
+            const failing = this.folders.filter(
+              (f) => f.error_count > 0 && !f.disabled
+            );
+            if (this.openErrorsOnLoad && failing.length === 1) {
+              this.folderErrors = failing[0];
+            }
+            this.openErrorsOnLoad = false;
           }
           this.loading.listFolders = false;
         },
@@ -1329,6 +1463,17 @@ export default {
 // Line the button up with the input, below the label
 .add-folder-button {
   margin-top: 1.5rem;
+}
+
+.errors-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.error-path {
+  font-family: monospace;
 }
 
 .folder-remove {
