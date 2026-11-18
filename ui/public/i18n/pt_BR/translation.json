@@ -174,6 +174,7 @@
         "folder_errors_title": "Erros de leitura em {path}",
         "folder_errors_description": "O último backup desta pasta não conseguiu ler estes arquivos e pastas. Eles estão faltando.",
         "folder_errors_partial": "{shown} de {count} erros mostrados.",
+        "folder_errors_ignored": "Esta lista também contém {count} erro ignorado pela política da pasta. | Esta lista também contém {count} erros ignorados pela política da pasta.",
         "folder_errors_back": "Voltar às pastas",
         "col_error_path": "Caminho",
         "col_error_reason": "Motivo",

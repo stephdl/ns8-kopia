@@ -109,6 +109,7 @@ Check if read errors of a backup are reported
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    [0]
+    Execute Command    rm -rf /root/kopia-ci-err
 
 Check if a folder can be added without the Kopia web UI
     ${rc} =    Execute Command    api-cli run module/${module_id}/add-client-folder --data '{"name": "ci@runner", "path": "C:\\\\Users\\\\ci\\\\Documents"}'

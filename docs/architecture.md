@@ -167,7 +167,9 @@ mail: it backed up once, but it is still late.
 Read errors are tracked apart, under `errors` in `alerts.json`. A machine is in errors when
 the newest complete snapshot of one of its enabled folders has a non zero `stats.errorCount`.
 Kopia stores the path and reason of each error in `rootEntry.summ.errors` of the manifest,
-so `snapshot list` gives everything without opening the snapshot. The owner and the admins get
+so `snapshot list` gives everything without opening the snapshot. That list also holds the
+errors a policy ignores, with nothing to tell them apart, so the count comes from
+`stats.errorCount` only. The owner and the admins get
 one mail when the machine goes into errors and one when it is clean again.
 
 Mails go through the cluster smarthost, from `noreply@<host>` unless a sender is set. Kopia
@@ -214,7 +216,7 @@ instance stays stopped. `clone-module` follows the same rule.
 | `reset-client-password` | new password, return the new scripts |
 | `get-client-enrollment` | URL, fingerprint and identity, without the password |
 | `list-clients` | machines with last backup, `error_count`, and state: `ok`, `late`, `late_admin`, `never_seen`, or `unknown` when the server does not answer |
-| `list-client-folders` | folders of a machine, with the date and the read errors of their last snapshot (1000 listed at most) |
+| `list-client-folders` | folders of a machine, with the date and the read errors of their last snapshot (1000 listed at most, errors ignored by a policy included) |
 | `remove-client` | remove the account, and its snapshots with `delete_snapshots` |
 | `count-snapshots` | count the snapshots left for a `user@host`, before it is added again |
 | `get-health` | server, disk use, certificate expiry, last integrity check |

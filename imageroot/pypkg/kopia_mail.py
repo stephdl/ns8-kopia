@@ -18,7 +18,7 @@ TEMPLATES = {
         "back_ok": ("Backup back to normal: {machine}",
                     "The machine {machine} completed a backup to {host} again at {last}."),
         "snapshot_errors": ("Backup with errors: {machine}",
-                            "The last backup of {machine} to {host} at {last} could not read {count} files or folders.\n"
+                            "The last backup of {machine} to {host} at {last} could not read some files or folders. Number of errors: {count}.\n"
                             "Part of the data is missing from this backup. Owner: {owner}.\n\n"
                             "The list of files in error is in the folders of the machine, on the Clients page."),
         "errors_cleared": ("No backup errors anymore: {machine}",
@@ -39,7 +39,7 @@ TEMPLATES = {
         "back_ok": ("Sauvegarde revenue à la normale : {machine}",
                     "La machine {machine} a de nouveau terminé une sauvegarde vers {host} le {last}."),
         "snapshot_errors": ("Sauvegarde avec erreurs : {machine}",
-                            "La dernière sauvegarde de {machine} vers {host} le {last} n'a pas pu lire {count} fichiers ou dossiers.\n"
+                            "La dernière sauvegarde de {machine} vers {host} le {last} n'a pas pu lire certains fichiers ou dossiers. Nombre d'erreurs : {count}.\n"
                             "Une partie des données manque dans cette sauvegarde. Propriétaire : {owner}.\n\n"
                             "La liste des fichiers en erreur se trouve dans les dossiers de la machine, page Clients."),
         "errors_cleared": ("Plus d'erreur de sauvegarde : {machine}",
@@ -60,7 +60,7 @@ TEMPLATES = {
         "back_ok": ("Backup tornato normale: {machine}",
                     "La macchina {machine} ha di nuovo completato un backup verso {host} il {last}."),
         "snapshot_errors": ("Backup con errori: {machine}",
-                            "L'ultimo backup di {machine} verso {host} il {last} non ha potuto leggere {count} file o cartelle.\n"
+                            "L'ultimo backup di {machine} verso {host} il {last} non ha potuto leggere alcuni file o cartelle. Numero di errori: {count}.\n"
                             "Una parte dei dati manca in questo backup. Proprietario: {owner}.\n\n"
                             "L'elenco dei file in errore si trova nelle cartelle della macchina, pagina Client."),
         "errors_cleared": ("Nessun errore di backup: {machine}",
@@ -81,7 +81,7 @@ TEMPLATES = {
         "back_ok": ("Sicherung wieder normal: {machine}",
                     "Der Rechner {machine} hat am {last} wieder eine Sicherung auf {host} abgeschlossen."),
         "snapshot_errors": ("Sicherung mit Fehlern: {machine}",
-                            "Die letzte Sicherung von {machine} auf {host} am {last} konnte {count} Dateien oder Ordner nicht lesen.\n"
+                            "Die letzte Sicherung von {machine} auf {host} am {last} konnte einige Dateien oder Ordner nicht lesen. Anzahl der Fehler: {count}.\n"
                             "Ein Teil der Daten fehlt in dieser Sicherung. Besitzer: {owner}.\n\n"
                             "Die Liste der fehlerhaften Dateien steht in den Ordnern des Rechners auf der Seite Clients."),
         "errors_cleared": ("Keine Sicherungsfehler mehr: {machine}",
@@ -102,7 +102,7 @@ TEMPLATES = {
         "back_ok": ("Copia de nuevo normal: {machine}",
                     "El equipo {machine} ha completado de nuevo una copia en {host} el {last}."),
         "snapshot_errors": ("Copia con errores: {machine}",
-                            "La última copia de {machine} en {host} el {last} no pudo leer {count} archivos o carpetas.\n"
+                            "La última copia de {machine} en {host} el {last} no pudo leer algunos archivos o carpetas. Número de errores: {count}.\n"
                             "Parte de los datos falta en esta copia. Propietario: {owner}.\n\n"
                             "La lista de archivos con error está en las carpetas del equipo, en la página Clientes."),
         "errors_cleared": ("Ya no hay errores de copia: {machine}",
@@ -123,7 +123,7 @@ TEMPLATES = {
         "back_ok": ("Cópia de novo normal: {machine}",
                     "A máquina {machine} concluiu de novo uma cópia para {host} em {last}."),
         "snapshot_errors": ("Cópia com erros: {machine}",
-                            "A última cópia de {machine} para {host} em {last} não conseguiu ler {count} ficheiros ou pastas.\n"
+                            "A última cópia de {machine} para {host} em {last} não conseguiu ler alguns ficheiros ou pastas. Número de erros: {count}.\n"
                             "Parte dos dados falta nesta cópia. Proprietário: {owner}.\n\n"
                             "A lista dos ficheiros com erro está nas pastas da máquina, na página Clientes."),
         "errors_cleared": ("Já não há erros de cópia: {machine}",
@@ -144,7 +144,7 @@ TEMPLATES = {
         "back_ok": ("Backup normalizado: {machine}",
                     "A máquina {machine} concluiu de novo um backup em {host} em {last}."),
         "snapshot_errors": ("Backup com erros: {machine}",
-                            "O último backup de {machine} em {host} em {last} não conseguiu ler {count} arquivos ou pastas.\n"
+                            "O último backup de {machine} em {host} em {last} não conseguiu ler alguns arquivos ou pastas. Número de erros: {count}.\n"
                             "Parte dos dados está faltando neste backup. Proprietário: {owner}.\n\n"
                             "A lista dos arquivos com erro está nas pastas da máquina, na página Clientes."),
         "errors_cleared": ("Não há mais erros de backup: {machine}",
@@ -165,7 +165,7 @@ TEMPLATES = {
         "back_ok": ("Babeskopia normaltasunera itzuli da: {machine}",
                     "{machine} makinak berriro babeskopia bat amaitu du {host} zerbitzarian: {last}."),
         "snapshot_errors": ("Babeskopia erroreekin: {machine}",
-                            "{machine} makinaren azken babeskopiak ({host}, {last}) ezin izan ditu {count} fitxategi edo karpeta irakurri.\n"
+                            "{machine} makinaren azken babeskopiak ({host}, {last}) ezin izan ditu fitxategi edo karpeta batzuk irakurri. Errore kopurua: {count}.\n"
                             "Datuen zati bat falta da babeskopia honetan. Jabea: {owner}.\n\n"
                             "Errorea duten fitxategien zerrenda makinaren karpetetan dago, Bezeroak orrian."),
         "errors_cleared": ("Ez dago babeskopia-errorerik: {machine}",

@@ -445,11 +445,15 @@ MAX_LISTED_ERRORS = 1000
 
 
 def snapshot_errors(snap):
-    """Return (count, [{path, error}]) of the files and folders a snapshot could not read."""
+    """Return (count, ignored, [{path, error}]) of the files and folders a snapshot could not read.
+    Kopia lists the errors a policy ignores among the others, with nothing to tell them apart,
+    so the count comes from the stats and the list may hold the ignored ones too."""
     summ = (snap.get("rootEntry") or {}).get("summ") or {}
+    stats = snap.get("stats") or {}
     errors = [{"path": e.get("path", ""), "error": e.get("error", "")} for e in summ.get("errors") or []]
-    count = max((snap.get("stats") or {}).get("errorCount", 0), summ.get("numFailed", 0), len(errors))
-    return count, errors[:MAX_LISTED_ERRORS]
+    count = stats.get("errorCount", summ.get("numFailed", 0))
+    ignored = stats.get("ignoredErrorCount", summ.get("numIgnoredErrors", 0))
+    return count, ignored, errors[:MAX_LISTED_ERRORS]
 
 
 def newest_snapshots(snapshots):
@@ -464,13 +468,18 @@ def newest_snapshots(snapshots):
     return newest
 
 
+def folder_disabled(policy):
+    """True when disable-client-folder switched the folder to manual scheduling: the machine keeps
+    the snapshots but takes no new one."""
+    return bool((policy.get("scheduling") or {}).get("manual"))
+
+
 def disabled_folders(policies):
-    """Return the paths that disable-client-folder switched to manual scheduling."""
-    return {pol["target"]["path"] for pol in policies
-            if pol["target"]["path"] and (pol.get("scheduling") or {}).get("manual")}
+    return {pol["target"]["path"] for pol in policies if pol["target"]["path"] and folder_disabled(pol)}
 
 
 def by_machine(manifests, key):
+    """Group snapshot or policy manifests by user@host, from one kopia call for every machine."""
     grouped = {}
     for item in manifests or []:
         grouped.setdefault(client_name(item[key]["userName"], item[key]["host"]), []).append(item)
@@ -493,7 +502,12 @@ def clients_status(settings=None):
     settings = settings or read_settings()
     now = datetime.now(timezone.utc)
     snapshots = by_machine(kopia_json(["snapshot", "list", "--all"]), "source")
-    policies = by_machine(kopia_json(["policy", "list"]), "target")
+    try:
+        policies = by_machine(kopia_json(["policy", "list"]), "target")
+    except (RuntimeError, OSError, ValueError) as ex:
+        # Only the error count needs the policies: keep the lateness, count every folder
+        log(f"cannot read policies: {ex}")
+        policies = {}
     result = []
     for client in load_clients():
         newest = newest_snapshots(snapshots.get(client["name"], []))
@@ -505,11 +519,12 @@ def clients_status(settings=None):
         else:
             age = (now - end).total_seconds() / 3600
             state = lateness(age, settings)
-        failing = [snap for path, snap in newest.items() if path not in disabled and snapshot_errors(snap)[0]]
-        error_ends = [parse_time(snap["endTime"]) for snap in failing]
+        failing = [(snap, snapshot_errors(snap)[0]) for path, snap in newest.items() if path not in disabled]
+        failing = [(snap, count) for snap, count in failing if count]
+        error_ends = [parse_time(snap["endTime"]) for snap, _ in failing]
         result.append(dict(client, last_backup=end.isoformat() if end else None,
                            age_hours=round(age, 1) if age is not None else None, state=state,
-                           error_count=sum(snapshot_errors(snap)[0] for snap in failing),
+                           error_count=sum(count for _, count in failing),
                            last_error_backup=max(error_ends).isoformat() if error_ends else None))
     return result
 

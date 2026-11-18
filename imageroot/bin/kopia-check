@@ -38,7 +38,8 @@ now = datetime.now(timezone.utc)
 
 def send(recipients, kind, **values):
     """Return True when the mail left, or when nobody has to get it."""
-    recipients = [r for r in recipients if r]
+    # The owner may be an admin recipient too
+    recipients = list(dict.fromkeys(r for r in recipients if r))
     if not recipients:
         return True
     subject, body = kopia_mail.render(kind, lang, host=host, **values)
@@ -119,7 +120,9 @@ def check_errors(statuses):
         else:
             # Also reached when the failing folder was disabled or removed, not only after a clean backup
             kind = "errors_cleared"
-        if send([client.get("owner_email")] + admins, kind, **values):
+        recipients = [client.get("owner_email")] + admins
+        # Without any recipient the state stays put, so the mail goes out once someone is set
+        if any(recipients) and send(recipients, kind, **values):
             with_errors[name] = has_errors
 
 

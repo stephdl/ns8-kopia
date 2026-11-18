@@ -503,13 +503,24 @@
             {{ $t("clients.folder_errors_description") }}
           </p>
           <p
-            v-if="folderErrors.errors.length < folderErrors.error_count"
+            v-if="
+              folderErrors.errors.length <
+              folderErrors.error_count + folderErrors.ignored_count
+            "
             class="mg-bottom-sm"
           >
             {{
               $t("clients.folder_errors_partial", {
                 shown: folderErrors.errors.length,
-                count: folderErrors.error_count,
+                count: folderErrors.error_count + folderErrors.ignored_count,
+              })
+            }}
+          </p>
+          <!-- Kopia mixes the errors a policy ignores into the same list, with nothing to tell them apart -->
+          <p v-if="folderErrors.ignored_count > 0" class="mg-bottom-sm">
+            {{
+              $tc("clients.folder_errors_ignored", folderErrors.ignored_count, {
+                count: folderErrors.ignored_count,
               })
             }}
           </p>
