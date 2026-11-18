@@ -45,7 +45,8 @@ Settings page, or:
 api-cli run module/kopia1/configure-module --data '{"host": "kopia.example.org", "lets_encrypt": false, "admin_password": "Admin-pass-2026"}'
 ```
 
-Set `lets_encrypt` to `true` once the host points to the node, or the certificate request fails.
+Let's Encrypt needs a valid public domain name for `host`, pointing to the node. Set
+`lets_encrypt` to `true` only then, or the certificate request fails.
 
 The repository password is generated at install and kept in the module backup, next to the
 repository it opens. Anyone with the cluster backup password can read the backups of every
