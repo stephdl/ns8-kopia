@@ -42,14 +42,11 @@ The output of the command returns the instance name, for example `kopia1`. Then 
 Settings page, or:
 
 ```sh
-api-cli run module/kopia1/configure-module --data - <<'JSON'
-{
-  "host": "kopia.example.org",
-  "lets_encrypt": true,
-  "admin_password": "Admin-pass-2026"
-}
-JSON
+api-cli run module/kopia1/configure-module --data '{"host": "kopia.example.org", "lets_encrypt": false, "admin_password": "Admin-pass-2026"}'
 ```
+
+Set `lets_encrypt` to `true` only once the host points to the node. Until then the request fails and
+the admin web UI keeps a self-signed certificate. The machines never use this certificate.
 
 The repository password is generated at install and kept in the module backup, next to the
 repository it opens. Anyone with the cluster backup password can read the backups of every
