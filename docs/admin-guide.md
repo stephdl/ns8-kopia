@@ -312,8 +312,9 @@ once, but it is still late.
 
 A backup that skips files still counts as a backup. A file open in another program, a folder
 without read access, or a Mac without Full Disk Access gives such errors. The machine then shows
-a red errors tag next to its state on the Clients page. In the folders of the machine, "Show
-errors" lists each file and the reason. Only the newest backup of each folder counts, and a
+a red errors tag next to its state on the Clients page. A click on the tag opens the folders
+of the machine, or the errors directly when only one folder has some. "Show errors" in the menu
+of a folder lists each file and the reason, with a search box. Only the newest backup of each folder counts, and a
 disabled folder does not count. A file that fails at every backup keeps the machine in errors
 until it is excluded or fixed. See [Exclude files and folders](#exclude-files-and-folders).
 

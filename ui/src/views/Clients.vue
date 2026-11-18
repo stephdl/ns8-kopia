@@ -135,15 +135,22 @@
                     :kind="stateKind(row.state)"
                     :class="{ 'tag-late': row.state === 'late' }"
                   />
-                  <NsTag
+                  <button
                     v-if="row.error_count > 0"
-                    kind="red"
-                    :label="
-                      $tc('clients.errors_count', row.error_count, {
-                        count: row.error_count,
-                      })
-                    "
-                  />
+                    type="button"
+                    class="errors-button"
+                    :title="$t('clients.folder_show_errors')"
+                    @click="showFoldersModal(row, true)"
+                  >
+                    <NsTag
+                      kind="red"
+                      :label="
+                        $tc('clients.errors_count', row.error_count, {
+                          count: row.error_count,
+                        })
+                      "
+                    />
+                  </button>
                 </cv-data-table-cell>
                 <cv-data-table-cell>
                   <!-- A desktop backs up nothing until the admin adds its folders: keep the way in sight -->
@@ -410,7 +417,7 @@
     </NsModal>
     <!-- remove -->
     <NsModal
-      size="default"
+      :size="folderErrors ? 'large' : 'default'"
       :visible="isShownFoldersModal"
       @modal-hidden="isShownFoldersModal = false"
     >
@@ -504,16 +511,47 @@
               })
             }}
           </p>
-          <ul class="folder-list mg-bottom">
-            <li
-              v-for="item in folderErrors.errors"
-              :key="item.path"
-              class="folder-error"
-            >
-              <div class="folder-path">{{ item.path }}</div>
-              <div class="folder-meta">{{ item.error }}</div>
-            </li>
-          </ul>
+          <NsDataTable
+            class="mg-bottom"
+            :allRows="folderErrors.errors"
+            :columns="[
+              $t('clients.col_error_path'),
+              $t('clients.col_error_reason'),
+            ]"
+            :rawColumns="['path', 'error']"
+            :sortable="true"
+            :pageSizes="[10, 25, 50, 100]"
+            isSearchable
+            :searchPlaceholder="$t('clients.search_errors')"
+            :searchClearLabel="core.$t('common.clear_search')"
+            :noSearchResultsLabel="core.$t('common.no_search_results')"
+            :noSearchResultsDescription="
+              core.$t('common.no_search_results_description')
+            "
+            :isLoading="false"
+            :itemsPerPageLabel="core.$t('pagination.items_per_page')"
+            :rangeOfTotalItemsLabel="core.$t('pagination.range_of_total_items')"
+            :ofTotalPagesLabel="core.$t('pagination.of_total_pages')"
+            :backwardText="core.$t('pagination.previous_page')"
+            :forwardText="core.$t('pagination.next_page')"
+            :pageNumberLabel="core.$t('pagination.page_number')"
+            @updatePage="errorsPage = $event"
+          >
+            <template slot="data">
+              <cv-data-table-row
+                v-for="(row, rowIndex) in errorsPage"
+                :key="`${rowIndex}`"
+                :value="`${rowIndex}`"
+              >
+                <cv-data-table-cell class="break-word error-path">{{
+                  row.path || "/"
+                }}</cv-data-table-cell>
+                <cv-data-table-cell class="break-word">{{
+                  row.error
+                }}</cv-data-table-cell>
+              </cv-data-table-row>
+            </template>
+          </NsDataTable>
           <NsButton
             kind="secondary"
             size="field"
@@ -771,6 +809,8 @@ export default {
       folderToRemove: "",
       // Folder whose read errors replace the list in the window
       folderErrors: null,
+      errorsPage: [],
+      openErrorsOnLoad: false,
       busyFolder: "",
       folders: [],
       newFolder: "",
@@ -1132,7 +1172,8 @@ export default {
         failed: fail,
       });
     },
-    showFoldersModal(client) {
+    showFoldersModal(client, openErrors = false) {
+      this.openErrorsOnLoad = openErrors;
       this.foldersClient = client.name;
       this.folderToRemove = "";
       this.folderErrors = null;
@@ -1158,6 +1199,14 @@ export default {
           // The modal may show another machine by now
           if (name === this.foldersClient) {
             this.folders = output.folders;
+            // From the errors tag: go straight to the errors when only one folder has some
+            const failing = this.folders.filter(
+              (f) => f.error_count > 0 && !f.disabled
+            );
+            if (this.openErrorsOnLoad && failing.length === 1) {
+              this.folderErrors = failing[0];
+            }
+            this.openErrorsOnLoad = false;
           }
           this.loading.listFolders = false;
         },
@@ -1403,9 +1452,15 @@ export default {
   margin-top: 1.5rem;
 }
 
-.folder-error {
-  padding: $spacing-04 0;
-  border-bottom: 1px solid $ui-03;
+.errors-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.error-path {
+  font-family: monospace;
 }
 
 .folder-remove {
