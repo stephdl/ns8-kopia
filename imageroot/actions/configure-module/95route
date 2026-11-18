@@ -10,6 +10,8 @@ import sys
 import agent
 import kopia_module as km
 
+# Last step: a refused Let's Encrypt certificate aborts the action, and must not leave the
+# repository uncreated or the server stopped
 env = os.environ
 module_id = os.environ["MODULE_ID"]
 host = env["TRAEFIK_HOST"]

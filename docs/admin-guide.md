@@ -45,18 +45,12 @@ the image, a password or the certificate changed, since a restart cuts the runni
 Fill in **Settings**, or from the command line send at least `host` and `admin_password`:
 
 ```sh
-api-cli run module/kopia1/configure-module --data - <<'EOF'
-{
-  "host": "kopia.example.org",
-  "lets_encrypt": true,
-  "client_port": 51515,
-  "admin_password": "Admin-pass-2026",
-  "admin_recipients": ["it@example.org"]
-}
-EOF
+api-cli run module/kopia1/configure-module --data '{"host": "kopia.example.org", "lets_encrypt": false, "client_port": 51515, "admin_password": "Admin-pass-2026", "admin_recipients": ["it@example.org"]}'
 ```
 
-Later calls send only the fields to change.
+Later calls send only the fields to change. Let's Encrypt needs a valid public domain name for
+`host`, pointing to the node. Set `lets_encrypt` to `true` only then, or the certificate request
+fails.
 
 The repository is created at the first configuration. Its password is generated at install and
 kept in the module backup, so a restore brings it back with the repository. Nobody needs to
