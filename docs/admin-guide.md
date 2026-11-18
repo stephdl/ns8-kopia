@@ -312,7 +312,8 @@ once, but it is still late.
 
 A backup that skips files still counts as a backup. A file open in another program, a folder
 without read access, or a Mac without Full Disk Access gives such errors. The machine then shows
-a red errors tag next to its state on the Clients page. A click on the tag opens the folders
+a red errors tag on the Clients page, in place of the green OK. A Late or Very late state
+stays next to it. A click on the tag opens the folders
 of the machine, or the errors directly when only one folder has some. "Show errors" in the menu
 of a folder lists each file and the reason, with a search box. Only the newest backup of each folder counts, and a
 disabled folder does not count. A file that fails at every backup keeps the machine in errors

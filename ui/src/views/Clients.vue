@@ -130,7 +130,9 @@
                   <template v-else>-</template>
                 </cv-data-table-cell>
                 <cv-data-table-cell>
+                  <!-- A green OK next to an errors tag reads as a contradiction -->
                   <NsTag
+                    v-if="!(row.state === 'ok' && row.error_count > 0)"
                     :label="$t('clients.state_' + row.state)"
                     :kind="stateKind(row.state)"
                     :class="{ 'tag-late': row.state === 'late' }"
