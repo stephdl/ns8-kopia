@@ -48,10 +48,8 @@ Fill in **Settings**, or from the command line send at least `host` and `admin_p
 api-cli run module/kopia1/configure-module --data '{"host": "kopia.example.org", "lets_encrypt": false, "client_port": 51515, "admin_password": "Admin-pass-2026", "admin_recipients": ["it@example.org"]}'
 ```
 
-Later calls send only the fields to change. Send `"lets_encrypt": true` once the host points to
-the node. Before that, Let's Encrypt refuses the certificate and the call fails on the `host`
-field. The repository and the server are ready by then: only the route of the admin web UI is
-missing, and a new call without Let's Encrypt creates it.
+Later calls send only the fields to change. Set `lets_encrypt` to `true` once the host points to
+the node, or the certificate request fails.
 
 The repository is created at the first configuration. Its password is generated at install and
 kept in the module backup, so a restore brings it back with the repository. Nobody needs to
