@@ -86,7 +86,7 @@ All units are user units of the module.
 | --- | --- |
 | `kopia.service` | the rootless pod |
 | `kopia-server.service` | the `kopia server start` container |
-| `kopia-check.timer` | hourly, runs `bin/kopia-check`: client states, late mails, maintenance resume |
+| `kopia-check.timer` | hourly, runs `bin/kopia-check`: client states, late and error mails, maintenance resume |
 | `kopia-verify.timer` | Sunday 03:00, runs `bin/kopia-verify`: weekly integrity check |
 | `kopia-verify-snapshots.service` | started after a restore, runs `bin/kopia-verify --snapshots` |
 
@@ -164,6 +164,12 @@ It records each mail sent in `alerts.json`, so one mail goes out when a threshol
 never one per run. A machine that comes back from the admin level to the owner level gets no
 mail: it backed up once, but it is still late.
 
+Read errors are tracked apart, under `errors` in `alerts.json`. A machine is in errors when
+the newest complete snapshot of one of its enabled folders has a non zero `stats.errorCount`.
+Kopia stores the path and reason of each error in `rootEntry.summ.errors` of the manifest,
+so `snapshot list` gives everything without opening the snapshot. The owner and the admins get
+one mail when the machine goes into errors and one when it is clean again.
+
 Mails go through the cluster smarthost, from `noreply@<host>` unless a sender is set. Kopia
 native notification profiles are not used: they verify the SMTP server certificate and fail
 against a smarthost with a self-signed one.
@@ -207,8 +213,8 @@ instance stays stopped. `clone-module` follows the same rule.
 | `add-client` | create `user@host`, return the scripts with the password |
 | `reset-client-password` | new password, return the new scripts |
 | `get-client-enrollment` | URL, fingerprint and identity, without the password |
-| `list-clients` | machines with last backup and state: `ok`, `late`, `late_admin`, `never_seen`, or `unknown` when the server does not answer |
-| `list-client-folders` | folders of a machine, with the date of their last snapshot |
+| `list-clients` | machines with last backup, `error_count`, and state: `ok`, `late`, `late_admin`, `never_seen`, or `unknown` when the server does not answer |
+| `list-client-folders` | folders of a machine, with the date and the read errors of their last snapshot (1000 listed at most) |
 | `remove-client` | remove the account, and its snapshots with `delete_snapshots` |
 | `count-snapshots` | count the snapshots left for a `user@host`, before it is added again |
 | `get-health` | server, disk use, certificate expiry, last integrity check |

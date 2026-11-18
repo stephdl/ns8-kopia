@@ -20,15 +20,18 @@ folders = {}
 
 
 def folder(path):
-    return folders.setdefault(path, {"path": path, "policy": False, "disabled": False, "last_backup": None})
+    return folders.setdefault(path, {"path": path, "policy": False, "disabled": False, "last_backup": None,
+                                     "error_count": 0, "errors": []})
 
 
-for snap in km.machine_snapshots(name):
-    entry = folder(snap["source"]["path"])
-    if not snap.get("incomplete"):
-        end = km.parse_time(snap["endTime"])
-        if entry["last_backup"] is None or end > entry["last_backup"]:
-            entry["last_backup"] = end
+snapshots = km.machine_snapshots(name)
+for path, snap in km.newest_snapshots(snapshots).items():
+    entry = folder(path)
+    entry["last_backup"] = km.parse_time(snap["endTime"]).isoformat()
+    entry["error_count"], entry["errors"] = km.snapshot_errors(snap)
+# A folder whose snapshots are all incomplete still shows up, never backed up
+for snap in snapshots:
+    folder(snap["source"]["path"])
 for pol in km.machine_policies(name):
     if pol["target"]["path"]:
         entry = folder(pol["target"]["path"])
@@ -36,7 +39,4 @@ for pol in km.machine_policies(name):
         # Set by disable-client-folder: the machine keeps the snapshots but takes no new one
         entry["disabled"] = bool((pol.get("scheduling") or {}).get("manual"))
 
-for entry in folders.values():
-    if entry["last_backup"]:
-        entry["last_backup"] = entry["last_backup"].isoformat()
 json.dump({"folders": sorted(folders.values(), key=lambda f: f["path"].lower())}, fp=sys.stdout)

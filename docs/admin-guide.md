@@ -302,11 +302,20 @@ too. One mail goes out when a threshold is crossed, never one per run.
 | Owner late | `Backup late: <machine>` | owner email of the machine | last backup reaches the owner threshold (default 48 h) |
 | Admin late | `Backup late: <machine> (<hours> h)` | admin recipients | last backup reaches the admin threshold (default 96 h) |
 | Back to normal | `Backup back to normal: <machine>` | owner, plus admins if they were warned | a new backup brings the age under the owner threshold |
+| Backup with errors | `Backup with errors: <machine>` | owner and admin recipients | the newest backup of a folder could not read some files |
+| Errors cleared | `No backup errors anymore: <machine>` | owner and admin recipients | no enabled folder has errors in its newest backup anymore: a clean backup, or the folder was disabled or removed |
 | Verification failed | `Backup verification failed on <host>` | admin recipients | the weekly integrity check finds errors |
 | Test | `Kopia test mail from <host>` | the address typed on the Alerts page | the admin clicks "Send test mail" |
 
 A machine that comes back from the admin level to the owner level gets no mail: it backed up
 once, but it is still late.
+
+A backup that skips files still counts as a backup. A file open in another program, a folder
+without read access, or a Mac without Full Disk Access gives such errors. The machine then shows
+a red errors tag next to its state on the Clients page. In the folders of the machine, "Show
+errors" lists each file and the reason. Only the newest backup of each folder counts, and a
+disabled folder does not count. A file that fails at every backup keeps the machine in errors
+until it is excluded or fixed. See [Exclude files and folders](#exclude-files-and-folders).
 
 Mails go through the cluster smarthost, in the language chosen on the Alerts page. Without a
 smarthost no mail leaves, and the states stay visible on the Clients and Status pages.

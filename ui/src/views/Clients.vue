@@ -135,6 +135,15 @@
                     :kind="stateKind(row.state)"
                     :class="{ 'tag-late': row.state === 'late' }"
                   />
+                  <NsTag
+                    v-if="row.error_count > 0"
+                    kind="red"
+                    :label="
+                      $tc('clients.errors_count', row.error_count, {
+                        count: row.error_count,
+                      })
+                    "
+                  />
                 </cv-data-table-cell>
                 <cv-data-table-cell>
                   <!-- A desktop backs up nothing until the admin adds its folders: keep the way in sight -->
@@ -477,6 +486,42 @@
             >
           </div>
         </div>
+        <div v-else-if="folderErrors" class="folder-errors">
+          <h6 class="mg-bottom-sm">
+            {{ $t("clients.folder_errors_title", { path: folderErrors.path }) }}
+          </h6>
+          <p class="mg-bottom-sm">
+            {{ $t("clients.folder_errors_description") }}
+          </p>
+          <p
+            v-if="folderErrors.errors.length < folderErrors.error_count"
+            class="mg-bottom-sm"
+          >
+            {{
+              $t("clients.folder_errors_partial", {
+                shown: folderErrors.errors.length,
+                count: folderErrors.error_count,
+              })
+            }}
+          </p>
+          <ul class="folder-list mg-bottom">
+            <li
+              v-for="item in folderErrors.errors"
+              :key="item.path"
+              class="folder-error"
+            >
+              <div class="folder-path">{{ item.path }}</div>
+              <div class="folder-meta">{{ item.error }}</div>
+            </li>
+          </ul>
+          <NsButton
+            kind="secondary"
+            size="field"
+            :icon="ArrowLeft20"
+            @click="folderErrors = null"
+            >{{ $t("clients.folder_errors_back") }}</NsButton
+          >
+        </div>
         <template v-else>
           <p v-if="!folders.length" class="mg-bottom">
             {{ $t("clients.no_folders") }}
@@ -491,6 +536,17 @@
                     size="sm"
                     kind="gray"
                     :label="$t('clients.folder_disabled')"
+                  />
+                  <!-- Gray: a disabled folder does not count for the machine state nor the mails -->
+                  <NsTag
+                    v-if="folder.error_count > 0"
+                    size="sm"
+                    :kind="folder.disabled ? 'gray' : 'red'"
+                    :label="
+                      $tc('clients.errors_count', folder.error_count, {
+                        count: folder.error_count,
+                      })
+                    "
                   />
                   <span>{{
                     folder.last_backup
@@ -515,6 +571,15 @@
                 class="folder-menu"
                 :label="$t('clients.folder_actions')"
               >
+                <cv-overflow-menu-item
+                  v-if="folder.error_count > 0"
+                  @click="folderErrors = folder"
+                >
+                  <NsMenuItem
+                    :icon="WarningAlt20"
+                    :label="$t('clients.folder_show_errors')"
+                  />
+                </cv-overflow-menu-item>
                 <cv-overflow-menu-item @click="openFolderPolicy(folder.path)">
                   <NsMenuItem
                     :icon="Launch20"
@@ -557,7 +622,7 @@
           </ul>
         </template>
         <cv-form
-          v-if="!folderToRemove"
+          v-if="!folderToRemove && !folderErrors"
           @submit.prevent="addFolder"
           class="add-folder"
         >
@@ -634,6 +699,8 @@ import ModuleTask from "@/mixins/moduleTask";
 import { createSealKey, openSealed } from "@/lib/seal";
 import Play20 from "@carbon/icons-vue/es/play/20";
 import Pause20 from "@carbon/icons-vue/es/pause/20";
+import WarningAlt20 from "@carbon/icons-vue/es/warning--alt/20";
+import ArrowLeft20 from "@carbon/icons-vue/es/arrow--left/20";
 
 // Kopia compares paths as text: a Windows path keeps its backslashes and drive letter
 const FOLDER_PATTERNS = [/^\/./, /^[A-Za-z]:\\/, /^\\\\[^\\]+\\[^\\]+/];
@@ -660,6 +727,8 @@ export default {
       // Not in the icon service of ns8-ui-lib
       Play20,
       Pause20,
+      WarningAlt20,
+      ArrowLeft20,
       scriptTabs: [
         {
           id: "tab-windows",
@@ -700,6 +769,8 @@ export default {
       isShownFoldersModal: false,
       foldersClient: "",
       folderToRemove: "",
+      // Folder whose read errors replace the list in the window
+      folderErrors: null,
       busyFolder: "",
       folders: [],
       newFolder: "",
@@ -1064,6 +1135,7 @@ export default {
     showFoldersModal(client) {
       this.foldersClient = client.name;
       this.folderToRemove = "";
+      this.folderErrors = null;
       this.error.folderAction = null;
       this.folders = [];
       this.newFolder = "";
@@ -1329,6 +1401,11 @@ export default {
 // Line the button up with the input, below the label
 .add-folder-button {
   margin-top: 1.5rem;
+}
+
+.folder-error {
+  padding: $spacing-04 0;
+  border-bottom: 1px solid $ui-03;
 }
 
 .folder-remove {

@@ -17,6 +17,12 @@ TEMPLATES = {
                        "Last backup: {last}.\nOwner: {owner}."),
         "back_ok": ("Backup back to normal: {machine}",
                     "The machine {machine} completed a backup to {host} again at {last}."),
+        "snapshot_errors": ("Backup with errors: {machine}",
+                            "The last backup of {machine} to {host} at {last} could not read {count} files or folders.\n"
+                            "Part of the data is missing from this backup. Owner: {owner}.\n\n"
+                            "The list of files in error is in the folders of the machine, on the Clients page."),
+        "errors_cleared": ("No backup errors anymore: {machine}",
+                           "No folder of {machine} on {host} has backup errors anymore."),
         "verify_failed": ("Backup verification failed on {host}",
                           "The periodic check of the backup repository of {host} found errors:\n\n{details}"),
         "never": "never",
@@ -32,6 +38,12 @@ TEMPLATES = {
                        "Dernière sauvegarde : {last}.\nPropriétaire : {owner}."),
         "back_ok": ("Sauvegarde revenue à la normale : {machine}",
                     "La machine {machine} a de nouveau terminé une sauvegarde vers {host} le {last}."),
+        "snapshot_errors": ("Sauvegarde avec erreurs : {machine}",
+                            "La dernière sauvegarde de {machine} vers {host} le {last} n'a pas pu lire {count} fichiers ou dossiers.\n"
+                            "Une partie des données manque dans cette sauvegarde. Propriétaire : {owner}.\n\n"
+                            "La liste des fichiers en erreur se trouve dans les dossiers de la machine, page Clients."),
+        "errors_cleared": ("Plus d'erreur de sauvegarde : {machine}",
+                           "Plus aucun dossier de {machine} sur {host} n'a d'erreur de sauvegarde."),
         "verify_failed": ("Échec de la vérification des sauvegardes sur {host}",
                           "La vérification périodique du dépôt de sauvegarde de {host} a trouvé des erreurs :\n\n{details}"),
         "never": "jamais",
@@ -47,6 +59,12 @@ TEMPLATES = {
                        "Ultimo backup: {last}.\nProprietario: {owner}."),
         "back_ok": ("Backup tornato normale: {machine}",
                     "La macchina {machine} ha di nuovo completato un backup verso {host} il {last}."),
+        "snapshot_errors": ("Backup con errori: {machine}",
+                            "L'ultimo backup di {machine} verso {host} il {last} non ha potuto leggere {count} file o cartelle.\n"
+                            "Una parte dei dati manca in questo backup. Proprietario: {owner}.\n\n"
+                            "L'elenco dei file in errore si trova nelle cartelle della macchina, pagina Client."),
+        "errors_cleared": ("Nessun errore di backup: {machine}",
+                           "Nessuna cartella di {machine} su {host} ha più errori di backup."),
         "verify_failed": ("Verifica dei backup fallita su {host}",
                           "Il controllo periodico del repository di backup di {host} ha trovato errori:\n\n{details}"),
         "never": "mai",
@@ -62,6 +80,12 @@ TEMPLATES = {
                        "Letzte Sicherung: {last}.\nBesitzer: {owner}."),
         "back_ok": ("Sicherung wieder normal: {machine}",
                     "Der Rechner {machine} hat am {last} wieder eine Sicherung auf {host} abgeschlossen."),
+        "snapshot_errors": ("Sicherung mit Fehlern: {machine}",
+                            "Die letzte Sicherung von {machine} auf {host} am {last} konnte {count} Dateien oder Ordner nicht lesen.\n"
+                            "Ein Teil der Daten fehlt in dieser Sicherung. Besitzer: {owner}.\n\n"
+                            "Die Liste der fehlerhaften Dateien steht in den Ordnern des Rechners auf der Seite Clients."),
+        "errors_cleared": ("Keine Sicherungsfehler mehr: {machine}",
+                           "Kein Ordner von {machine} auf {host} hat mehr Sicherungsfehler."),
         "verify_failed": ("Prüfung der Sicherungen fehlgeschlagen auf {host}",
                           "Die regelmäßige Prüfung des Sicherungs-Repositorys von {host} hat Fehler gefunden:\n\n{details}"),
         "never": "nie",
@@ -77,6 +101,12 @@ TEMPLATES = {
                        "Última copia: {last}.\nPropietario: {owner}."),
         "back_ok": ("Copia de nuevo normal: {machine}",
                     "El equipo {machine} ha completado de nuevo una copia en {host} el {last}."),
+        "snapshot_errors": ("Copia con errores: {machine}",
+                            "La última copia de {machine} en {host} el {last} no pudo leer {count} archivos o carpetas.\n"
+                            "Parte de los datos falta en esta copia. Propietario: {owner}.\n\n"
+                            "La lista de archivos con error está en las carpetas del equipo, en la página Clientes."),
+        "errors_cleared": ("Ya no hay errores de copia: {machine}",
+                           "Ninguna carpeta de {machine} en {host} tiene ya errores de copia."),
         "verify_failed": ("Fallo en la verificación de copias en {host}",
                           "La comprobación periódica del repositorio de copias de {host} encontró errores:\n\n{details}"),
         "never": "nunca",
@@ -92,6 +122,12 @@ TEMPLATES = {
                        "Última cópia: {last}.\nProprietário: {owner}."),
         "back_ok": ("Cópia de novo normal: {machine}",
                     "A máquina {machine} concluiu de novo uma cópia para {host} em {last}."),
+        "snapshot_errors": ("Cópia com erros: {machine}",
+                            "A última cópia de {machine} para {host} em {last} não conseguiu ler {count} ficheiros ou pastas.\n"
+                            "Parte dos dados falta nesta cópia. Proprietário: {owner}.\n\n"
+                            "A lista dos ficheiros com erro está nas pastas da máquina, na página Clientes."),
+        "errors_cleared": ("Já não há erros de cópia: {machine}",
+                           "Nenhuma pasta de {machine} em {host} tem já erros de cópia."),
         "verify_failed": ("Falha na verificação das cópias em {host}",
                           "A verificação periódica do repositório de cópias de {host} encontrou erros:\n\n{details}"),
         "never": "nunca",
@@ -107,6 +143,12 @@ TEMPLATES = {
                        "Último backup: {last}.\nProprietário: {owner}."),
         "back_ok": ("Backup normalizado: {machine}",
                     "A máquina {machine} concluiu de novo um backup em {host} em {last}."),
+        "snapshot_errors": ("Backup com erros: {machine}",
+                            "O último backup de {machine} em {host} em {last} não conseguiu ler {count} arquivos ou pastas.\n"
+                            "Parte dos dados está faltando neste backup. Proprietário: {owner}.\n\n"
+                            "A lista dos arquivos com erro está nas pastas da máquina, na página Clientes."),
+        "errors_cleared": ("Não há mais erros de backup: {machine}",
+                           "Nenhuma pasta de {machine} em {host} tem mais erros de backup."),
         "verify_failed": ("Falha na verificação dos backups em {host}",
                           "A verificação periódica do repositório de backup de {host} encontrou erros:\n\n{details}"),
         "never": "nunca",
@@ -122,6 +164,12 @@ TEMPLATES = {
                        "Azken babeskopia: {last}.\nJabea: {owner}."),
         "back_ok": ("Babeskopia normaltasunera itzuli da: {machine}",
                     "{machine} makinak berriro babeskopia bat amaitu du {host} zerbitzarian: {last}."),
+        "snapshot_errors": ("Babeskopia erroreekin: {machine}",
+                            "{machine} makinaren azken babeskopiak ({host}, {last}) ezin izan ditu {count} fitxategi edo karpeta irakurri.\n"
+                            "Datuen zati bat falta da babeskopia honetan. Jabea: {owner}.\n\n"
+                            "Errorea duten fitxategien zerrenda makinaren karpetetan dago, Bezeroak orrian."),
+        "errors_cleared": ("Ez dago babeskopia-errorerik: {machine}",
+                           "{machine} makinaren karpeta batek ere ez du babeskopia-errorerik {host} zerbitzarian."),
         "verify_failed": ("Babeskopien egiaztapenak huts egin du {host} zerbitzarian",
                           "{host} zerbitzariko babeskopia-biltegiaren aldizkako egiaztapenak erroreak aurkitu ditu:\n\n{details}"),
         "never": "inoiz ez",
