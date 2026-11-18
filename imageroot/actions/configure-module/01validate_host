@@ -18,7 +18,7 @@ host = data["host"]
 if not host:
     # Reported with the other first configuration errors by 03validate_passwords
     sys.exit(0)
-# An unchanged host is never a conflict, even for a clone: 30route skips a route owned by another instance
+# An unchanged host is never a conflict, even for a clone: 95route skips a route owned by another instance
 if host != os.environ.get("TRAEFIK_HOST", "") and agent.http_route_in_use(domain=host):
     agent.set_status("validation-failed")
     json.dump([{"field": "host", "parameter": "host", "value": host, "error": "domain_already_used_in_traefik"}], fp=sys.stdout)
