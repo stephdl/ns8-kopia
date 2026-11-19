@@ -215,8 +215,8 @@ instance stays stopped. `clone-module` follows the same rule.
 | `add-client` | create `user@host`, return the scripts with the password |
 | `reset-client-password` | new password, return the new scripts |
 | `get-client-enrollment` | URL, fingerprint and identity, without the password |
-| `list-clients` | machines with last backup, `error_count`, and state: `ok`, `late`, `late_admin`, `never_seen`, or `unknown` when the server does not answer |
-| `list-client-folders` | folders of a machine, with the date and the read errors of their last snapshot (1000 listed at most, errors ignored by a policy included) |
+| `list-clients` | machines with last backup, `total_size` of the last snapshot of each enabled folder, `error_count`, and state: `ok`, `late`, `late_admin`, `never_seen`, or `unknown` when the server does not answer |
+| `list-client-folders` | folders of a machine, with the date, the size and the read errors of their last snapshot (1000 listed at most, errors ignored by a policy included) |
 | `remove-client` | remove the account, and its snapshots with `delete_snapshots` |
 | `count-snapshots` | count the snapshots left for a `user@host`, before it is added again |
 | `get-health` | server, disk use, certificate expiry, last integrity check |

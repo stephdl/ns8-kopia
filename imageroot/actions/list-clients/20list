@@ -14,7 +14,7 @@ try:
 except (RuntimeError, OSError, ValueError) as ex:
     # Without the server the list still comes from the module state, with an unknown state
     print(f"cannot read snapshots: {ex}", file=sys.stderr)
-    clients = [dict(c, last_backup=None, age_hours=None, state="unknown", error_count=None,
+    clients = [dict(c, last_backup=None, age_hours=None, state="unknown", total_size=None, error_count=None,
                     last_error_backup=None)
                for c in km.load_clients()]
 json.dump({"clients": clients}, fp=sys.stdout)

@@ -20,7 +20,7 @@ folders = {}
 
 
 def folder(path):
-    return folders.setdefault(path, {"path": path, "policy": False, "disabled": False, "last_backup": None,
+    return folders.setdefault(path, {"path": path, "policy": False, "disabled": False, "last_backup": None, "size": None,
                                      "error_count": 0, "ignored_count": 0, "errors": []})
 
 
@@ -28,6 +28,7 @@ snapshots = km.machine_snapshots(name)
 for path, snap in km.newest_snapshots(snapshots).items():
     entry = folder(path)
     entry["last_backup"] = km.parse_time(snap["endTime"]).isoformat()
+    entry["size"] = km.snapshot_size(snap)
     entry["error_count"], entry["ignored_count"], entry["errors"] = km.snapshot_errors(snap)
 # A folder whose snapshots are all incomplete still shows up, never backed up
 for snap in snapshots:

@@ -129,6 +129,9 @@
                   </template>
                   <template v-else>-</template>
                 </cv-data-table-cell>
+                <cv-data-table-cell>{{
+                  row.total_size | byteFormat
+                }}</cv-data-table-cell>
                 <cv-data-table-cell>
                   <!-- A green OK next to an errors tag reads as a contradiction -->
                   <NsTag
@@ -604,6 +607,9 @@
                       ? formatDateTime(folder.last_backup)
                       : $t("clients.folder_never")
                   }}</span>
+                  <span v-if="folder.last_backup">{{
+                    folder.size | byteFormat
+                  }}</span>
                 </div>
               </div>
               <cv-inline-loading
@@ -799,7 +805,14 @@ export default {
       urlCheckInterval: null,
       clients: [],
       tablePage: [],
-      tableColumns: ["name", "owner_email", "last_backup", "state", "folders"],
+      tableColumns: [
+        "name",
+        "owner_email",
+        "last_backup",
+        "total_size",
+        "state",
+        "folders",
+      ],
       // Before the first configuration there is no server to ask
       configured: true,
       isShownAddModal: false,
