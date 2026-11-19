@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Earlier versions saved the built-in patterns too: keep only the admin ones, so a pattern
+# dropped from DEFAULT_EXCLUDES in a later release does not stay as an admin pattern
+import agent
+import kopia_module as km
+
+for key, value in km.settings_to_env({"excludes": km.read_settings()["excludes"]}).items():
+    agent.set_env(key, value)

@@ -218,6 +218,7 @@
         "keep_range": "Sartu 0 eta 1000 arteko zenbaki osoa (100 urteroko snapshotentzat)",
         "excludes_too_long": "Eredu batek 255 karaktere izan ditzake gehienez",
         "excludes_too_many": "Sartu 200 eredu gehienez",
+        "excludes_built_in": "{pattern} dagoeneko eredu integratua da",
         "hours_range": "Sartu 1 eta 8760 arteko zenbaki osoa",
         "admin_after_owner": "Administratzaileen epea jabearena baino handiagoa izan behar da",
         "recipients_invalid": "Sartu baliozko posta helbideak",

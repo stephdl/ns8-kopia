@@ -237,12 +237,13 @@ a folder. Rules use the gitignore syntax, one rule per line:
 
 There are two ways to exclude something.
 
-1. **Every machine**: the **Policies** page of the module, field **Excluded patterns**. The
-   field already holds the default rules: add your lines below them and keep them, since a
-   line you remove is no longer excluded. In particular keep
-   `repository.config.kopia-password`, the file where a Linux client stores its password. For
-   example `**/.local/share/containers` skips the rootless Podman storage, which the user
-   often cannot read and which would end each snapshot with a permission error.
+1. **Every machine**: the **Policies** page of the module. The **Built-in patterns** box lists
+   the rules the module always applies, among them `repository.config.kopia-password`, the
+   file where a Linux client stores its password. It is read-only, and module updates keep it
+   current. A built-in rule cannot be turned off. Add your own rules in the **Excluded
+   patterns** field, which starts empty. For example `**/.local/share/containers` skips the
+   rootless Podman storage, which the user often cannot read and which would end each
+   snapshot with a permission error.
 2. **On the machine**: a `.kopiaignore` file in the backed up folder, or in any folder below
    it. It applies to its folder and everything inside, on top of the rules of the Policies
    page. For a machine that backs up `C:\Users\anna\Documents`, the file goes in that folder,

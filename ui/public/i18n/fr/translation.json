@@ -218,6 +218,7 @@
         "keep_range": "Saisissez un nombre entier de 0 à 1000 (100 pour les annuels)",
         "excludes_too_long": "Un motif peut avoir 255 caractères au maximum",
         "excludes_too_many": "Saisissez 200 motifs au maximum",
+        "excludes_built_in": "{pattern} est déjà un motif intégré",
         "hours_range": "Saisissez un nombre entier de 1 à 8760",
         "admin_after_owner": "Le délai des admins doit être supérieur à celui du propriétaire",
         "recipients_invalid": "Saisissez des adresses mail valides",

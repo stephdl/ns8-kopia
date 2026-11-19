@@ -218,6 +218,7 @@
         "keep_range": "Geben Sie eine ganze Zahl von 0 bis 1000 ein (100 für jährlich)",
         "excludes_too_long": "Ein Muster darf höchstens 255 Zeichen haben",
         "excludes_too_many": "Geben Sie höchstens 200 Muster ein",
+        "excludes_built_in": "{pattern} ist bereits ein integriertes Muster",
         "hours_range": "Geben Sie eine ganze Zahl von 1 bis 8760 ein",
         "admin_after_owner": "Die Frist der Admins muss größer sein als die des Besitzers",
         "recipients_invalid": "Geben Sie gültige E-Mail-Adressen ein",

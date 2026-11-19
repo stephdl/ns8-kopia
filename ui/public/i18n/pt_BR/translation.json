@@ -218,6 +218,7 @@
         "keep_range": "Digite um número inteiro de 0 a 1000 (100 para os anuais)",
         "excludes_too_long": "Um padrão pode ter no máximo 255 caracteres",
         "excludes_too_many": "Digite no máximo 200 padrões",
+        "excludes_built_in": "{pattern} já é um padrão integrado",
         "hours_range": "Digite um número inteiro de 1 a 8760",
         "admin_after_owner": "O prazo dos admins precisa ser maior que o do proprietário",
         "recipients_invalid": "Digite endereços de e-mail válidos",

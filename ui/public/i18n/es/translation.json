@@ -218,6 +218,7 @@
         "keep_range": "Introduzca un número entero de 0 a 1000 (100 para las anuales)",
         "excludes_too_long": "Un patrón puede tener 255 caracteres como máximo",
         "excludes_too_many": "Introduzca 200 patrones como máximo",
+        "excludes_built_in": "{pattern} ya es un patrón integrado",
         "hours_range": "Introduzca un número entero de 1 a 8760",
         "admin_after_owner": "El plazo de los admins debe ser mayor que el del propietario",
         "recipients_invalid": "Introduzca direcciones de correo válidas",

@@ -218,6 +218,7 @@
         "keep_range": "Enter a whole number from 0 to 1000 (100 for annual)",
         "excludes_too_long": "A pattern can have 255 characters at most",
         "excludes_too_many": "Enter 200 patterns at most",
+        "excludes_built_in": "{pattern} is already a built-in pattern",
         "hours_range": "Enter a whole number from 1 to 8760",
         "admin_after_owner": "The admin delay must be greater than the owner delay",
         "recipients_invalid": "Enter valid email addresses",
