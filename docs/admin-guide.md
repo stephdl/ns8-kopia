@@ -411,7 +411,7 @@ server. The second command keeps only the server:
 
 ```sh
 journalctl _UID=$(id -u kopia1) -f
-journalctl _UID=$(id -u kopia1) SYSLOG_IDENTIFIER=kopia-server -f
+journalctl _UID=$(id -u kopia1) CONTAINER_NAME=kopia-server -f
 ```
 
 It shows the start of the server, each session a machine opens (`starting session for user
@@ -419,3 +419,6 @@ It shows the start of the server, each session a machine opens (`starting sessio
 on a machine: a read error, a failed snapshot or a refused password stay on the machine, in
 KopiaUI or `kopia` output. A refused login leaves no line on the server at all. The read
 errors of the last snapshot of each folder are on the **Folders** page of the machine.
+
+When an action of the module fails, the error of Kopia is in the first command, on the lines
+of `agent@kopia1`, not on the lines of the server.

@@ -21,12 +21,11 @@ ExecStart=/usr/bin/podman run --conmon-pidfile %t/kopia-server.pid \
     --cidfile %t/kopia-server.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/kopia.pod-id --replace -d --name kopia-server \
     --env-file ./secrets/kopia.env \
-    --env KOPIA_LOG_DIR_MAX_FILES=20 --env KOPIA_CONTENT_LOG_DIR_MAX_FILES=20 \
     --volume kopia-repository:/repo:z \
     --volume kopia-config:/app/config:z \
     --volume kopia-cache:/app/cache:z \
     --volume ./certs:/certs:ro,z \
-    ${KOPIA_IMAGE} server start \
+    ${KOPIA_IMAGE} --disable-file-logging --disable-content-log server start \
     --address=0.0.0.0:${CLIENT_PORT} \
     --tls-cert-file=/certs/client.pem \
     --tls-key-file=/certs/client-key.pem \

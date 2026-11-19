@@ -24,6 +24,7 @@ podman run --rm -i --env-file ./secrets/kopia.env \
     --volume kopia-cache:/app/cache:z \
     --entrypoint /bin/sh "${KOPIA_IMAGE}" -s <<'SCRIPT'
 set -e
+kopia() { command kopia --disable-file-logging --disable-content-log "$@"; }
 identity="--override-username=server --override-hostname=kopia"
 if [ -f /app/config/repository.config ] && kopia repository status >/dev/null 2>&1; then
     echo "Repository already connected"

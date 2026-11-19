@@ -142,7 +142,7 @@ def set_user_hash(name, encoded, exists):
     """Create or update a Kopia account. The hash goes through stdin, never on the command line."""
     verb = "set" if exists else "add"
     # name matches NAME_PATTERN on both sides of the @, so it needs no shell quoting
-    kopia([], stdin=encoded + "\n", script=f'read -r h; kopia server user {verb} {name} --user-password-hash="$h"')
+    kopia([], stdin=encoded + "\n", script=f'read -r h; {KOPIA} server user {verb} {name} --user-password-hash="$h"')
 
 
 def set_client_password(name, users=None):
@@ -206,6 +206,10 @@ def cert_expiry(path=CERT):
 
 
 
+# The journal gets the console output: the debug log files only filled the container
+KOPIA = "kopia --disable-file-logging --disable-content-log"
+
+
 def kopia(args, stdin=None, script=None, check=True, timeout=600):
     """Run kopia inside the server container with the current secrets.
 
@@ -213,7 +217,7 @@ def kopia(args, stdin=None, script=None, check=True, timeout=600):
     With script, args is ignored and the shell snippet runs instead, reading stdin.
     """
     cmd = ["podman", "exec", "-i", "--env-file", KOPIA_ENV, CONTAINER]
-    cmd += ["sh", "-c", script] if script else ["kopia"] + args
+    cmd += ["sh", "-c", script] if script else KOPIA.split() + args
     proc = subprocess.run(cmd, input=stdin, capture_output=True, text=True, timeout=timeout)
     if check and proc.returncode != 0:
         log(proc.stderr.strip())
@@ -243,7 +247,7 @@ def server_refresh():
     """Make the server read new users, ACLs and policies now instead of at the next index refresh."""
     port = os.environ.get("CLIENT_PORT", str(DEFAULT_PORT))
     script = (f'KOPIA_SERVER_USERNAME={CONTROL_USER} KOPIA_SERVER_PASSWORD="$KOPIA_SERVER_CONTROL_PASSWORD" '
-              f'kopia server refresh --address=https://127.0.0.1:{port} '
+              f'{KOPIA} server refresh --address=https://127.0.0.1:{port} '
               f'--server-cert-fingerprint={cert_fingerprint()}')
     kopia([], script=script)
 
