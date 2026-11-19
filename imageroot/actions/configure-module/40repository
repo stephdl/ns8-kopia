@@ -11,7 +11,7 @@
 set -e
 exec 1>&2
 
-for vol in kopia-repository kopia-config kopia-cache kopia-logs; do
+for vol in kopia-repository kopia-config kopia-cache; do
     podman volume exists "${vol}" || podman volume create "${vol}" >/dev/null
 done
 
@@ -21,7 +21,7 @@ fi
 
 podman run --rm -i --env-file ./secrets/kopia.env \
     --volume kopia-repository:/repo:z --volume kopia-config:/app/config:z \
-    --volume kopia-cache:/app/cache:z --volume kopia-logs:/app/logs:z \
+    --volume kopia-cache:/app/cache:z \
     --entrypoint /bin/sh "${KOPIA_IMAGE}" -s <<'SCRIPT'
 set -e
 identity="--override-username=server --override-hostname=kopia"
