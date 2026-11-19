@@ -607,7 +607,7 @@
                       ? formatDateTime(folder.last_backup)
                       : $t("clients.folder_never")
                   }}</span>
-                  <span v-if="folder.last_backup">{{
+                  <span v-if="folder.size != null">{{
                     folder.size | byteFormat
                   }}</span>
                 </div>

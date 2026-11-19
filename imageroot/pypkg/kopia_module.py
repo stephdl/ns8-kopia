@@ -470,7 +470,7 @@ def snapshot_errors(snap):
 def snapshot_size(snap):
     """Return the bytes of the files a snapshot holds, before deduplication and compression."""
     summ = (snap.get("rootEntry") or {}).get("summ") or {}
-    return summ.get("size", (snap.get("stats") or {}).get("totalSize"))
+    return (snap.get("stats") or {}).get("totalSize", summ.get("size"))
 
 
 def newest_snapshots(snapshots):
@@ -513,8 +513,8 @@ def lateness(age_hours, settings):
 
 def clients_status(settings=None):
     """Merge the machine list with the newest snapshot of each folder of each machine.
-    error_count sums the read errors and total_size the bytes of the newest snapshot of each
-    folder still enabled,
+    error_count sums the read errors and total_size the bytes of the newest snapshot
+    of each folder still enabled.
     last_error_backup is the end time of the newest of those snapshots."""
     from datetime import datetime, timezone
     settings = settings or read_settings()
