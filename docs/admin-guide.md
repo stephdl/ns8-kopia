@@ -419,11 +419,3 @@ It shows the start of the server, each session a machine opens (`starting sessio
 on a machine: a read error, a failed snapshot or a refused password stay on the machine, in
 KopiaUI or `kopia` output. A refused login leaves no line on the server at all. The read
 errors of the last snapshot of each folder are on the **Folders** page of the machine.
-
-The server also keeps detailed debug logs in the `kopia-logs` volume, under `cli-logs/`, one
-file per run. The server writes to the newest `*-server-start.*.log`. Avoid `latest.log`, it
-points to the last command the module ran, such as a `policy list`:
-
-```sh
-runagent -m kopia1 podman exec kopia-server sh -c 'tail -f $(ls -t /app/logs/cli-logs/*server-start*.log | head -1)'
-```
