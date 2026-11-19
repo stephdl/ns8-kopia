@@ -36,8 +36,7 @@
             <NsButton
               kind="primary"
               :icon="Add20"
-              :loading="isPageLoading"
-              :disabled="isPageLoading || !configured"
+              :disabled="!configured"
               @click="showAddModal"
               >{{ $t("clients.add_machine") }}</NsButton
             >
