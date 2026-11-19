@@ -20,6 +20,7 @@ ExecStartPre=/bin/rm -f %t/kopia-server.pid %t/kopia-server.ctr-id
 ExecStart=/usr/bin/podman run --conmon-pidfile %t/kopia-server.pid \
     --cidfile %t/kopia-server.ctr-id --cgroups=no-conmon \
     --pod-id-file %t/kopia.pod-id --replace -d --name kopia-server \
+    --log-opt=tag=%u \
     --env-file ./secrets/kopia.env \
     --volume kopia-repository:/repo:z \
     --volume kopia-config:/app/config:z \
