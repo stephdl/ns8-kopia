@@ -77,6 +77,14 @@
               ref="compression"
             />
             <cv-text-area
+              :value="defaultExcludes.join('\n')"
+              :label="$t('policies.default_excludes')"
+              :helper-text="$t('policies.default_excludes_helper')"
+              :disabled="stillLoading || !isConfigured"
+              readonly
+              class="mg-bottom maxwidth"
+            />
+            <cv-text-area
               v-model="excludesText"
               :label="$t('policies.excludes')"
               :helper-text="$t('policies.excludes_helper')"
@@ -193,6 +201,7 @@ export default {
       },
       compression: "",
       excludesText: "",
+      defaultExcludes: [],
       // NsSlider works with strings
       verifyPercent: "10",
       loading: {
@@ -308,6 +317,7 @@ export default {
       }
       this.compression = config.compression;
       this.excludesText = (config.excludes || []).join("\n");
+      this.defaultExcludes = config.default_excludes || [];
       this.verifyPercent = String(config.verify_percent);
       this.loading.getConfiguration = false;
     },

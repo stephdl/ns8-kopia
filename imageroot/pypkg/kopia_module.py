@@ -339,6 +339,22 @@ def disk_usage(name="kopia-repository"):
 
 
 
+# Every update pushes these to every instance, even after the admin saved the Policies page
+DEFAULT_EXCLUDES = [
+    ".cache", "Cache", "Caches", "cache2", "Temp", "tmp", "*.tmp", "~$*",
+    "$RECYCLE.BIN", ".Trash-*", "node_modules", "Thumbs.db", ".DS_Store",
+    "hiberfil.sys", "pagefile.sys", "swapfile.sys",
+    # Windows and running apps lock these during a session, so Kopia cannot read them
+    # without VSS, which needs admin rights. Kopia matches case, hence the brackets.
+    "[nN][tT][uU][sS][eE][rR].[dD][aA][tT]*", "[uU][sS][rR][cC][lL][aA][sS][sS].[dD][aA][tT]*",
+    "**/AppData/Local/Microsoft/Windows/WebCache/",
+    "**/AppData/Local/Microsoft/Windows/WebCacheLock.dat",
+    "**/AppData/Local/Packages/*/Settings/", "**/AppData/Local/Packages/*/SystemAppData/",
+    "**/AppData/Local/Packages/**/EBWebView/", "**/AppData/Roaming/kopia-ui/",
+    # The client keeps its own password there
+    "repository.config.kopia-password",
+]
+
 # configure-module field: (environment variable, default, kind)
 SETTINGS = {
     "snapshot_interval": ("SNAPSHOT_INTERVAL", 4, int),
@@ -349,20 +365,8 @@ SETTINGS = {
     "keep_monthly": ("KEEP_MONTHLY", 12, int),
     "keep_annual": ("KEEP_ANNUAL", 2, int),
     "compression": ("COMPRESSION", "zstd", str),
-    "excludes": ("EXCLUDES", [
-        ".cache", "Cache", "Caches", "cache2", "Temp", "tmp", "*.tmp", "~$*",
-        "$RECYCLE.BIN", ".Trash-*", "node_modules", "Thumbs.db", ".DS_Store",
-        "hiberfil.sys", "pagefile.sys", "swapfile.sys",
-        # Windows and running apps lock these during a session, so Kopia cannot read them
-        # without VSS, which needs admin rights. Kopia matches case, hence the brackets.
-        "[nN][tT][uU][sS][eE][rR].[dD][aA][tT]*", "[uU][sS][rR][cC][lL][aA][sS][sS].[dD][aA][tT]*",
-        "**/AppData/Local/Microsoft/Windows/WebCache/",
-        "**/AppData/Local/Microsoft/Windows/WebCacheLock.dat",
-        "**/AppData/Local/Packages/*/Settings/", "**/AppData/Local/Packages/*/SystemAppData/",
-        "**/AppData/Local/Packages/**/EBWebView/", "**/AppData/Roaming/kopia-ui/",
-        # The client keeps its own password there
-        "repository.config.kopia-password",
-    ], list),
+    # Only the patterns the admin adds: DEFAULT_EXCLUDES always apply on top
+    "excludes": ("EXCLUDES", [], list),
     "owner_alert_hours": ("OWNER_ALERT_HOURS", 48, int),
     "admin_alert_hours": ("ADMIN_ALERT_HOURS", 96, int),
     "admin_recipients": ("ADMIN_RECIPIENTS", [], list),
@@ -395,13 +399,26 @@ def configure_request():
     return data
 
 
+def extra_excludes(patterns):
+    """Drop the built-in patterns: a list saved before they were forced holds them too."""
+    return [pattern for pattern in patterns if pattern not in DEFAULT_EXCLUDES]
+
+
 def read_settings(env=None):
     env = os.environ if env is None else env
-    return {field: _decode(env.get(var), default, kind) for field, (var, default, kind) in SETTINGS.items()}
+    settings = {field: _decode(env.get(var), default, kind) for field, (var, default, kind) in SETTINGS.items()}
+    settings["excludes"] = extra_excludes(settings["excludes"])
+    return settings
 
 
 def settings_to_env(data):
+    if "excludes" in data:
+        data = dict(data, excludes=extra_excludes(data["excludes"]))
     return {var: _encode(data[field], kind) for field, (var, _, kind) in SETTINGS.items() if field in data}
+
+
+def effective_excludes(settings):
+    return DEFAULT_EXCLUDES + settings["excludes"]
 
 
 def alert_sender(settings=None):
@@ -418,8 +435,9 @@ def global_policy_args(settings=None, current_ignore=()):
             f"--keep-daily={s['keep_daily']}", f"--keep-weekly={s['keep_weekly']}",
             f"--keep-monthly={s['keep_monthly']}", f"--keep-annual={s['keep_annual']}",
             f"--compression={s['compression']}"]
-    args += [f"--remove-ignore={pattern}" for pattern in current_ignore if pattern not in s["excludes"]]
-    args += [f"--add-ignore={pattern}" for pattern in s["excludes"] if pattern not in current_ignore]
+    excludes = effective_excludes(s)
+    args += [f"--remove-ignore={pattern}" for pattern in current_ignore if pattern not in excludes]
+    args += [f"--add-ignore={pattern}" for pattern in excludes if pattern not in current_ignore]
     return args
 
 

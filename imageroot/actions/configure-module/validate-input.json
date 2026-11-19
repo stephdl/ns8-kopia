@@ -120,7 +120,7 @@
                 "pattern": "^[^\\n\\r]+$"
             },
             "uniqueItems": true,
-            "description": "Patterns ignored by every machine, gitignore syntax."
+            "description": "Patterns ignored by every machine on top of the built-in ones, gitignore syntax. Built-in patterns sent here are dropped."
         },
         "owner_alert_hours": {
             "type": "integer",

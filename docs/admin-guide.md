@@ -90,7 +90,7 @@ only connect outbound, so open nothing on them. A laptop on a network that allow
 | `snapshot_interval` | Policies | 4 | hours between snapshots: 0, 1, 2, 4, 6, 8, 12 or 24. 0 means manual only |
 | `keep_latest`, `keep_hourly`, `keep_daily`, `keep_weekly`, `keep_monthly`, `keep_annual` | Policies | 10, 48, 14, 8, 12, 2 | 0 to 1000 |
 | `compression` | Policies | `zstd` | Kopia compression names |
-| `excludes` | Policies | caches, temp folders, trash, `node_modules`, Windows swap files, Windows files locked during a session | one gitignore rule per line |
+| `excludes` | Policies | none | one gitignore rule per line, added to the built-in patterns: caches, temp folders, trash, `node_modules`, Windows swap files, Windows files locked during a session. The built-in patterns always apply and module updates keep them current |
 | `verify_percent` | Policies | 10 | 0 to 100 |
 | `owner_alert_hours` | Alerts | 48 | 1 to 8760 |
 | `admin_alert_hours` | Alerts | 96 | 1 to 8760 |

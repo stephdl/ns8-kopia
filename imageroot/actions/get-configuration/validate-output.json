@@ -15,6 +15,7 @@
         "default_sender": {"type": "string"},
         "route_missing": {"type": "boolean"},
         "excludes": {"type": "array", "items": {"type": "string"}},
+        "default_excludes": {"type": "array", "items": {"type": "string"}},
         "admin_recipients": {"type": "array", "items": {"type": "string"}}
     }
 }

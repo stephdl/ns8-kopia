@@ -94,6 +94,20 @@ Check if the server still expires old snapshots
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    1
 
+Check if the built-in excluded patterns stay with the admin ones
+    # A saved list must not drop the built-in patterns: new ones come with module updates
+    ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host": "kopia.test.example.org", "excludes": ["*.iso", "node_modules"]}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/get-configuration | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["excludes"], "node_modules" in d["default_excludes"])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    ['*.iso'] True
+    ${output}  ${rc} =    Execute Command    podman run --rm --network=host --add-host kopia.test.example.org:127.0.0.1 -e HOME=/home/u -e KOPIA_CONFIG_PATH=/home/u/.config/kopia/repository.config -e KOPIA_PERSIST_CREDENTIALS_ON_CONNECT=true -v /root/kopia-ci-home:/home/u:Z --entrypoint sh docker.io/kopia/kopia:0.23.1 -c 'kopia policy show --global --json' | python3 -c 'import json,sys; i=json.load(sys.stdin)["files"]["ignore"]; print("*.iso" in i, "repository.config.kopia-password" in i)'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    True True
+
 Check if read errors of a backup are reported
     # Root in the client container reads any file, so drop the capabilities that bypass the modes
     ${rc} =    Execute Command    mkdir -p /root/kopia-ci-err && echo secret > /root/kopia-ci-err/locked && chmod 000 /root/kopia-ci-err/locked
