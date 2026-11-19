@@ -95,6 +95,7 @@
         "col_name": "Rechner",
         "col_owner_email": "Besitzer",
         "col_last_backup": "Letztes Backup",
+        "col_total_size": "Größe",
         "col_state": "Zustand",
         "col_folders": "Ordner",
         "manage_folders": "Verwalten",

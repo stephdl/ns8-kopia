@@ -69,6 +69,14 @@ Check if a machine can enroll, back up and restore
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    [0]
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-clients | python3 -c 'import json,sys; print([c["total_size"] > 0 for c in json.load(sys.stdin)["clients"] if c["name"] == "ci@runner"])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    [True]
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-client-folders --data '{"name": "ci@runner"}' | python3 -c 'import json,sys; print([f["size"] > 0 for f in json.load(sys.stdin)["folders"] if f["path"] == "/home/u"])'
+    ...    return_rc=True
+    Should Be Equal As Integers    ${rc}  0
+    Should Be Equal As Strings    ${output}    [True]
 
 Check if a machine cannot delete its snapshots
     ${output}  ${rc} =    Execute Command    podman run --rm --network=host --add-host kopia.test.example.org:127.0.0.1 -e HOME=/home/u -e KOPIA_CONFIG_PATH=/home/u/.config/kopia/repository.config -e KOPIA_PERSIST_CREDENTIALS_ON_CONNECT=true -v /root/kopia-ci-home:/home/u:Z --entrypoint sh docker.io/kopia/kopia:0.23.1 -c 'kopia snapshot delete --delete "$(kopia snapshot list /home/u --json | grep -o -m1 "\\"id\\": *\\"[0-9a-f]*" | grep -o "[0-9a-f]*$")"'

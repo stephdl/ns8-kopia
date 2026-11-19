@@ -95,6 +95,7 @@
         "col_name": "Machine",
         "col_owner_email": "Propriétaire",
         "col_last_backup": "Dernière sauvegarde",
+        "col_total_size": "Taille",
         "col_state": "État",
         "col_folders": "Dossiers",
         "manage_folders": "Gérer",

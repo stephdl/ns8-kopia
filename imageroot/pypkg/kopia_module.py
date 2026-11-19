@@ -467,6 +467,12 @@ def snapshot_errors(snap):
     return count, ignored, errors[:MAX_LISTED_ERRORS]
 
 
+def snapshot_size(snap):
+    """Return the bytes of the files a snapshot holds, before deduplication and compression."""
+    summ = (snap.get("rootEntry") or {}).get("summ") or {}
+    return (snap.get("stats") or {}).get("totalSize", summ.get("size"))
+
+
 def newest_snapshots(snapshots):
     """Return {path: newest complete snapshot} of a list of snapshot manifests."""
     newest = {}
@@ -507,7 +513,8 @@ def lateness(age_hours, settings):
 
 def clients_status(settings=None):
     """Merge the machine list with the newest snapshot of each folder of each machine.
-    error_count sums the read errors of the newest snapshot of each folder still enabled,
+    error_count sums the read errors and total_size the bytes of the newest snapshot
+    of each folder still enabled.
     last_error_backup is the end time of the newest of those snapshots."""
     from datetime import datetime, timezone
     settings = settings or read_settings()
@@ -530,11 +537,14 @@ def clients_status(settings=None):
         else:
             age = (now - end).total_seconds() / 3600
             state = lateness(age, settings)
-        failing = [(snap, snapshot_errors(snap)[0]) for path, snap in newest.items() if path not in disabled]
+        enabled = [snap for path, snap in newest.items() if path not in disabled]
+        sizes = [size for size in map(snapshot_size, enabled) if size is not None]
+        failing = [(snap, snapshot_errors(snap)[0]) for snap in enabled]
         failing = [(snap, count) for snap, count in failing if count]
         error_ends = [parse_time(snap["endTime"]) for snap, _ in failing]
         result.append(dict(client, last_backup=end.isoformat() if end else None,
                            age_hours=round(age, 1) if age is not None else None, state=state,
+                           total_size=sum(sizes) if sizes else None,
                            error_count=sum(count for _, count in failing),
                            last_error_backup=max(error_ends).isoformat() if error_ends else None))
     return result

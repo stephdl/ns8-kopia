@@ -95,6 +95,7 @@
         "col_name": "Makina",
         "col_owner_email": "Jabea",
         "col_last_backup": "Azken babeskopia",
+        "col_total_size": "Tamaina",
         "col_state": "Egoera",
         "col_folders": "Karpetak",
         "manage_folders": "Kudeatu",
