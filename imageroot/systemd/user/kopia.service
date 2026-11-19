@@ -18,12 +18,12 @@ Restart=always
 TimeoutStopSec=70
 ExecStartPre=/bin/rm -f %t/kopia.pid %t/kopia.pod-id
 # Clients reach the client port from outside, Traefik reaches it on 127.0.0.1 for the admin UI.
-# allow_host_loopback lets the pod reach services of the node at 10.0.2.2.
+# pasta keeps the machine address in the server log, slirp4netns shows 10.0.2.100 instead
 ExecStartPre=/usr/bin/podman pod create --infra-conmon-pidfile %t/kopia.pid \
     --pod-id-file %t/kopia.pod-id \
     --name kopia \
     --hostname ${TRAEFIK_HOST} \
-    --network=slirp4netns:allow_host_loopback=true \
+    --network=pasta \
     --publish ${CLIENT_PORT}:${CLIENT_PORT} \
     --replace
 ExecStart=/usr/bin/podman pod start --pod-id-file %t/kopia.pod-id

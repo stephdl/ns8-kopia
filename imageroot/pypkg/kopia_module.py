@@ -568,7 +568,6 @@ def send_mail(rdb, recipients, subject, body, sender=None):
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
     host = conf["host"]
-    # The pod reaches the node loopback at 10.0.2.2, but this code runs on the node itself
     if conf["encrypt_smtp"] == "tls":
         smtp = smtplib.SMTP_SSL(host, conf["port"], context=ctx, timeout=30)
     else:
