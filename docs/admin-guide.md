@@ -257,11 +257,26 @@ included. If you still use it, copy into it every rule of the Policies page firs
 yours. This is how Kopia merges policies, the more specific one wins.
 
 On Windows, the default rules also skip files that Windows and running apps keep locked
-during a session: the registry hives (`NTUSER.DAT`, `UsrClass.dat`), the settings of Store
-apps, the WebView2 data of Teams and the widgets, and the KopiaUI profile. Kopia cannot read
-them and a restore does not need them. Kopia matches rules with case, so the hive rules list
-both cases. Once the Policies page has been saved, the field keeps the list it had then. On
-an older install, add these rules by hand.
+during a session. Kopia cannot read them without a shadow copy, which needs admin rights, so
+each snapshot would end with read errors on them:
+
+```
+[nN][tT][uU][sS][eE][rR].[dD][aA][tT]*
+[uU][sS][rR][cC][lL][aA][sS][sS].[dD][aA][tT]*
+**/AppData/Local/Microsoft/Windows/WebCache/
+**/AppData/Local/Microsoft/Windows/WebCacheLock.dat
+**/AppData/Local/Packages/*/Settings/
+**/AppData/Local/Packages/*/SystemAppData/
+**/AppData/Local/Packages/**/EBWebView/
+**/AppData/Roaming/kopia-ui/
+```
+
+The first two are the registry hives of the user, `NTUSER.DAT` and `UsrClass.dat`, with their
+logs. A restore brings back the files of the profile, not its registry settings. Kopia matches
+rules with case, so the brackets cover both cases. The others are the cache of the Windows web
+engine, the settings and private registry of every Store app, the WebView2 data of Store apps
+such as Teams and the widgets, and the KopiaUI profile. They work for a backup of one profile
+and of `C:\Users`.
 
 **Ignore Well-Known Cache Directories** is on by default: Kopia skips any folder holding a
 `CACHEDIR.TAG` file.

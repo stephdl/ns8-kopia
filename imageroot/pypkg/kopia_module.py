@@ -349,11 +349,13 @@ SETTINGS = {
         ".cache", "Cache", "Caches", "cache2", "Temp", "tmp", "*.tmp", "~$*",
         "$RECYCLE.BIN", ".Trash-*", "node_modules", "Thumbs.db", ".DS_Store",
         "hiberfil.sys", "pagefile.sys", "swapfile.sys",
-        # Windows and running apps lock these, a restore never needs them. Kopia matches case.
-        "[nN][tT][uU][sS][eE][rR].[dD][aA][tT]*", "[uU]sr[cC]lass.dat*",
-        "**/AppData/Local/Microsoft/Windows/WebCache/", "WebCacheLock.dat",
+        # Windows and running apps lock these during a session, so Kopia cannot read them
+        # without VSS, which needs admin rights. Kopia matches case, hence the brackets.
+        "[nN][tT][uU][sS][eE][rR].[dD][aA][tT]*", "[uU][sS][rR][cC][lL][aA][sS][sS].[dD][aA][tT]*",
+        "**/AppData/Local/Microsoft/Windows/WebCache/",
+        "**/AppData/Local/Microsoft/Windows/WebCacheLock.dat",
         "**/AppData/Local/Packages/*/Settings/", "**/AppData/Local/Packages/*/SystemAppData/",
-        "EBWebView/", "kopia-ui/",
+        "**/AppData/Local/Packages/**/EBWebView/", "**/AppData/Roaming/kopia-ui/",
         # The client keeps its own password there
         "repository.config.kopia-password",
     ], list),
