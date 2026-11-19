@@ -95,6 +95,7 @@
         "col_name": "Equipo",
         "col_owner_email": "Propietario",
         "col_last_backup": "Última copia",
+        "col_total_size": "Tamaño",
         "col_state": "Estado",
         "col_folders": "Carpetas",
         "manage_folders": "Gestionar",

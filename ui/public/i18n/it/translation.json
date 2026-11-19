@@ -95,6 +95,7 @@
         "col_name": "Macchina",
         "col_owner_email": "Proprietario",
         "col_last_backup": "Ultimo backup",
+        "col_total_size": "Dimensione",
         "col_state": "Stato",
         "col_folders": "Cartelle",
         "manage_folders": "Gestisci",
