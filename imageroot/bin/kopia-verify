@@ -26,10 +26,10 @@ TIMED_OUT = 124
 
 started = datetime.now(timezone.utc)
 if "--snapshots" in sys.argv[1:]:
-    percent, command = None, "kopia snapshot verify"
+    percent, command = None, f"{km.KOPIA} snapshot verify"
 else:
     percent = km.read_settings()["verify_percent"]
-    command = f"kopia content verify --download-percent={percent}"
+    command = f"{km.KOPIA} content verify --download-percent={percent}"
 try:
     proc = km.kopia([], script=f"timeout {LIMIT_HOURS}h {command}",
                     check=False, timeout=(LIMIT_HOURS + 1) * 3600)

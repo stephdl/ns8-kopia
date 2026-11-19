@@ -427,3 +427,20 @@ the services:
 ```sh
 runagent -m kopia1 systemctl --user status kopia-server kopia-check.timer kopia-verify.timer
 ```
+
+Every line of the instance carries the uid of its user: the agent, the timers and the Kopia
+server. The second command keeps only the server:
+
+```sh
+journalctl _UID=$(id -u kopia1) -f
+journalctl _UID=$(id -u kopia1) CONTAINER_NAME=kopia-server -f
+```
+
+It shows the start of the server, each session a machine opens (`starting session for user
+"anna@laptop" from <address>`) and errors of the server itself. It does not show what happens
+on a machine: a read error, a failed snapshot or a refused password stay on the machine, in
+KopiaUI or `kopia` output. A refused login leaves no line on the server at all. The read
+errors of the last snapshot of each folder are on the **Folders** page of the machine.
+
+When an action of the module fails, the error of Kopia is in the first command, on the lines
+of `agent@kopia1`, not on the lines of the server.
