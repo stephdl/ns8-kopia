@@ -406,10 +406,12 @@ the services:
 runagent -m kopia1 systemctl --user status kopia-server kopia-check.timer kopia-verify.timer
 ```
 
-The Kopia server writes its console to the journal under the name of the instance:
+Every line of the instance carries the uid of its user: the agent, the timers and the Kopia
+server. The second command keeps only the server:
 
 ```sh
-journalctl -t kopia1 -f
+journalctl _UID=$(id -u kopia1) -f
+journalctl _UID=$(id -u kopia1) SYSLOG_IDENTIFIER=kopia-server -f
 ```
 
 It shows the start of the server, each session a machine opens (`starting session for user
