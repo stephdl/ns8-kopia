@@ -90,7 +90,7 @@ only connect outbound, so open nothing on them. A laptop on a network that allow
 | `snapshot_interval` | Policies | 4 | hours between snapshots: 0, 1, 2, 4, 6, 8, 12 or 24. 0 means manual only |
 | `keep_latest`, `keep_hourly`, `keep_daily`, `keep_weekly`, `keep_monthly`, `keep_annual` | Policies | 10, 48, 14, 8, 12, 2 | 0 to 1000 |
 | `compression` | Policies | `zstd` | Kopia compression names |
-| `excludes` | Policies | caches, temp folders, trash, `node_modules`, Windows swap files | one gitignore rule per line |
+| `excludes` | Policies | caches, temp folders, trash, `node_modules`, Windows swap files, Windows files locked during a session | one gitignore rule per line |
 | `verify_percent` | Policies | 10 | 0 to 100 |
 | `owner_alert_hours` | Alerts | 48 | 1 to 8760 |
 | `admin_alert_hours` | Alerts | 96 | 1 to 8760 |
@@ -255,6 +255,13 @@ The Kopia policy editor of a folder, opened with **Edit in Kopia**, also has an
 uses that list alone and drops every rule of the Policies page for this folder, defaults
 included. If you still use it, copy into it every rule of the Policies page first, then add
 yours. This is how Kopia merges policies, the more specific one wins.
+
+On Windows, the default rules also skip files that Windows and running apps keep locked
+during a session: the registry hives (`NTUSER.DAT`, `UsrClass.dat`), the settings of Store
+apps, the WebView2 data of Teams and the widgets, and the KopiaUI profile. Kopia cannot read
+them and a restore does not need them. Kopia matches rules with case, so the hive rules list
+both cases. Once the Policies page has been saved, the field keeps the list it had then. On
+an older install, add these rules by hand.
 
 **Ignore Well-Known Cache Directories** is on by default: Kopia skips any folder holding a
 `CACHEDIR.TAG` file.
