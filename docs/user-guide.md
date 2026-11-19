@@ -102,6 +102,20 @@ while.
 In KopiaUI, open **Snapshots**, pick a folder, then a date. **Restore** copies files back.
 **Mount** opens the backup as a folder, so you can copy files from it with your file manager.
 
+Always restore into a new folder, never into one that exists. Kopia makes the top folder of a
+restore read-only and dates it from 1970 (kopia/kopia#4324). The files inside keep their
+permissions and dates. Restored into `~/Images`, your `~/Images` would become read-only too.
+
+To get a normal folder, pick one of these:
+
+- **Mount** the backup and copy what you need with your file manager. Copied folders are
+  normal ones.
+- Restore to a ZIP file: type a destination that ends in `.zip`, such as
+  `~/restore-photos.zip`, then extract it with your file manager.
+- Uncheck **Restore Permissions** in the restore options. The folder can be changed, and the
+  files become readable by you only.
+- Restore as usual, then make the folder writable again: `chmod u+w ~/restore-photos`.
+
 From the command line:
 
 ```sh
