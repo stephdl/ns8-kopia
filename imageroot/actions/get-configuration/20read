@@ -28,4 +28,5 @@ config = {
     "route_missing": bool(host) and km.own_route() == {},
 }
 config.update(km.read_settings())
+config["default_excludes"] = km.DEFAULT_EXCLUDES
 json.dump(config, fp=sys.stdout)

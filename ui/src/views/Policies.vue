@@ -77,10 +77,17 @@
               ref="compression"
             />
             <cv-text-area
+              :value="defaultExcludes.join('\n')"
+              :label="$t('policies.default_excludes')"
+              :helper-text="$t('policies.default_excludes_helper')"
+              readonly
+              class="mg-bottom maxwidth"
+            />
+            <cv-text-area
               v-model="excludesText"
               :label="$t('policies.excludes')"
               :helper-text="$t('policies.excludes_helper')"
-              :invalid-message="$t(error.excludes)"
+              :invalid-message="$t(error.excludes, { pattern: builtInExclude })"
               :disabled="stillLoading || !isConfigured"
               placeholder="node_modules"
               class="mg-bottom maxwidth"
@@ -193,6 +200,8 @@ export default {
       },
       compression: "",
       excludesText: "",
+      defaultExcludes: [],
+      builtInExclude: "",
       // NsSlider works with strings
       verifyPercent: "10",
       loading: {
@@ -308,6 +317,7 @@ export default {
       }
       this.compression = config.compression;
       this.excludesText = (config.excludes || []).join("\n");
+      this.defaultExcludes = config.default_excludes || [];
       this.verifyPercent = String(config.verify_percent);
       this.loading.getConfiguration = false;
     },
@@ -331,6 +341,13 @@ export default {
       }
       if (this.excludes.length > 200) {
         this.fail("excludes", "settings.excludes_too_many");
+      }
+      // The backend drops them silently, so say why the line disappears
+      this.builtInExclude =
+        this.excludes.find((pattern) => this.defaultExcludes.includes(pattern)) ||
+        "";
+      if (this.builtInExclude) {
+        this.fail("excludes", "settings.excludes_built_in");
       }
       if (!this.isCount(this.verifyPercentNumber, 100)) {
         this.fail("verify_percent", "settings.verify_percent_range");

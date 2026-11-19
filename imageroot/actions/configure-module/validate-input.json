@@ -18,8 +18,8 @@
             "keep_annual": 2,
             "compression": "zstd",
             "excludes": [
-                "node_modules",
-                "*.tmp"
+                "*.iso",
+                "**/.local/share/containers"
             ],
             "owner_alert_hours": 48,
             "admin_alert_hours": 96,
@@ -120,7 +120,7 @@
                 "pattern": "^[^\\n\\r]+$"
             },
             "uniqueItems": true,
-            "description": "Patterns ignored by every machine, gitignore syntax."
+            "description": "Patterns ignored by every machine on top of the built-in ones, gitignore syntax. Built-in patterns sent here are dropped."
         },
         "owner_alert_hours": {
             "type": "integer",
