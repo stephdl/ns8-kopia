@@ -279,20 +279,23 @@ such as Teams and the widgets, the local database of the Windows Mail, Calendar 
 sync, which Windows rebuilds from the server, and the KopiaUI profile. They work for a backup of one profile
 and of `C:\Users`.
 
-On Linux, the default rules skip folders that the user cannot read or that only hold rebuilt
-data:
+On Linux, the default rules skip the image layers of rootless containers, which the user
+cannot read, and the cache of Flatpak apps:
 
 ```
-**/.local/share/containers/storage/
-**/.local/share/docker/
+**/.local/share/containers/storage/overlay*/
+**/.local/share/containers/storage/vfs*/
+**/.local/share/docker/overlay2/
+**/.local/share/docker/vfs/
 **/.var/app/*/cache/
-**/.local/share/Trash/
 ```
 
-The first two hold the images, containers and volumes of rootless Podman and Docker. Their
-files belong to the user IDs of the containers, so each snapshot would end with permission
-errors. The others are the cache of Flatpak apps and the trash of the desktop. The paths are
-the same on every distribution.
+The files of the image layers belong to the user IDs of the containers, so each snapshot would
+end with permission errors. The volumes of Podman and Docker stay in the backup, since they
+hold user data. A volume whose files belong to a container user still gives permission errors:
+exclude it on the Policies page if it does not need a backup. These are the default locations
+on every distribution. A storage moved with `XDG_DATA_HOME`, the Podman `storage.conf` or the
+Docker `data-root` needs its own rule on the Policies page.
 
 **Ignore Well-Known Cache Directories** is on by default: Kopia skips any folder holding a
 `CACHEDIR.TAG` file.
@@ -422,9 +425,10 @@ policies. Add the folder from the Clients page.
 **A machine is Unknown.** The Kopia server did not answer `list-clients`. Check the Status
 page for a failed service.
 
-**Snapshots end with permission errors.** A folder the user cannot read, often the data
-folder of a container or a virtual machine on Linux, or a protected folder on macOS. Exclude it on the Policies page, or
-on macOS give KopiaUI Full Disk Access (see the [user guide](user-guide.md#macos)).
+**Snapshots end with permission errors.** A folder the user cannot read, often a container
+volume or a bind mounted data folder on Linux, or a protected folder on macOS. Exclude it on
+the Policies page, or on macOS give KopiaUI Full Disk Access (see the
+[user guide](user-guide.md#macos)).
 
 **The integrity check did not finish.** It ran out of time. Lower the share of data on the
 Policies page.
