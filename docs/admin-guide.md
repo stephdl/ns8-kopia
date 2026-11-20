@@ -269,6 +269,7 @@ each snapshot would end with read errors on them:
 **/AppData/Local/Packages/*/Settings/
 **/AppData/Local/Packages/*/SystemAppData/
 **/AppData/Local/Packages/**/EBWebView/
+**/AppData/Local/Comms/UnistoreDB/
 **/AppData/Roaming/kopia-ui/
 ```
 
@@ -276,7 +277,8 @@ The first two are the registry hives of the user, `NTUSER.DAT` and `UsrClass.dat
 logs. A restore brings back the files of the profile, not its registry settings. Kopia matches
 rules with case, so the brackets cover both cases. The others are the cache of the Windows web
 engine, the settings and private registry of every Store app, the WebView2 data of Store apps
-such as Teams and the widgets, and the KopiaUI profile. They work for a backup of one profile
+such as Teams and the widgets, the local database of the Windows Mail, Calendar and People
+sync, which Windows rebuilds from the server, and the KopiaUI profile. They work for a backup of one profile
 and of `C:\Users`.
 
 **Ignore Well-Known Cache Directories** is on by default: Kopia skips any folder holding a
