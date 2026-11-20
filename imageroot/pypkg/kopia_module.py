@@ -352,6 +352,10 @@ DEFAULT_EXCLUDES = [
     "**/AppData/Local/Packages/*/Settings/", "**/AppData/Local/Packages/*/SystemAppData/",
     "**/AppData/Local/Packages/**/EBWebView/", "**/AppData/Local/Comms/UnistoreDB/",
     "**/AppData/Roaming/kopia-ui/",
+    # Rootless containers store their files under other user IDs, so the user cannot read them
+    "**/.local/share/containers/storage/", "**/.local/share/docker/",
+    # Flatpak apps put their cache there, out of reach of the .cache rule
+    "**/.var/app/*/cache/", "**/.local/share/Trash/",
     # The client keeps its own password there
     "repository.config.kopia-password",
 ]

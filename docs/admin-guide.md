@@ -241,9 +241,7 @@ There are two ways to exclude something.
    the rules the module always applies, among them `repository.config.kopia-password`, the
    file where a Linux client stores its password. It is read-only, and module updates keep it
    current. A built-in rule cannot be turned off. Add your own rules in the **Excluded
-   patterns** field, which starts empty. For example `**/.local/share/containers` skips the
-   rootless Podman storage, which the user often cannot read and which would end each
-   snapshot with a permission error.
+   patterns** field, which starts empty. For example `**/*.iso` skips disk images.
 2. **On the machine**: a `.kopiaignore` file in the backed up folder, or in any folder below
    it. It applies to its folder and everything inside, on top of the rules of the Policies
    page. For a machine that backs up `C:\Users\anna\Documents`, the file goes in that folder,
@@ -280,6 +278,21 @@ engine, the settings and private registry of every Store app, the WebView2 data 
 such as Teams and the widgets, the local database of the Windows Mail, Calendar and People
 sync, which Windows rebuilds from the server, and the KopiaUI profile. They work for a backup of one profile
 and of `C:\Users`.
+
+On Linux, the default rules skip folders that the user cannot read or that only hold rebuilt
+data:
+
+```
+**/.local/share/containers/storage/
+**/.local/share/docker/
+**/.var/app/*/cache/
+**/.local/share/Trash/
+```
+
+The first two hold the images, containers and volumes of rootless Podman and Docker. Their
+files belong to the user IDs of the containers, so each snapshot would end with permission
+errors. The others are the cache of Flatpak apps and the trash of the desktop. The paths are
+the same on every distribution.
 
 **Ignore Well-Known Cache Directories** is on by default: Kopia skips any folder holding a
 `CACHEDIR.TAG` file.
@@ -409,8 +422,8 @@ policies. Add the folder from the Clients page.
 **A machine is Unknown.** The Kopia server did not answer `list-clients`. Check the Status
 page for a failed service.
 
-**Snapshots end with permission errors.** A folder the user cannot read, often the rootless
-Podman storage on Linux or a protected folder on macOS. Exclude it on the Policies page, or
+**Snapshots end with permission errors.** A folder the user cannot read, often the data
+folder of a container or a virtual machine on Linux, or a protected folder on macOS. Exclude it on the Policies page, or
 on macOS give KopiaUI Full Disk Access (see the [user guide](user-guide.md#macos)).
 
 **The integrity check did not finish.** It ran out of time. Lower the share of data on the
