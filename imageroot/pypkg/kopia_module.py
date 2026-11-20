@@ -352,6 +352,12 @@ DEFAULT_EXCLUDES = [
     "**/AppData/Local/Packages/*/Settings/", "**/AppData/Local/Packages/*/SystemAppData/",
     "**/AppData/Local/Packages/**/EBWebView/", "**/AppData/Local/Comms/UnistoreDB/",
     "**/AppData/Roaming/kopia-ui/",
+    # Image layers of rootless containers belong to other user IDs, so the user cannot read
+    # them. Volumes stay in the backup: they hold user data.
+    "**/.local/share/containers/storage/overlay*/", "**/.local/share/containers/storage/vfs*/",
+    "**/.local/share/docker/overlay2/", "**/.local/share/docker/vfs/",
+    # Flatpak apps put their cache there, out of reach of the .cache rule
+    "**/.var/app/*/cache/",
     # The client keeps its own password there
     "repository.config.kopia-password",
 ]

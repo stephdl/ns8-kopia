@@ -241,9 +241,7 @@ There are two ways to exclude something.
    the rules the module always applies, among them `repository.config.kopia-password`, the
    file where a Linux client stores its password. It is read-only, and module updates keep it
    current. A built-in rule cannot be turned off. Add your own rules in the **Excluded
-   patterns** field, which starts empty. For example `**/.local/share/containers` skips the
-   rootless Podman storage, which the user often cannot read and which would end each
-   snapshot with a permission error.
+   patterns** field, which starts empty. For example `**/*.iso` skips disk images.
 2. **On the machine**: a `.kopiaignore` file in the backed up folder, or in any folder below
    it. It applies to its folder and everything inside, on top of the rules of the Policies
    page. For a machine that backs up `C:\Users\anna\Documents`, the file goes in that folder,
@@ -280,6 +278,24 @@ engine, the settings and private registry of every Store app, the WebView2 data 
 such as Teams and the widgets, the local database of the Windows Mail, Calendar and People
 sync, which Windows rebuilds from the server, and the KopiaUI profile. They work for a backup of one profile
 and of `C:\Users`.
+
+On Linux, the default rules skip the image layers of rootless containers, which the user
+cannot read, and the cache of Flatpak apps:
+
+```
+**/.local/share/containers/storage/overlay*/
+**/.local/share/containers/storage/vfs*/
+**/.local/share/docker/overlay2/
+**/.local/share/docker/vfs/
+**/.var/app/*/cache/
+```
+
+The files of the image layers belong to the user IDs of the containers, so each snapshot would
+end with permission errors. The volumes of Podman and Docker stay in the backup, since they
+hold user data. A volume whose files belong to a container user still gives permission errors:
+exclude it on the Policies page if it does not need a backup. These are the default locations
+on every distribution. A storage moved with `XDG_DATA_HOME`, the Podman `storage.conf` or the
+Docker `data-root` needs its own rule on the Policies page.
 
 **Ignore Well-Known Cache Directories** is on by default: Kopia skips any folder holding a
 `CACHEDIR.TAG` file.
@@ -409,9 +425,10 @@ policies. Add the folder from the Clients page.
 **A machine is Unknown.** The Kopia server did not answer `list-clients`. Check the Status
 page for a failed service.
 
-**Snapshots end with permission errors.** A folder the user cannot read, often the rootless
-Podman storage on Linux or a protected folder on macOS. Exclude it on the Policies page, or
-on macOS give KopiaUI Full Disk Access (see the [user guide](user-guide.md#macos)).
+**Snapshots end with permission errors.** A folder the user cannot read, often a container
+volume or a bind mounted data folder on Linux, or a protected folder on macOS. Exclude it on
+the Policies page, or on macOS give KopiaUI Full Disk Access (see the
+[user guide](user-guide.md#macos)).
 
 **The integrity check did not finish.** It ran out of time. Lower the share of data on the
 Policies page.
