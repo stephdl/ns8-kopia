@@ -69,8 +69,9 @@ tool except Time Machine needs this permission.
 
 ### Linux server
 
-The Linux server script backs up your whole home directory with a systemd user timer,
-`kopia-snapshot.timer`. It enables lingering, so the timer keeps running after you log out.
+Log in as yourself over SSH or on the console before you paste the script, not with `su` or
+`sudo -u`: the timer needs a systemd user session. The Linux server script backs up your
+whole home directory with a systemd user timer, `kopia-snapshot.timer`. It enables lingering, so the timer keeps running after you log out.
 If the script cannot enable it, ask root to run `loginctl enable-linger <user>`. Check the
 timer with:
 
