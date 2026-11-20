@@ -159,6 +159,9 @@ see nothing.
 - Linux and macOS desktop, Linux server: open a terminal as the user, paste the script and
   press Enter. The script runs in `sh` whatever the login shell is. Under fish, type `sh`
   first, then paste. It also runs from a file with `sh enroll.sh`. Delete the file after use.
+- Linux server: log in as the user over SSH or on the console. `su - <user>` and
+  `sudo -u <user>` open no systemd user session, so the script stops with "No systemd user
+  session" before it adds the timer.
 
 A failed step stops the rest of the script but leaves the terminal open, so the error stays
 on screen.

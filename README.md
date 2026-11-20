@@ -53,7 +53,8 @@ repository it opens. Anyone with the cluster backup password can read the backup
 machine. Keep that password outside the server, and give it only to who may read them.
 
 Choose the host and the client port before the first machine: they cannot change while
-machines exist. Then add machines on the Clients page, see
+machines exist. Then install Kopia on each machine and add it on the Clients page, which gives
+the enrollment script to run there. See
 [Enroll a machine](docs/admin-guide.md#enroll-a-machine).
 
 ## Known limits
@@ -70,7 +71,13 @@ machines exist. Then add machines on the Clients page, see
 
 ## Testing
 
-The Robot Framework tests in [tests/](tests/) run in CI on a fresh NS8 node: install,
-configure, then the node acts as its own client: it runs the enrollment script in a kopia
-container, backs up, restores a file, checks the state, resets the password and checks the
-old one is refused. Then it removes the module.
+The Robot Framework tests in [tests/](tests/) run in CI on a fresh NS8 node, one file per
+topic. The node installs and configures the module, then acts as its own client: it runs the
+desktop enrollment script in a kopia container, backs up 150M of random data and restores it
+with a checksum. The tests also check that a machine cannot delete its snapshots, that the
+server applies the retention, that every built-in excluded pattern skips its files in a real
+snapshot, that read errors are reported, the folders of a machine, the password reset and
+the sealed enrollment output. Then they remove the module.
+
+The Linux server script is not covered: its systemd user timer needs a real login session.
+Test it by hand on a Linux machine.
