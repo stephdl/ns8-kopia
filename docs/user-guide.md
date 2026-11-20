@@ -127,4 +127,8 @@ kopia snapshot restore <snapshot id> /path/to/restore
 ## New computer
 
 When your computer is replaced or reinstalled, ask your administrator for a new script.
+
+When you run a new script on a computer where KopiaUI is already running, quit KopiaUI from
+its icon in the tray or the menu bar, then start it again. Until then it keeps the old
+password and cannot back up.
 Install KopiaUI, run the new script, and your old backups show up again in KopiaUI.
