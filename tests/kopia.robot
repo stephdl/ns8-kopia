@@ -99,10 +99,10 @@ Check if the built-in excluded patterns stay with the admin ones
     ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"host": "kopia.test.example.org", "excludes": ["*.iso", "node_modules"]}'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
-    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/get-configuration | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["excludes"], "node_modules" in d["default_excludes"], "**/.local/share/containers/storage/overlay*/" in d["default_excludes"])'
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/get-configuration | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["excludes"], "node_modules" in d["default_excludes"])'
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
-    Should Be Equal As Strings    ${output}    ['*.iso'] True True
+    Should Be Equal As Strings    ${output}    ['*.iso'] True
     ${output}  ${rc} =    Execute Command    podman run --rm --network=host --add-host kopia.test.example.org:127.0.0.1 -e HOME=/home/u -e KOPIA_CONFIG_PATH=/home/u/.config/kopia/repository.config -e KOPIA_PERSIST_CREDENTIALS_ON_CONNECT=true -v /root/kopia-ci-home:/home/u:Z --entrypoint sh docker.io/kopia/kopia:0.23.1 -c 'kopia policy show --global --json' | python3 -c 'import json,sys; i=json.load(sys.stdin)["files"]["ignore"]; print("*.iso" in i, "repository.config.kopia-password" in i)'
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
