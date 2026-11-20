@@ -10,12 +10,16 @@ Check if a machine can enroll, back up and restore
     ${rc} =    Execute Command    api-cli run module/${module_id}/add-client --data '{"username": "ci", "hostname": "runner"}' | python3 -c 'import json,sys; open("/root/kopia-ci.sh","w").write(json.load(sys.stdin)["shell"])'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
-    ${rc} =    Execute Command    mkdir -p /root/kopia-ci-home && echo ci-data > /root/kopia-ci-home/file.txt
+    # Random data neither compresses nor dedups, so Kopia really splits, encrypts and sends 150M
+    ${rc} =    Execute Command    mkdir -p /root/kopia-ci-home && echo ci-data > /root/kopia-ci-home/file.txt && for i in 1 2 3; do head -c 50M /dev/urandom > /root/kopia-ci-home/big$i.bin; done
     ...    return_rc=True  return_stdout=False
-    ${output}  ${rc} =    Execute Command    ${CLIENT} -v /root/kopia-ci.sh:/enroll.sh:ro,Z --entrypoint sh ${KOPIA_IMAGE} -c 'sh -i < /enroll.sh && kopia snapshot create /home/u && kopia snapshot restore /home/u /tmp/restored && cat /tmp/restored/file.txt'
+    ${output}  ${rc} =    Execute Command    ${CLIENT} -v /root/kopia-ci.sh:/enroll.sh:ro,Z --entrypoint sh ${KOPIA_IMAGE} -c 'sh -i < /enroll.sh && cd /home/u && sha256sum big*.bin > /tmp/sums && kopia snapshot create /home/u && kopia snapshot restore /home/u /tmp/restored && cat /tmp/restored/file.txt && cd /tmp/restored && sha256sum -c /tmp/sums'
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Contain    ${output}    ci-data
+    Should Contain    ${output}    big1.bin: OK
+    Should Contain    ${output}    big2.bin: OK
+    Should Contain    ${output}    big3.bin: OK
     ${rc} =    Execute Command    api-cli run module/${module_id}/list-clients | grep -q '"state": "ok"'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
@@ -23,7 +27,7 @@ Check if a machine can enroll, back up and restore
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    [0]
-    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-clients | python3 -c 'import json,sys; print([c["total_size"] > 0 for c in json.load(sys.stdin)["clients"] if c["name"] == "ci@runner"])'
+    ${output}  ${rc} =    Execute Command    api-cli run module/${module_id}/list-clients | python3 -c 'import json,sys; print([c["total_size"] > 150000000 for c in json.load(sys.stdin)["clients"] if c["name"] == "ci@runner"])'
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    [True]
