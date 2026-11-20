@@ -314,6 +314,11 @@ Click **Reset password** on the machine, run the new script on it, then delete t
 old password stops working at once. The identity does not change, so the machine finds its
 old snapshots.
 
+A running KopiaUI keeps the old password until it quits. After the new script, quit KopiaUI
+from its icon in the tray or the menu bar and start it again. Closing its window is not
+enough. The Linux server script needs nothing more: its timer reads the new config at the
+next snapshot.
+
 ### Remove a machine
 
 **Remove** deletes the account. By default its snapshots stay in the repository: a machine

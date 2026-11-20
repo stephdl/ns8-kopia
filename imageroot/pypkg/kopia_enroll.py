@@ -41,6 +41,7 @@ WINDOWS_SCRIPT = """& {{
     # The user picks the folders in KopiaUI, which then runs the scheduled snapshots from the tray
     Start-Process "$env:LOCALAPPDATA\\Programs\\KopiaUI\\KopiaUI.exe"
     Write-Host "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
+    Write-Host "If KopiaUI was already running, quit it from the tray and start it again."
 }}
 """
 
@@ -63,6 +64,7 @@ for kopia in "$(command -v kopia)" /opt/KopiaUI/resources/server/kopia \\
 done
 [ -x "$kopia" ] || {{ echo "kopia is not installed: install KopiaUI" >&2; exit 1; }}
 """ + UNIX_CONNECT + """echo "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
+echo "If KopiaUI was already running, quit it from its icon and start it again."
 echo "Keep KopiaUI running: it takes the scheduled snapshots."
 KOPIA_ENROLL
 """
