@@ -350,7 +350,8 @@ DEFAULT_EXCLUDES = [
     "**/AppData/Local/Microsoft/Windows/WebCache/",
     "**/AppData/Local/Microsoft/Windows/WebCacheLock.dat",
     "**/AppData/Local/Packages/*/Settings/", "**/AppData/Local/Packages/*/SystemAppData/",
-    "**/AppData/Local/Packages/**/EBWebView/", "**/AppData/Roaming/kopia-ui/",
+    "**/AppData/Local/Packages/**/EBWebView/", "**/AppData/Local/Comms/UnistoreDB/",
+    "**/AppData/Roaming/kopia-ui/",
     # The client keeps its own password there
     "repository.config.kopia-password",
 ]
