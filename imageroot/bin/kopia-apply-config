@@ -68,7 +68,11 @@ current = km.kopia_json(["policy", "show", "--global"]) or {}
 km.kopia(km.global_policy_args(current_ignore=current.get("files", {}).get("ignore", [])))
 apply_users()
 if os.path.exists(km.POLICIES_PENDING):
-    print(f"Restored {km.restore_policies()} Kopia policies", file=sys.stderr)
+    try:
+        print(f"Restored {km.restore_policies()} Kopia policies", file=sys.stderr)
+    except Exception as ex:
+        # One try only: a failed import must not break every later save and update
+        print(agent.SD_WARNING + f"saved policies not restored, add the folders again: {ex}", file=sys.stderr)
     os.remove(km.POLICIES_PENDING)
 # Always refresh: the server applies the retention it has cached, not the policy just written.
 km.server_refresh()

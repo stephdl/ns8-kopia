@@ -23,8 +23,10 @@ request = json.load(sys.stdin)
 data = kopia_configure.request_from_env(request["environment"])
 if not data["host"]:
     sys.exit(0)
-# The next apply imports the saved policies, also when it waits for the admin to free the port
-open(km.POLICIES_PENDING, "w").close()
+if not data["backup_repository"]:
+    # The volume came back empty: the next apply imports the saved policies, also when it waits
+    # for the admin to free the port
+    open(km.POLICIES_PENDING, "w").close()
 owner = km.port_used_by_other_module(agent.redis_connect(), data["client_port"], os.environ["MODULE_ID"], os.environ["NODE_ID"])
 if owner:
     print(agent.SD_WARNING + f"client port {data['client_port']} belongs to {owner} on this node: "
@@ -39,9 +41,6 @@ response = agent.tasks.run(agent_id=os.environ["AGENT_ID"], action="configure-mo
 agent.assert_exp(response["exit_code"] == 0, "configure-module failed")
 # The backup copied the repository with its maintenance paused
 km.set_maintenance(True)
-if not km.kopia_json(["snapshot", "list", "--all"]):
-    # A backup without the repository: nothing to check
-    sys.exit(0)
 # Walk every snapshot now: a backup that failed to copy part of the data shows up before a user needs it
 proc = subprocess.run(["systemctl", "--user", "start", "--no-block", "kopia-verify-snapshots.service"],
                       capture_output=True, text=True)

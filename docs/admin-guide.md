@@ -430,10 +430,9 @@ runagent -m kopia1 systemctl --user start kopia-verify-snapshots.service
 
 ### Clone and move
 
-Clone and move copy the `kopia-repository` volume too, so the history is kept, whatever
-the backup setting. A clone is a
-full copy: same host, same client port, same certificate, same machine accounts. On another
-node it starts at once. On the same node the source still holds the port and the route, so
+Clone and move copy the `kopia-repository` volume too, so the history is kept, whatever the
+backup setting. A clone is a full copy: same host, same client port, same certificate, same
+machine accounts. On another node it starts at once. On the same node the source still holds the port and the route, so
 the clone stays stopped. Remove the old instance, then save the settings of the clone to
 start it. This is the way to move the repository to a bigger additional disk. The machines
 keep working without any change. A move keeps everything.

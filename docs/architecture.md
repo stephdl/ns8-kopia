@@ -214,9 +214,9 @@ packs never change once written.
 
 `restore-module` restores the state and the volume, then `kopia-apply-config` creates the
 machine accounts again from their hashes and imports the saved policies the repository lacks:
-all of them when the volume came back empty, none otherwise. `kopia-verify-snapshots.service`
-then checks every snapshot, when there is one. The client port is kept: when another instance on the node holds it, the restored
-instance stays stopped. `clone-module` follows the same rule.
+all of them after a backup without the repository. `kopia-verify-snapshots.service` then
+checks every snapshot. The client port is kept: when another instance on the node holds it,
+the restored instance stays stopped. `clone-module` follows the same rule.
 
 ## Actions
 

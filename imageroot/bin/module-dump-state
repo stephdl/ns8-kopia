@@ -9,6 +9,7 @@
 # Maintenance rewrites indexes and deletes packs: while restic copies the repository, that leaves
 # a copy that cannot open and files that vanish mid-read. With maintenance off, machines only add files.
 
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -21,6 +22,9 @@ if not backup_repository:
 
 if subprocess.run(["systemctl", "--user", "-q", "is-active", "kopia-server.service"]).returncode != 0:
     # No server, no maintenance and no writes: the volume is already still, and the last policies dump stays
+    if not backup_repository and not os.path.exists(km.POLICIES_DUMP):
+        print("Kopia server stopped and no saved policies: a restore of this backup gives no folders",
+              file=sys.stderr)
     sys.exit(0)
 # Without the repository a restore needs them to give the machines their folders back
 try:
