@@ -238,7 +238,10 @@
         "admin_password_required": "Le mot de passe admin est obligatoire",
         "mail_failed": "Le mail de test n'a pas pu être envoyé. Vérifiez les paramètres du smarthost.",
         "host_required": "Saisissez un nom d'hôte",
-        "verify_percent_range": "Saisissez un nombre entier de 0 à 100"
+        "verify_percent_range": "Saisissez un nombre entier de 0 à 100",
+        "backup_repository": "Sauvegarder le dépôt avec la sauvegarde du cluster",
+        "backup_repository_on": "Activé : la sauvegarde du cluster contient les instantanés de toutes les machines. Une restauration ramène leur historique. La destination de sauvegarde grossit avec le dépôt et avec la rétention de la sauvegarde du cluster.",
+        "backup_repository_off": "Désactivé : la sauvegarde du cluster ne contient que les paramètres, les comptes des machines et leurs dossiers. Une restauration repart d'un dépôt vide : les machines se reconnectent seules et sauvegardent tout à nouveau, mais leur historique est perdu."
     },
     "policies": {
         "title": "Politiques",

@@ -51,3 +51,21 @@ Check if the server still expires old snapshots
     ...    return_rc=True
     Should Be Equal As Integers    ${rc}  0
     Should Be Equal As Strings    ${output}    1
+
+Check if the cluster backup can leave the repository out
+    # module-dump-state runs before each cluster backup, as the core would call it
+    ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"backup_repository": false}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${rc} =    Execute Command    runagent -m ${module_id} module-dump-state
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${rc} =    Execute Command    runagent -m ${module_id} sh -c 'grep -qx volumes/kopia-repository/data "$AGENT_INSTALL_DIR/etc/state-exclude.conf" && python3 -m json.tool policies.json >/dev/null && test ! -e maintenance-paused'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"backup_repository": true}'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0
+    ${rc} =    Execute Command    runagent -m ${module_id} sh -c 'module-dump-state && ! grep -q kopia-repository/data "$AGENT_INSTALL_DIR/etc/state-exclude.conf" && test -e maintenance-paused && module-cleanup-state'
+    ...    return_rc=True  return_stdout=False
+    Should Be Equal As Integers    ${rc}  0

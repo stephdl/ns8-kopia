@@ -238,7 +238,10 @@
         "admin_password_required": "Das Admin-Passwort ist erforderlich",
         "mail_failed": "Die Testmail konnte nicht gesendet werden. Prüfen Sie die Smarthost-Einstellungen.",
         "host_required": "Geben Sie einen Hostnamen ein",
-        "verify_percent_range": "Geben Sie eine ganze Zahl von 0 bis 100 ein"
+        "verify_percent_range": "Geben Sie eine ganze Zahl von 0 bis 100 ein",
+        "backup_repository": "Repository mit der Cluster-Sicherung sichern",
+        "backup_repository_on": "Ein: Die Cluster-Sicherung enthält die Snapshots aller Rechner. Eine Wiederherstellung bringt ihren Verlauf zurück. Das Sicherungsziel wächst mit dem Repository und mit der Aufbewahrung der Cluster-Sicherung.",
+        "backup_repository_off": "Aus: Die Cluster-Sicherung enthält nur die Einstellungen, die Rechnerkonten und ihre Ordner. Eine Wiederherstellung beginnt mit einem leeren Repository: Die Rechner verbinden sich selbst neu und sichern alles erneut, aber ihr Verlauf geht verloren."
     },
     "policies": {
         "title": "Richtlinien",

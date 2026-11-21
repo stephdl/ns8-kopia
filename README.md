@@ -52,6 +52,11 @@ The repository password is generated at install and kept in the module backup, n
 repository it opens. Anyone with the cluster backup password can read the backups of every
 machine. Keep that password outside the server, and give it only to who may read them.
 
+The repository is in the cluster backup by default. To keep the backup destination small, turn
+off **Back up the repository with the cluster backup** in Settings: the backup then keeps only
+the settings, the machine accounts and their folders, and a restore starts a new history. See
+the admin guide.
+
 Choose the host and the client port before the first machine: they cannot change while
 machines exist. Then install Kopia on each machine and add it on the Clients page, which gives
 the enrollment script to run there. See

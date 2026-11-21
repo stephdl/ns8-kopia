@@ -238,7 +238,10 @@
         "admin_password_required": "The admin password is required",
         "mail_failed": "The test mail could not be sent. Check the smarthost settings.",
         "host_required": "Enter a host name",
-        "verify_percent_range": "Enter a whole number from 0 to 100"
+        "verify_percent_range": "Enter a whole number from 0 to 100",
+        "backup_repository": "Back up the repository with the cluster backup",
+        "backup_repository_on": "On: the cluster backup holds the snapshots of every machine. A restore brings back their history. The backup destination grows with the repository and with the retention of the cluster backup.",
+        "backup_repository_off": "Off: the cluster backup holds only the settings, the machine accounts and their folders. A restore starts with an empty repository: the machines reconnect on their own and back up everything again, but their history is lost."
     },
     "policies": {
         "title": "Policies",

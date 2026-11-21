@@ -135,6 +135,26 @@
               :disabled="stillLoading"
               class="mg-bottom maxwidth"
             />
+            <NsToggle
+              value="backupRepository"
+              :label="$t('settings.backup_repository')"
+              v-model="isBackupRepository"
+              :disabled="stillLoading"
+              class="mg-bottom"
+            >
+              <template #tooltip>
+                <div class="mg-bottom-sm">
+                  {{ $t("settings.backup_repository_on") }}
+                </div>
+                <div>{{ $t("settings.backup_repository_off") }}</div>
+              </template>
+              <template slot="text-left">{{
+                $t("settings.disabled")
+              }}</template>
+              <template slot="text-right">{{
+                $t("settings.enabled")
+              }}</template>
+            </NsToggle>
             <cv-row v-if="error.configureModule">
               <cv-column>
                 <NsInlineNotification
@@ -210,6 +230,7 @@ export default {
       adminPasswordValidation: null,
       focusAdminPassword: { element: "" },
       isChangeAdminPassword: false,
+      isBackupRepository: true,
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -326,6 +347,7 @@ export default {
       this.clientsCount = config.clients_count;
       this.routeMissing = config.route_missing;
       this.adminPasswordSet = config.admin_password_set;
+      this.isBackupRepository = config.backup_repository;
       this.loading.getConfiguration = false;
       this.focusElement("host");
     },
@@ -383,6 +405,7 @@ export default {
         host: this.host,
         lets_encrypt: this.isLetsEncryptEnabled,
         client_port: this.clientPort,
+        backup_repository: this.isBackupRepository,
       };
       // Without a new password the backend keeps the current one
       if (this.isAdminPasswordActive) {

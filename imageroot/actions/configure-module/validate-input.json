@@ -28,7 +28,8 @@
             ],
             "alert_sender": "",
             "alert_language": "en",
-            "verify_percent": 10
+            "verify_percent": 10,
+            "backup_repository": true
         }
     ],
     "type": "object",
@@ -172,6 +173,10 @@
             "minimum": 0,
             "maximum": 100,
             "description": "Share of the repository data the weekly integrity check downloads and checks. 0 checks only the index and that every pack exists."
+        },
+        "backup_repository": {
+            "type": "boolean",
+            "description": "Copy the repository volume in the cluster backup. Off, the backup keeps the settings, the machine accounts and the folder list, and a restore starts with an empty repository."
         }
     }
 }

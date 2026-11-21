@@ -238,7 +238,10 @@
         "admin_password_required": "La contraseña admin es obligatoria",
         "mail_failed": "No se pudo enviar el correo de prueba. Revise los ajustes del smarthost.",
         "host_required": "Introduzca un nombre de host",
-        "verify_percent_range": "Introduzca un número entero de 0 a 100"
+        "verify_percent_range": "Introduzca un número entero de 0 a 100",
+        "backup_repository": "Respaldar el repositorio con la copia del clúster",
+        "backup_repository_on": "Activado: la copia del clúster contiene las instantáneas de todos los equipos. Una restauración recupera su historial. El destino de la copia crece con el repositorio y con la retención de la copia del clúster.",
+        "backup_repository_off": "Desactivado: la copia del clúster solo contiene la configuración, las cuentas de los equipos y sus carpetas. Una restauración empieza con un repositorio vacío: los equipos se vuelven a conectar solos y respaldan todo de nuevo, pero su historial se pierde."
     },
     "policies": {
         "title": "Políticas",

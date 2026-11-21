@@ -28,8 +28,8 @@ finish.
 **Clients** lists the machines with their last backup and their state. From there you add a
 machine, reset its password, see its connection details, manage its folders, or remove it.
 
-**Settings** holds the host, Let's Encrypt for the admin web UI, the client port and the admin
-password.
+**Settings** holds the host, Let's Encrypt for the admin web UI, the client port, the admin
+password, and whether the cluster backup copies the repository.
 
 **Policies** holds the global policy of every machine (schedule, retention, compression,
 excludes) and the share of data read by the weekly integrity check.
@@ -92,6 +92,7 @@ only connect outbound, so open nothing on them. A laptop on a network that allow
 | `compression` | Policies | `zstd` | Kopia compression names |
 | `excludes` | Policies | none | one gitignore rule per line, added to the built-in patterns: caches, temp folders, trash, `node_modules`, Windows swap files, Windows files locked during a session. The built-in patterns always apply and module updates keep them current |
 | `verify_percent` | Policies | 10 | 0 to 100 |
+| `backup_repository` | Settings | `true` | `false` keeps the repository out of the cluster backup |
 | `owner_alert_hours` | Alerts | 48 | 1 to 8760 |
 | `admin_alert_hours` | Alerts | 96 | 1 to 8760 |
 | `admin_recipients` | Alerts | none | mail addresses |
@@ -378,10 +379,20 @@ The module backup holds the configuration, the secrets and the `kopia-repository
 the history of every machine. Pick an off-site destination in the cluster backup, such as S3,
 and run it at least once a day: a restore loses every snapshot taken since the last backup.
 The Kopia packs never change once written, so each backup only sends the new ones. The
-destination needs about the size of the repository.
+destination needs the size of the repository, plus the data Kopia expired while the cluster
+backup still keeps it. Kopia maintenance deletes old packs, but restic keeps them until the
+retention of the cluster backup forgets the last snapshot that holds them. A short retention
+keeps the destination close to the repository size. A dedicated cluster backup with only
+this instance lets you give it its own retention and destination.
 
 The machines keep backing up while the cluster backup runs. Kopia maintenance is paused
 during that time and resumes after the backup, or after 24 hours when a backup fails.
+
+**Back up the repository with the cluster backup** in Settings is on by default. Turn it off
+to keep the snapshots out of the cluster backup, like the pool of BackupPC. The cluster backup
+then holds the settings, the secrets, the machine accounts and the policies of the machines
+and their folders, a few kilobytes. It no longer pauses Kopia maintenance. The repository
+then has no copy off the node: if its disk dies, the history of every machine is lost.
 
 The backup does not protect against an attacker who is root on the node: restic needs to
 delete in the destination to prune, so the same access can wipe it.
@@ -399,8 +410,19 @@ page and mails the admins.
 A machine that was lost too gets enrolled again with the same `user@host`: reset its password
 in Clients, run the new script, and restore its files from KopiaUI.
 
-A backup taken before the repository was in the module backup restores an empty repository.
-The machines then start a new history.
+A backup taken with **Back up the repository with the cluster backup** off restores an empty
+repository. The module creates a new one with the same password, the machine accounts with
+the same hashes, and the folders of each machine from the policies saved in the backup. The
+machines reconnect without a new script, see their folders at the next refresh, and back up
+everything again. Their old history is lost.
+
+A backup taken before the repository was in the module backup also restores an empty
+repository, but without the folders: add them again in Clients.
+
+A desktop does not start this full backup right away. KopiaUI waits for the next snapshot
+interval of the policy, 4 hours by default. To back up at once, the user clicks the refresh
+button of the **Snapshots** tab, then **Snapshot Now** next to each folder. Expect a heavy load
+on the network and the server while every machine sends all its data again.
 
 The restore keeps the client port. On a node where another instance holds it, the restored
 instance stays stopped. Remove the other instance, save the settings of the restored one to
@@ -412,10 +434,10 @@ runagent -m kopia1 systemctl --user start kopia-verify-snapshots.service
 
 ### Clone and move
 
-Clone and move copy the `kopia-repository` volume too, so the history is kept. A clone is a
-full copy: same host, same client port, same certificate, same machine accounts. On another
-node it starts at once. On the same node the source still holds the port and the route, so
-the clone stays stopped. Remove the old instance, then save the settings of the clone to
+Clone and move copy the `kopia-repository` volume too, so the history is kept, whatever the
+backup setting. A clone is a full copy: same host, same client port, same certificate, same
+machine accounts. On another node it starts at once. On the same node the source still holds
+the port and the route, so the clone stays stopped. Remove the old instance, then save the settings of the clone to
 start it. This is the way to move the repository to a bigger additional disk. The machines
 keep working without any change. A move keeps everything.
 
