@@ -125,7 +125,7 @@
         "reset_password": "Réinitialiser le mot de passe",
         "remove": "Supprimer",
         "enrollment_title": "Enrôlement de {name}",
-        "enrollment_intro": "Collez ce script dans un terminal sur la machine pour la connecter au serveur : PowerShell sous Windows, un terminal sous Linux et macOS. Sur un poste de travail, ajoutez ensuite les dossiers à sauvegarder avec Gérer dans la colonne Dossiers de la machine. Pour réinstaller une machine, réinitialisez son mot de passe et lancez le nouveau script. Elle retrouve ses anciens instantanés.",
+        "enrollment_intro": "Collez ce script dans un terminal sur la machine pour la connecter au serveur : PowerShell sous Windows, un terminal sous Linux et macOS. Sur un poste de travail, ajoutez ensuite les dossiers à sauvegarder avec Gérer dans la colonne Dossiers de la machine. Cochez ensuite Launch At Startup dans le menu de l'icône KopiaUI de la barre des tâches, sinon aucune sauvegarde ne tourne après un redémarrage. Pour réinstaller une machine, réinitialisez son mot de passe et lancez le nouveau script. Elle retrouve ses anciens instantanés.",
         "enrollment_details_intro": "Détails de connexion de cette machine. Servez-vous-en pour vérifier sa configuration dans KopiaUI.",
         "enrollment_user_title": "Lancez-le dans la session de l'utilisateur",
         "enrollment_user_description": "Lancez le script avec l'utilisateur qui possède les fichiers. Ne le lancez pas en administrateur ni en SYSTEM.",

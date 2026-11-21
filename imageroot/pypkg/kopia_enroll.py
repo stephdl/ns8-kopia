@@ -42,6 +42,7 @@ WINDOWS_SCRIPT = """& {{
     Start-Process "$env:LOCALAPPDATA\\Programs\\KopiaUI\\KopiaUI.exe"
     Write-Host "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
     Write-Host "If KopiaUI was already running, quit it from the tray and start it again."
+    Write-Host "In the menu of the KopiaUI tray icon, check Launch At Startup, or no backup runs after a reboot."
 }}
 """
 
@@ -66,6 +67,7 @@ done
 """ + UNIX_CONNECT + """echo "Enrolled. Ask your administrator to add the folders to back up, then start KopiaUI."
 echo "If KopiaUI was already running, quit it from its icon and start it again."
 echo "Keep KopiaUI running: it takes the scheduled snapshots."
+echo "In the menu of the KopiaUI icon, check Launch At Startup. On macOS, add KopiaUI to the Login Items."
 KOPIA_ENROLL
 """
 

@@ -174,7 +174,10 @@ The script connects to `https://<host>:<client port>`, pins the module certifica
 fingerprint, and stores the password in the OS keyring (or in the Kopia config folder on
 Linux without a keyring).
 
-On a desktop it takes no snapshot. Go to step 4.
+On a desktop it takes no snapshot, and only a running KopiaUI takes them. Check that the user
+enables **Launch At Startup** in the menu of the KopiaUI tray icon, or adds KopiaUI to the
+Login Items on macOS. Without it, KopiaUI stops at the first logout and the machine goes
+late. Go to step 4.
 
 On a Linux server it backs up the whole home directory. It adds a `kopia-snapshot.timer`
 systemd user timer at the policy interval (none in manual mode), and enables lingering so it
@@ -427,7 +430,7 @@ This deletes the repository volume and every backup in it.
 ## Troubleshooting
 
 **A machine stays Never seen.** A desktop has no folder yet: add one in **Folders**. Or
-KopiaUI is not running on it: it must stay in the tray, and start at login. Or the machine
+KopiaUI is not running on it: it must stay in the tray, with **Launch At Startup** checked. Or the machine
 cannot reach the client port: check the firewall of its network, and the port forward when
 NS8 is behind NAT. A machine that sleeps or stays off takes no snapshot either.
 
