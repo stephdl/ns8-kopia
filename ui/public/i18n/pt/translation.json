@@ -125,7 +125,7 @@
         "reset_password": "Repor a palavra-passe",
         "remove": "Remover",
         "enrollment_title": "Registo de {name}",
-        "enrollment_intro": "Cole este script num terminal na máquina para a ligar ao servidor: PowerShell no Windows, um terminal no Linux e macOS. Num computador de secretária, adicione depois as pastas a guardar com Gerir na coluna Pastas da máquina. Para reinstalar uma máquina, reponha a sua palavra-passe e execute o novo script. Ela recupera os snapshots antigos.",
+        "enrollment_intro": "Cole este script num terminal na máquina para a ligar ao servidor: PowerShell no Windows, um terminal no Linux e macOS. Num computador de secretária, adicione depois as pastas a guardar com Gerir na coluna Pastas da máquina. Depois ative Launch At Startup no menu do ícone do KopiaUI na área de notificação, senão nenhuma cópia corre após um reinício. Para reinstalar uma máquina, reponha a sua palavra-passe e execute o novo script. Ela recupera os snapshots antigos.",
         "enrollment_details_intro": "Dados de ligação desta máquina. Use-os para verificar a configuração no KopiaUI.",
         "enrollment_user_title": "Execute-o na sessão do utilizador",
         "enrollment_user_description": "Execute o script com o utilizador dono dos ficheiros. Não o execute como administrador nem como SYSTEM.",

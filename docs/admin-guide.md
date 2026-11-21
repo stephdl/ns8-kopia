@@ -174,7 +174,10 @@ The script connects to `https://<host>:<client port>`, pins the module certifica
 fingerprint, and stores the password in the OS keyring (or in the Kopia config folder on
 Linux without a keyring).
 
-On a desktop it takes no snapshot. Go to step 4.
+On a desktop it takes no snapshot, and only a running KopiaUI takes them. Check that the user
+enables **Launch At Startup** in the menu of the KopiaUI tray icon, or adds KopiaUI to the
+Login Items on macOS. Without it, KopiaUI stops at the first logout and the machine goes
+late. Go to step 4.
 
 On a Linux server it backs up the whole home directory. It adds a `kopia-snapshot.timer`
 systemd user timer at the policy interval (none in manual mode), and enables lingering so it
@@ -202,15 +205,19 @@ with the refresh button of its **Snapshots** tab. It then snapshots each folder 
 interval while it runs. The server cannot start a snapshot on a machine: for one right away,
 the user clicks **Snapshot Now** next to the folder in KopiaUI.
 
-Each folder has a menu with three entries:
+Each folder has a menu with these entries:
 
+- **Show errors**: only when the last snapshot of the folder could not read some files. It
+  lists their paths and the reason, the errors ignored by a policy included. See
+  [Alerts](#alerts) for what to do with them.
+- **Edit in Kopia**: change a setting for that folder only.
 - **Disable**: the machine stops backing up the folder and it shows **Disabled**. Its
-  snapshots stay restorable and expire with the retention. **Enable** backs it up again.
+  snapshots stay restorable and expire with the retention. On a disabled folder the entry
+  becomes **Enable**, which backs it up again.
 - **Remove**: its snapshots and its policy are deleted, and the machine forgets the folder.
   Maintenance frees the space within a day or two. This cannot be undone. KopiaUI keeps its
   old folder list until its next refresh: a snapshot taken before that brings the folder
   back. To be sure, disable the folder first, let the machine refresh, then remove it.
-- **Edit in Kopia**: change a setting for that folder only.
 
 Deleting the policy alone in the Kopia web UI does not stop the backups: KopiaUI keeps
 snapshotting every folder that already has a snapshot. The machine applies a removal at its
@@ -423,7 +430,7 @@ This deletes the repository volume and every backup in it.
 ## Troubleshooting
 
 **A machine stays Never seen.** A desktop has no folder yet: add one in **Folders**. Or
-KopiaUI is not running on it: it must stay in the tray, and start at login. Or the machine
+KopiaUI is not running on it: it must stay in the tray, with **Launch At Startup** checked. Or the machine
 cannot reach the client port: check the firewall of its network, and the port forward when
 NS8 is behind NAT. A machine that sleeps or stays off takes no snapshot either.
 

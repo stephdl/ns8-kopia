@@ -125,7 +125,7 @@
         "reset_password": "Reimposta la password",
         "remove": "Rimuovi",
         "enrollment_title": "Registrazione di {name}",
-        "enrollment_intro": "Incolla questo script in un terminale sulla macchina per collegarla al server: PowerShell su Windows, un terminale su Linux e macOS. Su un desktop, aggiungi poi le cartelle da salvare con Gestisci nella colonna Cartelle della macchina. Per reinstallare una macchina, reimposta la sua password ed esegui il nuovo script. Ritrova i suoi vecchi snapshot.",
+        "enrollment_intro": "Incolla questo script in un terminale sulla macchina per collegarla al server: PowerShell su Windows, un terminale su Linux e macOS. Su un desktop, aggiungi poi le cartelle da salvare con Gestisci nella colonna Cartelle della macchina. Poi attiva Launch At Startup nel menu dell'icona di KopiaUI nell'area di notifica, altrimenti nessun backup parte dopo un riavvio. Per reinstallare una macchina, reimposta la sua password ed esegui il nuovo script. Ritrova i suoi vecchi snapshot.",
         "enrollment_details_intro": "Dettagli di connessione di questa macchina. Usali per verificarne la configurazione in KopiaUI.",
         "enrollment_user_title": "Eseguilo nella sessione dell'utente",
         "enrollment_user_description": "Esegui lo script con l'utente che possiede i file. Non eseguirlo come amministratore o come SYSTEM.",
