@@ -243,6 +243,54 @@ def kopia_json(args):
     return json.loads(kopia(args + ["--json"]).stdout or "null")
 
 
+# Policies of the machines and their folders, copied out of the repository by each cluster backup
+POLICIES_DUMP = "policies.json"
+# Left by restore-module, removed by the first apply that imported the dump
+POLICIES_PENDING = "policies-pending"
+# Restic pattern added to state-exclude.conf when the repository stays out of the cluster backup
+REPOSITORY_EXCLUDE = "volumes/kopia-repository/data"
+
+
+def dump_policies():
+    """Save every policy but the global one, which configure-module rebuilds from the settings."""
+    policies = json.loads(kopia(["policy", "export"]).stdout or "{}")
+    policies.pop("(global)", None)
+    tmp = POLICIES_DUMP + ".tmp"
+    with open(tmp, "w") as f:
+        json.dump(policies, f, indent=2)
+    os.replace(tmp, POLICIES_DUMP)
+    return len(policies)
+
+
+def restore_policies():
+    """Import the saved policies the repository lacks: all of them after a backup without the repository."""
+    try:
+        with open(POLICIES_DUMP) as f:
+            saved = json.load(f)
+    except FileNotFoundError:
+        return 0
+    present = set(json.loads(kopia(["policy", "export"]).stdout or "{}"))
+    missing = {target: policy for target, policy in saved.items() if target not in present}
+    if missing:
+        kopia(["policy", "import"], stdin=json.dumps(missing))
+    return len(missing)
+
+
+def write_state_exclude(backup_repository, path=None):
+    """Add or drop the repository pattern in the exclude list the core reads after module-dump-state.
+
+    update-module brings back the shipped file, and the next backup writes the line again."""
+    path = path or os.path.join(os.environ["AGENT_INSTALL_DIR"], "etc", "state-exclude.conf")
+    with open(path) as f:
+        lines = [line for line in f.read().splitlines() if line.strip() != REPOSITORY_EXCLUDE]
+    if not backup_repository:
+        lines.append(REPOSITORY_EXCLUDE)
+    tmp = path + ".tmp"
+    with open(tmp, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    os.replace(tmp, path)
+
+
 def server_refresh():
     """Make the server read new users, ACLs and policies now instead of at the next index refresh."""
     port = os.environ.get("CLIENT_PORT", str(DEFAULT_PORT))
@@ -380,6 +428,7 @@ SETTINGS = {
     "alert_sender": ("ALERT_SENDER", "", str),
     "alert_language": ("ALERT_LANGUAGE", "en", str),
     "verify_percent": ("VERIFY_PERCENT", 10, int),
+    "backup_repository": ("BACKUP_REPOSITORY", True, bool),
 }
 
 
@@ -390,6 +439,9 @@ def _encode(value, kind):
 def _decode(raw, default, kind):
     if raw is None or raw == "":
         return default if kind is not list or raw is None else []
+    if kind is bool:
+        # bool("False") is true
+        return raw == "True"
     try:
         return json.loads(raw) if kind is list else kind(raw)
     except ValueError:

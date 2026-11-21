@@ -238,7 +238,10 @@
         "admin_password_required": "La password admin è obbligatoria",
         "mail_failed": "Impossibile inviare la mail di prova. Controlla le impostazioni dello smarthost.",
         "host_required": "Inserisci un nome host",
-        "verify_percent_range": "Inserisci un numero intero da 0 a 100"
+        "verify_percent_range": "Inserisci un numero intero da 0 a 100",
+        "backup_repository": "Salva il repository con il backup del cluster",
+        "backup_repository_on": "Attivo: il backup del cluster contiene gli snapshot di tutte le macchine. Un ripristino riporta la loro cronologia. La destinazione del backup cresce con il repository e con la retention del backup del cluster.",
+        "backup_repository_off": "Disattivo: il backup del cluster contiene solo le impostazioni, gli account delle macchine e le loro cartelle. Un ripristino riparte da un repository vuoto: le macchine si ricollegano da sole e salvano di nuovo tutto, ma la loro cronologia è persa."
     },
     "policies": {
         "title": "Criteri",

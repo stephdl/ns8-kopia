@@ -8,6 +8,7 @@
 # Push the module settings into Kopia: ACLs, global policy and machine accounts.
 # Idempotent. It never deletes a machine account: only remove-client does that.
 
+import os
 import sys
 import agent
 import kopia_module as km
@@ -66,5 +67,8 @@ apply_acls()
 current = km.kopia_json(["policy", "show", "--global"]) or {}
 km.kopia(km.global_policy_args(current_ignore=current.get("files", {}).get("ignore", [])))
 apply_users()
+if os.path.exists(km.POLICIES_PENDING):
+    print(f"Restored {km.restore_policies()} Kopia policies", file=sys.stderr)
+    os.remove(km.POLICIES_PENDING)
 # Always refresh: the server applies the retention it has cached, not the policy just written.
 km.server_refresh()

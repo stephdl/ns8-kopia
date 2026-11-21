@@ -50,6 +50,7 @@ flowchart TB
         S3["certs/client.pem<br/>client-key.pem"]
         S4["clients.json<br/>machine list, owner email"]
         S5["alerts.json<br/>mails already sent"]
+        S6["policies.json<br/>machine and folder policies,<br/>copied at each backup"]
     end
     ACT["actions<br/>configure-module, add-client,<br/>reset-client-password, ..."] --> State
     ACT --> APPLY["bin/kopia-apply-config"]
@@ -189,20 +190,32 @@ data in the restored copy, and only a walk of the snapshots finds it.
 ## Backup and restore
 
 The module backup holds `state/secrets`, `state/certs`, `state/clients.json`,
-`state/alerts.json` and the `kopia-repository` volume
+`state/alerts.json`, `state/policies.json` and the `kopia-repository` volume
 ([state-include.conf](../imageroot/etc/state-include.conf)). It leaves out the reserved space
 file and the `*.tmp.*` blobs Kopia is still writing
 ([state-exclude.conf](../imageroot/etc/state-exclude.conf)).
 
+The core gives no switch to leave a volume out at run time, but it calls `module-dump-state`
+before it reads `state-exclude.conf`. So `module-dump-state` rewrites that file in the install
+directory at each backup: with `BACKUP_REPOSITORY=False` it adds
+`volumes/kopia-repository/data`, otherwise it drops that line. `update-module` brings back
+the shipped file, and the next backup writes it again. `transfer-state` uses its own rsync
+rules, so clone and move always copy the volume.
+
+`module-dump-state` also saves every policy but the global one to `state/policies.json`, with
+`kopia policy export`. Folder policies live in the repository, and without them a desktop has
+nothing to back up.
+
 Kopia maintenance rewrites indexes and deletes packs, which would break restic while it reads
-the volume. So `module-dump-state` pauses the maintenance before the backup and
+the volume. So when the volume is in the backup, `module-dump-state` pauses the maintenance and
 `module-cleanup-state` resumes it after. If the backup fails before the cleanup, `kopia-check`
 resumes a pause older than 24 hours. The machines keep backing up during the backup: Kopia
 packs never change once written.
 
 `restore-module` restores the state and the volume, then `kopia-apply-config` creates the
-machine accounts again from their hashes, and `kopia-verify-snapshots.service` checks every
-snapshot. The client port is kept: when another instance on the node holds it, the restored
+machine accounts again from their hashes and imports the saved policies the repository lacks:
+all of them when the volume came back empty, none otherwise. `kopia-verify-snapshots.service`
+then checks every snapshot, when there is one. The client port is kept: when another instance on the node holds it, the restored
 instance stays stopped. `clone-module` follows the same rule.
 
 ## Actions

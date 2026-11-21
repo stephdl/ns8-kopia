@@ -238,7 +238,10 @@
         "admin_password_required": "Admin pasahitza beharrezkoa da",
         "mail_failed": "Ezin izan da proba-posta bidali. Begiratu smarthostaren ezarpenak.",
         "host_required": "Idatzi ostalari-izen bat",
-        "verify_percent_range": "Idatzi 0tik 100era bitarteko zenbaki osoa"
+        "verify_percent_range": "Idatzi 0tik 100era bitarteko zenbaki osoa",
+        "backup_repository": "Gorde biltegia klusterraren babeskopiarekin",
+        "backup_repository_on": "Aktibatuta: klusterraren babeskopiak makina guztien snapshotak ditu. Leheneratze batek haien historia itzultzen du. Babeskopiaren helmuga biltegiarekin eta klusterraren babeskopiaren atxikipenarekin hazten da.",
+        "backup_repository_off": "Desaktibatuta: klusterraren babeskopiak ezarpenak, makinen kontuak eta haien karpetak bakarrik ditu. Leheneratze bat biltegi huts batekin hasten da: makinak beren kabuz konektatzen dira berriro eta dena gordetzen dute berriro, baina haien historia galtzen da."
     },
     "policies": {
         "title": "Politikak",
