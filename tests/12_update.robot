@@ -44,7 +44,8 @@ Check if the settings survive the update
     Should Be Equal As Integers    ${rc}  0
     # Only the keys the stable release had: a new release may add settings with their default,
     # and refresh the built-in excludes
-    ${changed} =    Evaluate    [k for k, v in json.loads($config_before).items() if k != "default_excludes" and json.loads($output).get(k) != v]    modules=json
+    # Robot variables are only visible in the first iterable of a comprehension
+    ${changed} =    Evaluate    [k for before, after in [(json.loads($config_before), json.loads($output))] for k in before if k != "default_excludes" and after.get(k) != before[k]]    modules=json
     Should Be Empty    ${changed}
 
 Check if the machine still backs up after the update
