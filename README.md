@@ -84,5 +84,10 @@ server applies the retention, that every built-in excluded pattern skips its fil
 snapshot, that read errors are reported, the folders of a machine, the password reset and
 the sealed enrollment output. Then they remove the module.
 
+CI runs the suite twice. The install scenario starts from the image under test. The update
+scenario installs the release published in the stephdl forge, backs up a machine with it,
+updates it to the image under test, and checks that the settings, the machine account, its
+folder and its snapshot survive before the rest of the suite runs.
+
 The Linux server script is not covered: its systemd user timer needs a real login session.
 Test it by hand on a Linux machine.
