@@ -413,8 +413,12 @@ A backup taken with **Back up the repository with the cluster backup** off, or b
 repository was in the module backup, restores an empty repository. The module creates a new
 one with the same password, the machine accounts with the same hashes, and the folders of
 each machine from the saved policies. The machines reconnect without a new script, see their
-folders at the next refresh, and back up everything again. Their old history is lost. The
-network and the server take the full upload of every machine at once.
+folders at the next refresh, and back up everything again. Their old history is lost.
+
+A desktop does not start this full backup right away. KopiaUI waits for the next snapshot
+interval of the policy, 4 hours by default. To back up at once, the user clicks the refresh
+button of the **Snapshots** tab, then **Snapshot Now** next to each folder. Expect a heavy load
+on the network and the server while every machine sends all its data again.
 
 The restore keeps the client port. On a node where another instance holds it, the restored
 instance stays stopped. Remove the other instance, save the settings of the restored one to
