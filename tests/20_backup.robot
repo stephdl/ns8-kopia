@@ -60,7 +60,7 @@ Check if the cluster backup can leave the repository out
     ${rc} =    Execute Command    runagent -m ${module_id} module-dump-state
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
-    ${rc} =    Execute Command    runagent -m ${module_id} sh -c 'grep -qx volumes/kopia-repository/data "$AGENT_INSTALL_DIR/etc/state-exclude.conf" && python3 -c "import json; json.load(open(\"policies.json\"))" && test ! -e maintenance-paused'
+    ${rc} =    Execute Command    runagent -m ${module_id} sh -c 'grep -qx volumes/kopia-repository/data "$AGENT_INSTALL_DIR/etc/state-exclude.conf" && python3 -m json.tool policies.json >/dev/null && test ! -e maintenance-paused'
     ...    return_rc=True  return_stdout=False
     Should Be Equal As Integers    ${rc}  0
     ${rc} =    Execute Command    api-cli run module/${module_id}/configure-module --data '{"backup_repository": true}'
